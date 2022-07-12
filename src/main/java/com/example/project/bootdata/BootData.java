@@ -197,6 +197,21 @@ public class BootData implements CommandLineRunner {
                 .build();
         groupRepository.save(g7);
 
+        ch1.setGroupRoom(g1);
+        ch2.setGroupRoom(g2);
+        ch3.setGroupRoom(g3);
+        ch4.setGroupRoom(g4);
+        ch5.setGroupRoom(g5);
+        ch6.setGroupRoom(g6);
+        ch7.setGroupRoom(g7);
+
+        chatRepository.save(ch1);
+        chatRepository.save(ch2);
+        chatRepository.save(ch3);
+        chatRepository.save(ch4);
+        chatRepository.save(ch5);
+        chatRepository.save(ch6);
+        chatRepository.save(ch7);
 
         c1.setChat(g2.getChat());
         c2.setChat(g3.getChat());

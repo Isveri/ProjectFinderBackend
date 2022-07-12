@@ -9,10 +9,8 @@ import java.util.List;
 @Builder
 @Setter
 @Getter
-public class GroupRoomDTO {
+public class ChatDTO {
+
     private Long id;
-    private String name;
-    private String description;
-    private List<UserDTO> users;
-    private ChatDTO chatDTO;
+    private List<MessageDTO> messages;
 }

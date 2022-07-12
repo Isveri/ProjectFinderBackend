@@ -1,5 +1,6 @@
 package com.example.project.services;
 
+import com.example.project.domain.Chat;
 import com.example.project.domain.Message;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
@@ -8,6 +9,7 @@ import com.example.project.mappers.MessageMapper;
 import com.example.project.mappers.GroupRoomMapper;
 import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
+import com.example.project.repositories.ChatRepository;
 import com.example.project.repositories.MessageRepository;
 import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.UserRepository;
@@ -27,6 +29,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
+    private final ChatRepository chatRepository;
 
 
     @Override
@@ -47,9 +50,20 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:"+id));
+        GroupRoom groupRoom = createGroupRoom(groupRoomDTO, user);
+        groupRoom.setChat(createChat(groupRoom));
+        return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
+    }
+
+    private GroupRoom createGroupRoom(GroupRoomDTO groupRoomDTO, User user) {
         GroupRoom groupRoom = groupRoomMapper.mapGroupRoomDTOToGroupRoom(groupRoomDTO);
         user.getGroupRooms().add(groupRoom);
-        return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
+        return groupRepository.save(groupRoom);
+    }
+
+    private Chat createChat(GroupRoom groupRoom) {
+        Chat newChat = Chat.builder().groupRoom(groupRoom).build();
+        return chatRepository.save(newChat);
     }
 
     @Override
@@ -91,9 +105,11 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         Message message = messageMapper.mapMessageDTOTOMessage(messageDTO);
 
         message.setUser(user);
-//        message.setChat(.findById(messageDTO.getGroupId()).orElseThrow(() -> new NotFoundException("Group not found id:"+id)));
-
+        GroupRoom gr = groupRepository.findById(messageDTO.getGroupId()).orElseThrow(() -> new NotFoundException("Group not found id:"+id));
+        Chat chat = chatRepository.findById(gr.getChat().getId()).orElseThrow(()->new NotFoundException("Chat unavailable"));
+        message.setChat(chat);
         messageRepository.save(message);
+
     }
 
     @Override
