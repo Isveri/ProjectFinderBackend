@@ -26,6 +26,10 @@ public class BootData implements CommandLineRunner {
 
     private final ChatRepository chatRepository;
 
+    private final InGameRoleRepository inGameRoleRepository;
+
+    private final GameRepository gameRepository;
+
 
 
     @Override
@@ -266,6 +270,23 @@ public class BootData implements CommandLineRunner {
         userRepository.save(u4);
         userRepository.save(u5);
         userRepository.save(u6);
+
+        InGameRole igr1 = InGameRole.builder().name("Mid").build();
+        InGameRole igr2 = InGameRole.builder().name("Top").build();
+        InGameRole igr3 = InGameRole.builder().name("Bot").build();
+        InGameRole igr4 = InGameRole.builder().name("Jng").build();
+        InGameRole igr5 = InGameRole.builder().name("Supp").build();
+
+        inGameRoleRepository.save(igr1);
+        inGameRoleRepository.save(igr2);
+        inGameRoleRepository.save(igr3);
+        inGameRoleRepository.save(igr4);
+        inGameRoleRepository.save(igr5);
+
+
+
+        Game game1 = Game.builder().name("Lol").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
+        gameRepository.save(game1);
 
 
     }

@@ -25,4 +25,8 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private List<GroupRoom> groupRooms;
 
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name="game_id")
+    private Game game;
+
 }

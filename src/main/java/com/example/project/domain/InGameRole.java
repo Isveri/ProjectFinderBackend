@@ -22,7 +22,7 @@ public class InGameRole {
     @NotBlank
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "game_id")
     private Game game;
 

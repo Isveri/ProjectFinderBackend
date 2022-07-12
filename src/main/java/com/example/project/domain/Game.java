@@ -21,7 +21,11 @@ public class Game {
     @NotBlank
     private String name;
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game",cascade = CascadeType.MERGE)
     private List<InGameRole> inGameRoles;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.MERGE)
+    private List<Category> categories;
+
 
 }
