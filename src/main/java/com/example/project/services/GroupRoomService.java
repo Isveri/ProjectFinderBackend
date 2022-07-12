@@ -1,11 +1,8 @@
 package com.example.project.services;
 
 import com.example.project.domain.GroupRoom;
-import com.example.project.domain.User;
-import com.example.project.model.CommentDTO;
+import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
-import com.example.project.model.UserDTO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -25,7 +22,7 @@ public interface GroupRoomService {
 
     void deleteGroupRoomById(Long id);
 
-    void addComment(CommentDTO commentDTO);
+    void addComment(MessageDTO messageDTO);
 
     void deleteCommentById(Long commentId);
 }

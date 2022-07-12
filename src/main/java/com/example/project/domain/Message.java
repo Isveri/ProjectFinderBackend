@@ -1,6 +1,5 @@
 package com.example.project.domain;
 
-import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @Getter
 @Entity
-public class Comment {
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +24,7 @@ public class Comment {
     private User user;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name="group_id")
-    private GroupRoom groupRoom;
+    @JoinColumn(name="chat_id",nullable = false)
+    private Chat chat;
 
 }

@@ -1,12 +1,10 @@
 package com.example.project.controllers;
 
-import com.example.project.model.CommentDTO;
+import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
-import com.example.project.model.UserDTO;
 import com.example.project.services.GroupRoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,8 +50,8 @@ public class GroupRoomController {
     }
 
     @PostMapping("/newComment")
-    public ResponseEntity<Void> addComment(@RequestBody CommentDTO commentDTO) {
-        groupRoomService.addComment(commentDTO);
+    public ResponseEntity<Void> addComment(@RequestBody MessageDTO messageDTO) {
+        groupRoomService.addComment(messageDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

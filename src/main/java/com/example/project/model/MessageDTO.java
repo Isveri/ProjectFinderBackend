@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @Setter
 @Getter
-public class CommentDTO {
+public class MessageDTO {
     private Long id;
     private String text;
     private UserDTO user;

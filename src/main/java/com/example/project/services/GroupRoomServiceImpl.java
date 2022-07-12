@@ -1,23 +1,20 @@
 package com.example.project.services;
 
-import com.example.project.domain.Comment;
+import com.example.project.domain.Message;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
 import com.example.project.exceptions.NotFoundException;
-import com.example.project.mappers.CommentMapper;
+import com.example.project.mappers.MessageMapper;
 import com.example.project.mappers.GroupRoomMapper;
-import com.example.project.model.CommentDTO;
+import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
-import com.example.project.repositories.CommentRepository;
+import com.example.project.repositories.MessageRepository;
 import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +25,8 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     private final GroupRoomMapper groupRoomMapper;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
-    private final CommentMapper commentMapper;
+    private final MessageRepository messageRepository;
+    private final MessageMapper messageMapper;
 
 
     @Override
@@ -86,21 +83,21 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
-    public void addComment(CommentDTO commentDTO) {
+    public void addComment(MessageDTO messageDTO) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:"+id));
 
-        Comment comment = commentMapper.mapCommentDTOTOComment(commentDTO);
+        Message message = messageMapper.mapMessageDTOTOMessage(messageDTO);
 
-        comment.setUser(user);
-        comment.setGroupRoom(groupRepository.findById(commentDTO.getGroupId()).orElseThrow(() -> new NotFoundException("Group not found id:"+id)));
+        message.setUser(user);
+//        message.setChat(.findById(messageDTO.getGroupId()).orElseThrow(() -> new NotFoundException("Group not found id:"+id)));
 
-        commentRepository.save(comment);
+        messageRepository.save(message);
     }
 
     @Override
     public void deleteCommentById(Long commentId) {
-        commentRepository.deleteById(commentId);
+        messageRepository.deleteById(commentId);
     }
 }

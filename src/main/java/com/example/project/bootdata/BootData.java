@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +21,10 @@ public class BootData implements CommandLineRunner {
     private final GroupRepository groupRepository;
     private final PrivilegesRepository privilegesRepository;
     private final RoleRepository roleRepository;
-    private final CommentRepository commentRepository;
+    private final MessageRepository messageRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final ChatRepository chatRepository;
 
 
 
@@ -101,31 +102,49 @@ public class BootData implements CommandLineRunner {
         userRepository.save(u5);
         userRepository.save(u6);
 
-        Comment c1 = Comment.builder()
+        Message c1 = Message.builder()
                 .text("To jest moj pierwszy komentarz tutaj")
                 .user(u1)
                 .build();
 
 
-        Comment c2 = Comment.builder()
+        Message c2 = Message.builder()
                 .text("To jest moj pierwszy komentarz tutaj")
                 .user(u2)
                 .build();
 
-        Comment c3 = Comment.builder()
+        Message c3 = Message.builder()
                 .text("To jest moj drugi komentarz tutaj")
                 .user(u1)
                 .build();
 
-        Comment c4 = Comment.builder()
+        Message c4 = Message.builder()
                 .text("To jest moj trzeci komentarz tutaj")
                 .user(u1)
                 .build();
+
+        Chat ch1 = Chat.builder().build();
+        Chat ch2 = Chat.builder().build();
+        Chat ch3 = Chat.builder().build();
+        Chat ch4 = Chat.builder().build();
+        Chat ch5 = Chat.builder().build();
+        Chat ch6 = Chat.builder().build();
+        Chat ch7 = Chat.builder().build();
+
+        chatRepository.save(ch1);
+        chatRepository.save(ch2);
+        chatRepository.save(ch3);
+        chatRepository.save(ch4);
+        chatRepository.save(ch5);
+        chatRepository.save(ch6);
+        chatRepository.save(ch7);
+
 
         GroupRoom g1 =GroupRoom.builder()
                 .name("Grupa 1")
                 .description("Poszukuje osób do wspólnego pogrania w CS:GO")
                 .users(Collections.singletonList(u1))
+                .chat(ch1)
                 .build();
 
         groupRepository.save(g1);
@@ -134,6 +153,7 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 2")
                 .description("Poszukuje osób do wspólnego pogrania w League of Legends. Wymagana ranga gold+")
                 .users(Collections.singletonList(u1))
+                .chat(ch2)
                 .build();
 
         groupRepository.save(g2);
@@ -141,6 +161,7 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 3")
                 .users(Collections.singletonList(u1))
                 .description("Poszukuje osób do wspólnego wyjścia na kręgle ")
+                .chat(ch3)
                 .build();
         groupRepository.save(g3);
 
@@ -148,6 +169,7 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 4")
                 .users(Collections.singletonList(u1))
                 .description("Poszukuje osób do wspólnego wyjścia na mecz koszykówki")
+                .chat(ch4)
                 .build();
         groupRepository.save(g4);
 
@@ -155,6 +177,7 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 5")
                 .users(Collections.singletonList(u1))
                 .description("Grupa do rozmowy na różne tematy")
+                .chat(ch5)
                 .build();
         groupRepository.save(g5);
 
@@ -162,6 +185,7 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 6")
                 .users(Collections.singletonList(u1))
                 .description("Poszukuje osób zainteresowanych programowaniem i pracą w zespole")
+                .chat(ch6)
                 .build();
         groupRepository.save(g6);
 
@@ -169,19 +193,20 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 7")
                 .users(Collections.singletonList(u1))
                 .description("Szukam osób do wspólnego pogrania w League of Legends. Ranga plat+")
+                .chat(ch7)
                 .build();
         groupRepository.save(g7);
 
 
-        c1.setGroupRoom(g2);
-        c2.setGroupRoom(g3);
-        c3.setGroupRoom(g3);
-        c4.setGroupRoom(g1);
+        c1.setChat(g2.getChat());
+        c2.setChat(g3.getChat());
+        c3.setChat(g1.getChat());
+        c4.setChat(g4.getChat());
 
-        commentRepository.save(c1);
-        commentRepository.save(c2);
-        commentRepository.save(c3);
-        commentRepository.save(c4);
+        messageRepository.save(c1);
+        messageRepository.save(c2);
+        messageRepository.save(c3);
+        messageRepository.save(c4);
 
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege

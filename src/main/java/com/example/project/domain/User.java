@@ -1,6 +1,5 @@
 package com.example.project.domain;
 
-import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
@@ -46,7 +45,25 @@ public class User implements UserDetails, CredentialsContainer {
     private Role role;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
-    private List<Comment> comments = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_ingamerole",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingamerole_id"))
+    private List<InGameRole> inGameRoles;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_platforms",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "platform"))
+    private List<Platform> platforms;
+
+
+
+
 
     @Transient
     @Override
