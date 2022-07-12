@@ -29,11 +29,18 @@ public class GroupRoom {
     @ManyToOne(cascade = {CascadeType.MERGE})
     private Category category;
 
+    /**
+     * 1 na liscie to leader pog
+     */
     @ManyToMany(mappedBy = "groupRooms",cascade = CascadeType.MERGE)
     private List<User> users = new ArrayList<>();
 
     @OneToOne(mappedBy = "groupRoom",cascade = CascadeType.REMOVE)
     private Chat chat;
+
+    @ManyToOne(cascade=CascadeType.MERGE)
+    @JoinColumn(name="groupLeader_id")
+    private User groupLeader;
 
 //    @NotBlank
     private Long joinCode;

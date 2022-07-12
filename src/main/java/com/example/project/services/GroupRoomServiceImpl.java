@@ -52,6 +52,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:"+id));
         GroupRoom groupRoom = createGroupRoom(groupRoomDTO, user);
         groupRoom.setChat(createChat(groupRoom));
+        groupRoom.setGroupLeader(user);
         return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
     }
 

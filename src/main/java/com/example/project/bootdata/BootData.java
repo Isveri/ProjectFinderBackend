@@ -145,6 +145,7 @@ public class BootData implements CommandLineRunner {
                 .description("Poszukuje osób do wspólnego pogrania w CS:GO")
                 .users(Collections.singletonList(u1))
                 .chat(ch1)
+                .groupLeader(u1)
                 .build();
 
         groupRepository.save(g1);
@@ -153,6 +154,7 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 2")
                 .description("Poszukuje osób do wspólnego pogrania w League of Legends. Wymagana ranga gold+")
                 .users(Collections.singletonList(u1))
+                .groupLeader(u2)
                 .chat(ch2)
                 .build();
 
@@ -160,6 +162,7 @@ public class BootData implements CommandLineRunner {
         GroupRoom g3 = GroupRoom.builder()
                 .name("Grupa 3")
                 .users(Collections.singletonList(u1))
+                .groupLeader(u3)
                 .description("Poszukuje osób do wspólnego wyjścia na kręgle ")
                 .chat(ch3)
                 .build();
@@ -170,6 +173,7 @@ public class BootData implements CommandLineRunner {
                 .users(Collections.singletonList(u1))
                 .description("Poszukuje osób do wspólnego wyjścia na mecz koszykówki")
                 .chat(ch4)
+                .groupLeader(u2)
                 .build();
         groupRepository.save(g4);
 
@@ -178,6 +182,7 @@ public class BootData implements CommandLineRunner {
                 .users(Collections.singletonList(u1))
                 .description("Grupa do rozmowy na różne tematy")
                 .chat(ch5)
+                .groupLeader(u2)
                 .build();
         groupRepository.save(g5);
 
@@ -186,6 +191,7 @@ public class BootData implements CommandLineRunner {
                 .users(Collections.singletonList(u1))
                 .description("Poszukuje osób zainteresowanych programowaniem i pracą w zespole")
                 .chat(ch6)
+                .groupLeader(u3)
                 .build();
         groupRepository.save(g6);
 
@@ -194,6 +200,7 @@ public class BootData implements CommandLineRunner {
                 .users(Collections.singletonList(u1))
                 .description("Szukam osób do wspólnego pogrania w League of Legends. Ranga plat+")
                 .chat(ch7)
+                .groupLeader(u3)
                 .build();
         groupRepository.save(g7);
 
