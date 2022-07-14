@@ -28,6 +28,11 @@ public class GroupRoomController {
         return ResponseEntity.ok(groupRoomService.getAllGroups());
     }
 
+    @GetMapping("/all/{game}")
+    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGame(@PathVariable String game){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGame(game));
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> createGroupRoom(@RequestBody GroupRoomDTO groupRoomDTO){
         return ResponseEntity.ok(groupRoomService.save(groupRoomDTO));

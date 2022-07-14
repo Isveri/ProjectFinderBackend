@@ -9,15 +9,13 @@ import com.example.project.mappers.MessageMapper;
 import com.example.project.mappers.GroupRoomMapper;
 import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
-import com.example.project.repositories.ChatRepository;
-import com.example.project.repositories.MessageRepository;
-import com.example.project.repositories.GroupRepository;
-import com.example.project.repositories.UserRepository;
+import com.example.project.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -30,12 +28,23 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
     private final ChatRepository chatRepository;
+    private final GameRepository gameRepository;
 
 
     @Override
     public List<GroupRoomDTO> getAllGroups() {
         return groupRepository.findAll()
                 .stream()
+                .map(groupRoom -> groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GroupRoomDTO> getGroupsByGame(String game) {
+        Predicate<GroupRoom> chosenGame = groupRoom -> groupRoom.getGame().getName().equals(game);
+
+        return groupRepository.findAll()
+                .stream().filter(chosenGame)
                 .map(groupRoom -> groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom))
                 .collect(Collectors.toList());
     }

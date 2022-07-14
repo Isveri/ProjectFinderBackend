@@ -36,31 +36,31 @@ public class BootData implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
 
-        createCategory();
+//        createCategory();
         createOther();
 
 
     }
 
-    private void createCategory() {
-
-        categoryRepository.save(Category.builder()
-                .name("League Of Legends")
-                .build());
-
-        categoryRepository.save(Category.builder()
-                .name("CS:GO")
-                .build());
-
-        categoryRepository.save(Category.builder()
-                .name("IRL")
-                .build());
-
-        categoryRepository.save(Category.builder()
-                .name("Inne")
-                .build());
-
-    }
+//    private void createCategory() {
+//
+//        categoryRepository.save(Category.builder()
+//                .name("SoloQ")
+//                .build());
+//
+//        categoryRepository.save(Category.builder()
+//                .name("Ranked Flex")
+//                .build());
+//
+//        categoryRepository.save(Category.builder()
+//                .name("ARAM")
+//                .build());
+//
+//        categoryRepository.save(Category.builder()
+//                .name("Nieokreślone")
+//                .build());
+//
+//    }
 
     private void createOther(){
         User u1 = User.builder()
@@ -144,11 +144,68 @@ public class BootData implements CommandLineRunner {
         chatRepository.save(ch7);
 
 
+        InGameRole igr1 = InGameRole.builder().name("Mid").build();
+        InGameRole igr2 = InGameRole.builder().name("Top").build();
+        InGameRole igr3 = InGameRole.builder().name("Bot").build();
+        InGameRole igr4 = InGameRole.builder().name("Jng").build();
+        InGameRole igr5 = InGameRole.builder().name("Supp").build();
+
+        inGameRoleRepository.save(igr1);
+        inGameRoleRepository.save(igr2);
+        inGameRoleRepository.save(igr3);
+        inGameRoleRepository.save(igr4);
+        inGameRoleRepository.save(igr5);
+
+
+        InGameRole role1 = InGameRole.builder().name("Sniper").build();
+        InGameRole role2 = InGameRole.builder().name("Entry fragger").build();
+        InGameRole role3 = InGameRole.builder().name("Shoot Caller").build();
+
+        inGameRoleRepository.save(role1);
+        inGameRoleRepository.save(role2);
+        inGameRoleRepository.save(role3);
+
+        Game game1 = Game.builder().name("League of Legends").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
+        Game game2 = Game.builder().name("CS:GO").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
+        Game game3 = Game.builder().name("IRL").build();
+
+        gameRepository.save(game1);
+        gameRepository.save(game2);
+        gameRepository.save(game3);
+
+
+        Category cat1 = Category.builder()
+                .name("SoloQ")
+                .game(game1)
+                .build();
+        Category cat2 = Category.builder()
+                .name("Ranked Flex")
+                .game(game1)
+                .build();
+        Category cat3 = Category.builder()
+                .name("ARAM")
+                .game(game1)
+                .build();
+        Category cat4 = Category.builder()
+                .name("Nieokreślone")
+                .game(game1)
+                .build();
+
+
+        categoryRepository.save(cat1);
+        categoryRepository.save(cat2);
+        categoryRepository.save(cat3);
+        categoryRepository.save(cat4);
+
+
+
         GroupRoom g1 =GroupRoom.builder()
                 .name("Grupa 1")
                 .description("Poszukuje osób do wspólnego pogrania w CS:GO")
                 .users(Collections.singletonList(u1))
                 .chat(ch1)
+                .category(cat1)
+                .game(game1)
                 .groupLeader(u1)
                 .build();
 
@@ -159,7 +216,9 @@ public class BootData implements CommandLineRunner {
                 .description("Poszukuje osób do wspólnego pogrania w League of Legends. Wymagana ranga gold+")
                 .users(Collections.singletonList(u1))
                 .groupLeader(u2)
+                .category(cat1)
                 .chat(ch2)
+                .game(game1)
                 .build();
 
         groupRepository.save(g2);
@@ -169,6 +228,8 @@ public class BootData implements CommandLineRunner {
                 .groupLeader(u3)
                 .description("Poszukuje osób do wspólnego wyjścia na kręgle ")
                 .chat(ch3)
+                .game(game1)
+                .category(cat1)
                 .build();
         groupRepository.save(g3);
 
@@ -178,6 +239,8 @@ public class BootData implements CommandLineRunner {
                 .description("Poszukuje osób do wspólnego wyjścia na mecz koszykówki")
                 .chat(ch4)
                 .groupLeader(u2)
+                .game(game1)
+                .category(cat2)
                 .build();
         groupRepository.save(g4);
 
@@ -186,6 +249,7 @@ public class BootData implements CommandLineRunner {
                 .users(Collections.singletonList(u1))
                 .description("Grupa do rozmowy na różne tematy")
                 .chat(ch5)
+                .game(game2)
                 .groupLeader(u2)
                 .build();
         groupRepository.save(g5);
@@ -195,6 +259,7 @@ public class BootData implements CommandLineRunner {
                 .users(Collections.singletonList(u1))
                 .description("Poszukuje osób zainteresowanych programowaniem i pracą w zespole")
                 .chat(ch6)
+                .game(game2)
                 .groupLeader(u3)
                 .build();
         groupRepository.save(g6);
@@ -205,6 +270,7 @@ public class BootData implements CommandLineRunner {
                 .description("Szukam osób do wspólnego pogrania w League of Legends. Ranga plat+")
                 .chat(ch7)
                 .groupLeader(u3)
+                .game(game3)
                 .build();
         groupRepository.save(g7);
 
@@ -271,22 +337,13 @@ public class BootData implements CommandLineRunner {
         userRepository.save(u5);
         userRepository.save(u6);
 
-        InGameRole igr1 = InGameRole.builder().name("Mid").build();
-        InGameRole igr2 = InGameRole.builder().name("Top").build();
-        InGameRole igr3 = InGameRole.builder().name("Bot").build();
-        InGameRole igr4 = InGameRole.builder().name("Jng").build();
-        InGameRole igr5 = InGameRole.builder().name("Supp").build();
-
-        inGameRoleRepository.save(igr1);
-        inGameRoleRepository.save(igr2);
-        inGameRoleRepository.save(igr3);
-        inGameRoleRepository.save(igr4);
-        inGameRoleRepository.save(igr5);
-
-
-
-        Game game1 = Game.builder().name("Lol").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
-        gameRepository.save(game1);
+//        game1.setGroupRooms(Arrays.asList(g1,g2,g3,g4));
+//        game2.setGroupRooms(Arrays.asList(g5, g6));
+//        game3.setGroupRooms(Arrays.asList(g7));
+//
+//        gameRepository.save(game1);
+//        gameRepository.save(game2);
+//        gameRepository.save(game3);
 
 
     }

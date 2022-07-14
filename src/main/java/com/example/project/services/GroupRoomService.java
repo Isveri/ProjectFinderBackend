@@ -10,6 +10,8 @@ public interface GroupRoomService {
 
     List<GroupRoomDTO> getAllGroups();
 
+    List<GroupRoomDTO> getGroupsByGame(String game);
+
     GroupRoomDTO getGroupByName(String name);
 
     GroupRoomDTO save(GroupRoomDTO groupRoomDTO);

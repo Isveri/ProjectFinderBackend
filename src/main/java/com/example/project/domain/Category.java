@@ -22,7 +22,7 @@ public class Category {
     @NotBlank
     private String name;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category",cascade = CascadeType.MERGE)
     private List<GroupRoom> groupRooms;
 
     @ManyToOne(cascade = CascadeType.MERGE)

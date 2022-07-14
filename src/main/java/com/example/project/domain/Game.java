@@ -27,5 +27,8 @@ public class Game {
     @OneToMany(mappedBy = "game", cascade = CascadeType.MERGE)
     private List<Category> categories;
 
+    @OneToMany(mappedBy = "game",cascade =  CascadeType.MERGE)
+    private List<GroupRoom> groupRooms;
+
 
 }

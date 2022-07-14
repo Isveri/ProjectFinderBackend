@@ -29,6 +29,10 @@ public class GroupRoom {
     @ManyToOne(cascade = {CascadeType.MERGE})
     private Category category;
 
+    @JoinColumn(name = "game_id")
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    private Game game;
+
     /**
      * 1 na liscie to leader pog
      */
