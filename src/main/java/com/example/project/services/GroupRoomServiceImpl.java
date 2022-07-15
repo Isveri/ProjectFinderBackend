@@ -35,17 +35,16 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     public List<GroupRoomDTO> getAllGroups() {
         return groupRepository.findAll()
                 .stream()
-                .map(groupRoom -> groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom))
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<GroupRoomDTO> getGroupsByGame(String game) {
-        Predicate<GroupRoom> chosenGame = groupRoom -> groupRoom.getGame().getName().equals(game);
 
-        return groupRepository.findAll()
-                .stream().filter(chosenGame)
-                .map(groupRoom -> groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom))
+        return groupRepository.findAllByGameName(game)
+                .stream()
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
     }
 
@@ -106,8 +105,10 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         groupRepository.deleteById(id);
     }
 
+
+
     @Override
-    public void addComment(MessageDTO messageDTO) {
+    public void addMessage(MessageDTO messageDTO) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:"+id));
@@ -123,7 +124,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
-    public void deleteCommentById(Long commentId) {
+    public void deleteMessageById(Long commentId) {
         messageRepository.deleteById(commentId);
     }
 }

@@ -54,15 +54,4 @@ public class GroupRoomController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/newComment")
-    public ResponseEntity<Void> addComment(@RequestBody MessageDTO messageDTO) {
-        groupRoomService.addComment(messageDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<Void> deleteCommentById(@PathVariable Long commentId){
-        groupRoomService.deleteCommentById(commentId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 }

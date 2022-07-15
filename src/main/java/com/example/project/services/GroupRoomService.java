@@ -24,8 +24,8 @@ public interface GroupRoomService {
 
     void deleteGroupRoomById(Long id);
 
-    void addComment(MessageDTO messageDTO);
+    void addMessage(MessageDTO messageDTO);
 
-    void deleteCommentById(Long commentId);
+    void deleteMessageById(Long commentId);
 }
 
