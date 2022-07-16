@@ -147,7 +147,7 @@ public class BootData implements CommandLineRunner {
         InGameRole igr1 = InGameRole.builder().name("Mid").build();
         InGameRole igr2 = InGameRole.builder().name("Top").build();
         InGameRole igr3 = InGameRole.builder().name("Bot").build();
-        InGameRole igr4 = InGameRole.builder().name("Jng").build();
+        InGameRole igr4 = InGameRole.builder().name("Jungle").build();
         InGameRole igr5 = InGameRole.builder().name("Supp").build();
 
         inGameRoleRepository.save(igr1);
@@ -166,7 +166,7 @@ public class BootData implements CommandLineRunner {
         inGameRoleRepository.save(role3);
 
         Game game1 = Game.builder().name("League of Legends").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
-        Game game2 = Game.builder().name("CS:GO").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
+        Game game2 = Game.builder().name("CSGO").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
         Game game3 = Game.builder().name("IRL").build();
 
         gameRepository.save(game1);
@@ -329,6 +329,13 @@ public class BootData implements CommandLineRunner {
         u6.setRole(userRole);
         adminRole.setUsers(Arrays.asList(u1));
         userRole.setUsers(Arrays.asList(u2,u3,u4,u5,u6));
+
+        u1.setInGameRoles(Arrays.asList(igr1,igr3));
+        u2.setInGameRoles(Arrays.asList(igr2,igr4));
+        u3.setInGameRoles(Arrays.asList(igr3));
+        u4.setInGameRoles(Arrays.asList(igr4));
+        u5.setInGameRoles(Arrays.asList(igr5));
+        u6.setInGameRoles(Arrays.asList(igr1,igr2));
 
         userRepository.save(u1);
         userRepository.save(u2);

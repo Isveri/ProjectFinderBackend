@@ -14,6 +14,7 @@ public class GroupRoomDTO {
     private String name;
     private String description;
     private List<UserDTO> users;
+    private CategoryDTO category;
     private ChatDTO chatDTO;
     private UserDTO groupLeader;
 }
