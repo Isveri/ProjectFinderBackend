@@ -66,12 +66,22 @@ public class BootData implements CommandLineRunner {
         User u1 = User.builder()
                 .username("Evi")
                 .email("evi@gmail.com")
+                .name("Patryk")
+                .age(21)
+                .city("Lublin")
+                .phone(551345345)
+                .info("Challanger in every role in League of Legends. Global elite in CS:GO and Immortal in Valorant. 706gs BDO kek")
                 .password(passwordEncoder.encode("admin"))
                 .build();
 
         User u2 = User.builder()
                 .username("User")
                 .email("user@gmail.com")
+                .name("Adam")
+                .age(21)
+                .city("Lublin")
+                .phone(551343223)
+                .info("I like cakes")
                 .password(passwordEncoder.encode("user"))
                 .build();
 

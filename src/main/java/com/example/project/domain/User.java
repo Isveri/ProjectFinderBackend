@@ -33,6 +33,16 @@ public class User implements UserDetails, CredentialsContainer {
 
     private String name;
 
+    private String info;
+
+    private int age;
+
+    private int phone;
+
+    private String city;
+
+
+
     @ManyToMany
     @JoinTable(
             name = "users_groups",

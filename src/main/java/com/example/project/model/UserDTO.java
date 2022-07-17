@@ -15,6 +15,10 @@ public class UserDTO {
     private String username;
     private String password;
     private String email;
+    private String info;
+    private int age;
+    private int phone;
+    private String city;
     private RoleDTO role;
     private List<InGameRolesDTO> inGameRoles;
 }
