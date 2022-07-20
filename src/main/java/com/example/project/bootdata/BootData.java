@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,6 @@ public class BootData implements CommandLineRunner {
     private final InGameRoleRepository inGameRoleRepository;
 
     private final GameRepository gameRepository;
-
 
 
     @Override
@@ -62,7 +62,7 @@ public class BootData implements CommandLineRunner {
 //
 //    }
 
-    private void createOther(){
+    private void createOther() {
         User u1 = User.builder()
                 .username("Evi")
                 .email("evi@gmail.com")
@@ -175,8 +175,8 @@ public class BootData implements CommandLineRunner {
         inGameRoleRepository.save(role2);
         inGameRoleRepository.save(role3);
 
-        Game game1 = Game.builder().name("League of Legends").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
-        Game game2 = Game.builder().name("CSGO").inGameRoles(Arrays.asList(igr1,igr2,igr3,igr4,igr5)).build();
+        Game game1 = Game.builder().name("League of Legends").inGameRoles(Arrays.asList(igr1, igr2, igr3, igr4, igr5)).build();
+        Game game2 = Game.builder().name("CSGO").inGameRoles(Arrays.asList(role1, role2, role3)).build();
         Game game3 = Game.builder().name("IRL").build();
 
         gameRepository.save(game1);
@@ -187,33 +187,60 @@ public class BootData implements CommandLineRunner {
         Category cat1 = Category.builder()
                 .name("SoloQ")
                 .game(game1)
+                .basicMaxUsers(2)
                 .build();
         Category cat2 = Category.builder()
                 .name("Ranked Flex")
                 .game(game1)
+                .basicMaxUsers(5)
                 .build();
         Category cat3 = Category.builder()
                 .name("ARAM")
                 .game(game1)
+                .basicMaxUsers(5)
                 .build();
         Category cat4 = Category.builder()
-                .name("Nieokreślone")
+                .name("Custom")
                 .game(game1)
+                .basicMaxUsers(5)
                 .build();
 
+        Category cat5 = Category.builder()
+                .name("Match Making")
+                .game(game2)
+                .basicMaxUsers(5).build();
+
+        Category cat6 = Category.builder()
+                .name("WingMan")
+                .game(game2)
+                .basicMaxUsers(2).build();
+
+        Category cat7 = Category.builder()
+                .name("FaceIt")
+                .game(game2)
+                .basicMaxUsers(5).build();
+
+        Category cat8 = Category.builder()
+                .name("Custom")
+                .game(game2)
+                .basicMaxUsers(5).build();
 
         categoryRepository.save(cat1);
         categoryRepository.save(cat2);
         categoryRepository.save(cat3);
         categoryRepository.save(cat4);
+        categoryRepository.save(cat5);
+        categoryRepository.save(cat6);
+        categoryRepository.save(cat7);
+        categoryRepository.save(cat8);
 
 
-
-        GroupRoom g1 =GroupRoom.builder()
+        GroupRoom g1 = GroupRoom.builder()
                 .name("Grupa 1")
                 .description("Poszukuje osób do wspólnego pogrania w CS:GO")
-                .users(Collections.singletonList(u1))
+                .users(new ArrayList<>(cat1.getBasicMaxUsers()))
                 .chat(ch1)
+                .maxUsers(cat1.getBasicMaxUsers())
                 .category(cat1)
                 .game(game1)
                 .groupLeader(u1)
@@ -224,9 +251,10 @@ public class BootData implements CommandLineRunner {
         GroupRoom g2 = GroupRoom.builder()
                 .name("Grupa 2")
                 .description("Poszukuje osób do wspólnego pogrania w League of Legends. Wymagana ranga gold+")
-                .users(Collections.singletonList(u1))
+                .users(new ArrayList<>(cat4.getBasicMaxUsers()))
                 .groupLeader(u2)
-                .category(cat1)
+                .category(cat4)
+                .maxUsers(cat4.getBasicMaxUsers())
                 .chat(ch2)
                 .game(game1)
                 .build();
@@ -234,23 +262,25 @@ public class BootData implements CommandLineRunner {
         groupRepository.save(g2);
         GroupRoom g3 = GroupRoom.builder()
                 .name("Grupa 3")
-                .users(Collections.singletonList(u1))
+                .users(new ArrayList<>(cat2.getBasicMaxUsers()))
                 .groupLeader(u3)
                 .description("Poszukuje osób do wspólnego wyjścia na kręgle ")
                 .chat(ch3)
                 .game(game1)
-                .category(cat1)
+                .category(cat2)
+                .maxUsers(cat2.getBasicMaxUsers())
                 .build();
         groupRepository.save(g3);
 
         GroupRoom g4 = GroupRoom.builder()
                 .name("Grupa 4")
-                .users(Collections.singletonList(u1))
+                .users(new ArrayList<>(cat3.getBasicMaxUsers()))
                 .description("Poszukuje osób do wspólnego wyjścia na mecz koszykówki")
                 .chat(ch4)
                 .groupLeader(u2)
                 .game(game1)
-                .category(cat2)
+                .category(cat3)
+                .maxUsers(cat3.getBasicMaxUsers())
                 .build();
         groupRepository.save(g4);
 
@@ -260,6 +290,8 @@ public class BootData implements CommandLineRunner {
                 .description("Grupa do rozmowy na różne tematy")
                 .chat(ch5)
                 .game(game2)
+                .category(cat5)
+                .maxUsers(cat5.getBasicMaxUsers())
                 .groupLeader(u2)
                 .build();
         groupRepository.save(g5);
@@ -270,6 +302,8 @@ public class BootData implements CommandLineRunner {
                 .description("Poszukuje osób zainteresowanych programowaniem i pracą w zespole")
                 .chat(ch6)
                 .game(game2)
+                .category(cat6)
+                .maxUsers(cat6.getBasicMaxUsers())
                 .groupLeader(u3)
                 .build();
         groupRepository.save(g6);
@@ -280,6 +314,8 @@ public class BootData implements CommandLineRunner {
                 .description("Szukam osób do wspólnego pogrania w League of Legends. Ranga plat+")
                 .chat(ch7)
                 .groupLeader(u3)
+                .category(cat8)
+                .maxUsers(cat8.getBasicMaxUsers())
                 .game(game3)
                 .build();
         groupRepository.save(g7);
@@ -323,13 +359,12 @@ public class BootData implements CommandLineRunner {
         Role userRole = roleRepository.findByName("ROLE_USER");
 
 
-
-        u1.setGroupRooms(Arrays.asList(g1,g2,g3));
-        u2.setGroupRooms(Arrays.asList(g1,g3));
-        u3.setGroupRooms(Arrays.asList(g1,g2,g3,g4));
-        u4.setGroupRooms(Arrays.asList(g1,g2,g3,g4));
-        u5.setGroupRooms(Arrays.asList(g7,g2,g5,g4));
-        u6.setGroupRooms(Arrays.asList(g7,g2,g6,g4));
+        u1.setGroupRooms(Arrays.asList(g1, g2, g3));
+        u2.setGroupRooms(Arrays.asList(g1, g2));
+        u3.setGroupRooms(Arrays.asList(g3, g2, g4, g5));
+        u4.setGroupRooms(Arrays.asList(g2, g3, g4));
+        u5.setGroupRooms(Arrays.asList(g7, g2, g5, g4));
+        u6.setGroupRooms(Arrays.asList(g7, g6, g4));
 
         u1.setRole(adminRole);
         u2.setRole(userRole);
@@ -338,14 +373,14 @@ public class BootData implements CommandLineRunner {
         u5.setRole(userRole);
         u6.setRole(userRole);
         adminRole.setUsers(Arrays.asList(u1));
-        userRole.setUsers(Arrays.asList(u2,u3,u4,u5,u6));
+        userRole.setUsers(Arrays.asList(u2, u3, u4, u5, u6));
 
-        u1.setInGameRoles(Arrays.asList(igr1,igr3));
-        u2.setInGameRoles(Arrays.asList(igr2,igr4));
+        u1.setInGameRoles(Arrays.asList(igr1, igr3));
+        u2.setInGameRoles(Arrays.asList(igr2, igr4));
         u3.setInGameRoles(Arrays.asList(igr3));
         u4.setInGameRoles(Arrays.asList(igr4));
         u5.setInGameRoles(Arrays.asList(igr5));
-        u6.setInGameRoles(Arrays.asList(igr1,igr2));
+        u6.setInGameRoles(Arrays.asList(igr1, igr2));
 
         userRepository.save(u1);
         userRepository.save(u2);
@@ -364,6 +399,7 @@ public class BootData implements CommandLineRunner {
 
 
     }
+
     @Transactional
     Privilege createPrivilegeIfNotFound(String name) {
 

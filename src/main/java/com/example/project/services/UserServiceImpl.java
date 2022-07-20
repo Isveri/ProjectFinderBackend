@@ -121,6 +121,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Group room not found"));
 
         user.getGroupRooms().remove(groupRoom);
+        groupRoom.setGroupLeader(groupRoom.getUsers().get(0));
+        groupRepository.save(groupRoom);
         userRepository.save(currentUser);
     }
 

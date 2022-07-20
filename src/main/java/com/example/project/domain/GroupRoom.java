@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,9 @@ public class GroupRoom {
     @JoinColumn(name = "game_id")
     @ManyToOne(cascade = {CascadeType.MERGE})
     private Game game;
+
+    @NotNull
+    private int maxUsers;
 
     /**
      * 1 na liscie to leader pog

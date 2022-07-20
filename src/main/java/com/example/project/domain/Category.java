@@ -22,6 +22,9 @@ public class Category {
     @NotBlank
     private String name;
 
+    @NotNull
+    private int basicMaxUsers;
+
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name="game_id")
     private Game game;
