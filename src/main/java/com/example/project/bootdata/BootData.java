@@ -221,7 +221,7 @@ public class BootData implements CommandLineRunner {
                 .basicMaxUsers(5).build();
 
         Category cat8 = Category.builder()
-                .name("Custom")
+                .name("Death Match")
                 .game(game2)
                 .basicMaxUsers(5).build();
 

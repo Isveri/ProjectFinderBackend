@@ -37,9 +37,7 @@ public class GroupRoom {
     @NotNull
     private int maxUsers;
 
-    /**
-     * 1 na liscie to leader pog
-     */
+
     @ManyToMany(mappedBy = "groupRooms",cascade = CascadeType.MERGE)
     private List<User> users = new ArrayList<>();
 

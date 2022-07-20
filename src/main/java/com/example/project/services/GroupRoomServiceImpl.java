@@ -1,9 +1,6 @@
 package com.example.project.services;
 
-import com.example.project.domain.Chat;
-import com.example.project.domain.Message;
-import com.example.project.domain.GroupRoom;
-import com.example.project.domain.User;
+import com.example.project.domain.*;
 import com.example.project.exceptions.NotFoundException;
 import com.example.project.mappers.MessageMapper;
 import com.example.project.mappers.GroupRoomMapper;
@@ -28,6 +25,9 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
     private final ChatRepository chatRepository;
+
+    private final CategoryRepository categoryRepository;
+
     private final GameRepository gameRepository;
 
 
@@ -60,8 +60,10 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:"+id));
         GroupRoom groupRoom = createGroupRoom(groupRoomDTO, user);
         groupRoom.setChat(createChat(groupRoom));
+        Category category = categoryRepository.findByName(groupRoom.getCategory().getName());
+        groupRoom.setGame(category.getGame());
         groupRoom.setGroupLeader(user);
-        return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
+        return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
     }
 
     private GroupRoom createGroupRoom(GroupRoomDTO groupRoomDTO, User user) {
