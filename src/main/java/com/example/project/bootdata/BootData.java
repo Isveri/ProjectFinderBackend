@@ -183,6 +183,25 @@ public class BootData implements CommandLineRunner {
         gameRepository.save(game2);
         gameRepository.save(game3);
 
+        igr1.setGame(game1);
+        igr2.setGame(game1);
+        igr3.setGame(game1);
+        igr4.setGame(game1);
+        igr5.setGame(game1);
+
+        role1.setGame(game2);
+        role2.setGame(game2);
+        role3.setGame(game2);
+
+        inGameRoleRepository.save(igr1);
+        inGameRoleRepository.save(igr2);
+        inGameRoleRepository.save(igr3);
+        inGameRoleRepository.save(igr4);
+        inGameRoleRepository.save(igr5);
+        inGameRoleRepository.save(role1);
+        inGameRoleRepository.save(role2);
+        inGameRoleRepository.save(role3);
+
 
         Category cat1 = Category.builder()
                 .name("SoloQ")
