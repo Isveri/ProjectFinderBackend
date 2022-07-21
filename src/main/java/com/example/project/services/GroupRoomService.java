@@ -12,6 +12,13 @@ public interface GroupRoomService {
 
     List<GroupRoomDTO> getGroupsByGame(String game);
 
+    List<GroupRoomDTO> getGroupsByGameCategory(Long gameId,Long categoryId);
+
+    List<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId,Long categoryId,Long roleId);
+
+    List<GroupRoomDTO> getGroupsByGameRole(Long gameId,Long roleId);
+
+
     GroupRoomDTO getGroupByName(String name);
 
     GroupRoomDTO save(GroupRoomDTO groupRoomDTO);

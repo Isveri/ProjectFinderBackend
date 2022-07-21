@@ -12,5 +12,6 @@ import java.util.List;
 public class GameDTO {
     private String name;
     private Long id;
-    private List<InGameRolesDTO> inGameRolesDTOList;
+    private List<InGameRolesDTO> inGameRoles;
+    private List<CategoryDTO> categories;
 }

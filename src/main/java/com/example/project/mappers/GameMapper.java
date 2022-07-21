@@ -7,7 +7,7 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
 @Mapper(builder = @Builder(disableBuilder = true),
-        uses = InGameRolesMapper.class,
+        uses = {InGameRolesMapper.class,CategoryMapper.class},
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public abstract class GameMapper {
 

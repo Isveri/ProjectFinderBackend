@@ -49,6 +49,30 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
+    public List<GroupRoomDTO> getGroupsByGameCategory(Long gameId, Long categoryId) {
+        return groupRepository.findAllByGameIdAndCategoryId(gameId,categoryId)
+                .stream()
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId, Long categoryId, Long roleId) {
+        return groupRepository.findAllByGameIdAndCategoryIdAndGame_InGameRolesId(gameId,categoryId,roleId)
+                .stream()
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GroupRoomDTO> getGroupsByGameRole(Long gameId, Long roleId) {
+        return groupRepository.findAllByGameIdAndGame_InGameRolesId(gameId,roleId)
+                .stream()
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public GroupRoomDTO getGroupByName(String name) {
         return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.findByName(name).orElseThrow(() -> new NotFoundException("Group room not found")));
     }

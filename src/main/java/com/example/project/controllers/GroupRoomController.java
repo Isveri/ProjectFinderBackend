@@ -54,4 +54,19 @@ public class GroupRoomController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/G&C/{gameId}/{categoryId}")
+    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCategory(@PathVariable Long gameId, @PathVariable Long categoryId){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategory(gameId,categoryId));
+    }
+
+    @GetMapping("/G&R/{gameId}/{inGameRoleId}")
+    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameInGameRole(@PathVariable Long gameId, @PathVariable Long inGameRoleId){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameRole(gameId,inGameRoleId));
+    }
+
+    @GetMapping("/G&C&R/{gameId}/{categoryId}/{roleId}")
+    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCategoryRole(@PathVariable Long gameId, @PathVariable Long categoryId, @PathVariable Long roleId){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryRole(gameId,categoryId,roleId));
+    }
+
 }
