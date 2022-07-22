@@ -47,8 +47,12 @@ public class UserController {
 
     @PatchMapping("/joinGroup/{groupId}")
     public ResponseEntity<Void> joinGroupRoom(@PathVariable Long groupId){
-        userService.joinGroupRoom(groupId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        UserDTO temp = userService.joinGroupRoom(groupId);
+        if(temp == null){
+           return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }else {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
     }
 
     @DeleteMapping("/my-groups/{groupId}")
