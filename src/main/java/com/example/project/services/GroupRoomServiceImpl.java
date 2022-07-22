@@ -85,6 +85,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         GroupRoom groupRoom = createGroupRoom(groupRoomDTO, user);
         groupRoom.setChat(createChat(groupRoom));
         Category category = categoryRepository.findByName(groupRoom.getCategory().getName());
+        groupRoom.setCategory(category);
         groupRoom.setGame(category.getGame());
         groupRoom.setGroupLeader(user);
         return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
