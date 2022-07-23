@@ -54,6 +54,12 @@ public class GroupRoomController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PatchMapping("/changeVisibility/{groupId}/{value}")
+    public ResponseEntity<Void> changeVisibility(@PathVariable Long groupId, @PathVariable boolean value){
+        groupRoomService.updateVisibility(groupId,value);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/G&C/{gameId}/{categoryId}")
     public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCategory(@PathVariable Long gameId, @PathVariable Long categoryId){
         return ResponseEntity.ok(groupRoomService.getGroupsByGameCategory(gameId,categoryId));

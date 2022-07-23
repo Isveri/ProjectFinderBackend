@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -46,6 +45,13 @@ public class GroupRoomServiceImpl implements GroupRoomService {
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateVisibility(Long groupId, boolean result){
+        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group room not found"));
+        groupRoom.setOpen(result);
+        groupRepository.save(groupRoom);
     }
 
     @Override

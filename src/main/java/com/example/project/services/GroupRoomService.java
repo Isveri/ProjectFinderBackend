@@ -18,6 +18,7 @@ public interface GroupRoomService {
 
     List<GroupRoomDTO> getGroupsByGameRole(Long gameId,Long roleId);
 
+    void updateVisibility(Long groupId, boolean result);
 
     GroupRoomDTO getGroupByName(String name);
 
