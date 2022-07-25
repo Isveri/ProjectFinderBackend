@@ -1,5 +1,6 @@
 package com.example.project.controllers;
 
+import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.services.GroupRoomService;
@@ -73,6 +74,15 @@ public class GroupRoomController {
     @GetMapping("/G&C&R/{gameId}/{categoryId}/{roleId}")
     public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCategoryRole(@PathVariable Long gameId, @PathVariable Long categoryId, @PathVariable Long roleId){
         return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryRole(gameId,categoryId,roleId));
+    }
+
+    @GetMapping("/generateCode/{groupId}")
+    public ResponseEntity<JoinCodeDTO> generateJoinCode(@PathVariable Long groupId){
+        JoinCodeDTO joinCodeDTO = groupRoomService.generateJoinCode(groupId);
+        if(joinCodeDTO==null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }else{
+        return ResponseEntity.ok(joinCodeDTO);}
     }
 
 }

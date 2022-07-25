@@ -20,4 +20,5 @@ public class GroupRoomDTO {
     private ChatDTO chatDTO;
     private UserDTO groupLeader;
     private GameDTO game;
+    private String joinCode;
 }

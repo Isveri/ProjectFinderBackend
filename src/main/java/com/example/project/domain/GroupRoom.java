@@ -51,5 +51,5 @@ public class GroupRoom {
     private User groupLeader;
 
 //    @NotBlank
-    private Long joinCode;
+    private String joinCode;
 }

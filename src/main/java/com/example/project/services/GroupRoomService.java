@@ -1,6 +1,7 @@
 package com.example.project.services;
 
 import com.example.project.domain.GroupRoom;
+import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
 
@@ -29,6 +30,8 @@ public interface GroupRoomService {
     GroupRoomDTO saveAndReturnDTO(GroupRoom groupRoom);
 
     GroupRoomDTO updateGroupRoomByDTO(Long id, GroupRoomDTO groupRoomDTO);
+
+    JoinCodeDTO generateJoinCode(Long groupId);
 
     void deleteGroupRoomById(Long id);
 

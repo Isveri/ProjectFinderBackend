@@ -4,6 +4,7 @@ import com.example.project.domain.*;
 import com.example.project.exceptions.NotFoundException;
 import com.example.project.mappers.MessageMapper;
 import com.example.project.mappers.GroupRoomMapper;
+import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.repositories.*;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
-    public void updateVisibility(Long groupId, boolean result){
+    public void updateVisibility(Long groupId, boolean result) {
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group room not found"));
         groupRoom.setOpen(result);
         groupRepository.save(groupRoom);
@@ -56,7 +58,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameCategory(Long gameId, Long categoryId) {
-        return groupRepository.findAllByGameIdAndCategoryIdAndOpenIsTrue(gameId,categoryId)
+        return groupRepository.findAllByGameIdAndCategoryIdAndOpenIsTrue(gameId, categoryId)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -64,7 +66,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId, Long categoryId, Long roleId) {
-        return groupRepository.findAllByGameIdAndCategoryIdAndGameInGameRolesIdAndOpenIsTrue(gameId,categoryId,roleId)
+        return groupRepository.findAllByGameIdAndCategoryIdAndGameInGameRolesIdAndOpenIsTrue(gameId, categoryId, roleId)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -72,7 +74,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameRole(Long gameId, Long roleId) {
-        return groupRepository.findAllByGameIdAndGame_InGameRolesIdAndOpenIsTrue(gameId,roleId)
+        return groupRepository.findAllByGameIdAndGame_InGameRolesIdAndOpenIsTrue(gameId, roleId)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -87,7 +89,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     public GroupRoomDTO save(GroupRoomDTO groupRoomDTO) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = currentUser.getId();
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:"+id));
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:" + id));
         GroupRoom groupRoom = createGroupRoom(groupRoomDTO, user);
         groupRoom.setChat(createChat(groupRoom));
         Category category = categoryRepository.findByName(groupRoom.getCategory().getName());
@@ -122,16 +124,49 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public GroupRoomDTO updateGroupRoomByDTO(Long id, GroupRoomDTO groupRoomDTO) {
-        groupRepository.findById(id).orElseThrow(() -> new NotFoundException("Group room not found id:"+id));
+        groupRepository.findById(id).orElseThrow(() -> new NotFoundException("Group room not found id:" + id));
         GroupRoom groupRoom = groupRoomMapper.mapGroupRoomDTOToGroupRoom(groupRoomDTO);
         groupRoom.setId(id);
         return saveAndReturnDTO(groupRoom);
     }
 
     @Override
+    public JoinCodeDTO generateJoinCode(Long groupId) {
+        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group room no found id:" + groupId));
+        String generatedCode = getString();
+
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (groupRepository.findGroupRoomByJoinCode(generatedCode) != null) {
+            generateJoinCode(groupId);
+
+        }
+        if (groupRoom.getJoinCode() == null && groupRoom.getGroupLeader().getId().equals(currentUser.getId())) {
+            groupRoom.setJoinCode(generatedCode);
+            groupRepository.save(groupRoom);
+            return JoinCodeDTO.builder().code(generatedCode).build();
+        } else {
+            return null;
+        }
+    }
+
+    private String getString() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+    @Override
     public void deleteGroupRoomById(Long id) {
-        GroupRoom groupRoom = groupRepository.findById(id).orElseThrow(() -> new NotFoundException("Group room not found id:"+id));
-        for (User user:groupRoom.getUsers()) {
+        GroupRoom groupRoom = groupRepository.findById(id).orElseThrow(() -> new NotFoundException("Group room not found id:" + id));
+        for (User user : groupRoom.getUsers()) {
             user.getGroupRooms().remove(groupRoom);
         }
         groupRoom.setUsers(null);
@@ -139,18 +174,17 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
 
-
     @Override
     public void addMessage(MessageDTO messageDTO) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = currentUser.getId();
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:"+id));
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:" + id));
 
         Message message = messageMapper.mapMessageDTOTOMessage(messageDTO);
 
         message.setUser(user);
-        GroupRoom gr = groupRepository.findById(messageDTO.getGroupId()).orElseThrow(() -> new NotFoundException("Group not found id:"+id));
-        Chat chat = chatRepository.findById(gr.getChat().getId()).orElseThrow(()->new NotFoundException("Chat unavailable"));
+        GroupRoom gr = groupRepository.findById(messageDTO.getGroupId()).orElseThrow(() -> new NotFoundException("Group not found id:" + id));
+        Chat chat = chatRepository.findById(gr.getChat().getId()).orElseThrow(() -> new NotFoundException("Chat unavailable"));
         message.setChat(chat);
         messageRepository.save(message);
 
