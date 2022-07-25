@@ -85,4 +85,13 @@ public class GroupRoomController {
         return ResponseEntity.ok(joinCodeDTO);}
     }
 
+    @PatchMapping("/joinByCode/{code}")
+    public ResponseEntity<GroupRoomDTO> joinGroupByCode(@PathVariable String code){
+        GroupRoomDTO groupRoomDTO = groupRoomService.joinGroupByCode(code);
+        if(groupRoomDTO == null){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }else{
+        return ResponseEntity.ok(groupRoomService.joinGroupByCode(code));
+    }
+    }
 }

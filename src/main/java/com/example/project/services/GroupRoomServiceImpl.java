@@ -163,6 +163,21 @@ public class GroupRoomServiceImpl implements GroupRoomService {
                 .toString();
     }
 
+    public GroupRoomDTO joinGroupByCode(String code){
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new NotFoundException("User not found id:"+currentUser.getId()));;
+
+
+        GroupRoom groupRoom = groupRepository.findGroupRoomByJoinCode(code);
+        if(user.getGroupRooms().contains(groupRoom)){
+            return null;
+        }else{
+            user.getGroupRooms().add(groupRoom);
+            userRepository.save(user);
+            return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
+        }
+    }
+
     @Override
     public void deleteGroupRoomById(Long id) {
         GroupRoom groupRoom = groupRepository.findById(id).orElseThrow(() -> new NotFoundException("Group room not found id:" + id));

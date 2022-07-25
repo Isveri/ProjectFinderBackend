@@ -33,6 +33,8 @@ public interface GroupRoomService {
 
     JoinCodeDTO generateJoinCode(Long groupId);
 
+    GroupRoomDTO joinGroupByCode(String code);
+
     void deleteGroupRoomById(Long id);
 
     void addMessage(MessageDTO messageDTO);
