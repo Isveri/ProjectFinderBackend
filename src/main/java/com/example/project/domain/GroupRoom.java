@@ -38,7 +38,7 @@ public class GroupRoom {
     private int maxUsers;
 
     @Builder.Default
-    private boolean open = false;
+    private boolean open = true;
 
     @ManyToMany(mappedBy = "groupRooms",cascade = CascadeType.MERGE)
     private List<User> users = new ArrayList<>();

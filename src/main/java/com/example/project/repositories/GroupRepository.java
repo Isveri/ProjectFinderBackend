@@ -10,13 +10,13 @@ public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
 
     Optional<GroupRoom> findByName(String name);
 
-    List<GroupRoom> findAllByGameName(String name);
+    List<GroupRoom> findAllByGameNameAndOpenIsTrue(String name);
 
-    List<GroupRoom> findAllByGameIdAndCategoryId(Long gameId,Long categoryId);
+    List<GroupRoom> findAllByGameIdAndCategoryIdAndOpenIsTrue(Long gameId, Long categoryId);
 
-    List<GroupRoom> findAllByGameIdAndGame_InGameRolesId(Long gameId,Long inGameRoleId);
+    List<GroupRoom> findAllByGameIdAndGame_InGameRolesIdAndOpenIsTrue(Long gameId, Long inGameRoleId);
 
-    List<GroupRoom> findAllByGameIdAndCategoryIdAndGame_InGameRolesId(Long gameId,Long categoryId,Long inGameRoleId);
+    List<GroupRoom> findAllByGameIdAndCategoryIdAndGameInGameRolesIdAndOpenIsTrue(Long gameId, Long categoryId, Long inGameRoleId);
 
 
 }

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -121,7 +122,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Group room not found"));
 
         user.getGroupRooms().remove(groupRoom);
-        groupRoom.setGroupLeader(groupRoom.getUsers().get(0));
+        if(Objects.equals(groupRoom.getGroupLeader(),user)){
+        groupRoom.setGroupLeader(groupRoom.getUsers().get(0));}
         groupRepository.save(groupRoom);
         userRepository.save(currentUser);
     }

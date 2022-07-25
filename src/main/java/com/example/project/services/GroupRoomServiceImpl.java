@@ -41,7 +41,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     @Override
     public List<GroupRoomDTO> getGroupsByGame(String game) {
 
-        return groupRepository.findAllByGameName(game)
+        return groupRepository.findAllByGameNameAndOpenIsTrue(game)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -56,7 +56,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameCategory(Long gameId, Long categoryId) {
-        return groupRepository.findAllByGameIdAndCategoryId(gameId,categoryId)
+        return groupRepository.findAllByGameIdAndCategoryIdAndOpenIsTrue(gameId,categoryId)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -64,7 +64,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId, Long categoryId, Long roleId) {
-        return groupRepository.findAllByGameIdAndCategoryIdAndGame_InGameRolesId(gameId,categoryId,roleId)
+        return groupRepository.findAllByGameIdAndCategoryIdAndGameInGameRolesIdAndOpenIsTrue(gameId,categoryId,roleId)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -72,7 +72,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameRole(Long gameId, Long roleId) {
-        return groupRepository.findAllByGameIdAndGame_InGameRolesId(gameId,roleId)
+        return groupRepository.findAllByGameIdAndGame_InGameRolesIdAndOpenIsTrue(gameId,roleId)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
