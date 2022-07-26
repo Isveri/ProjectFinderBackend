@@ -2,6 +2,7 @@ package com.example.project.controllers;
 
 import com.example.project.model.UserDTO;
 import com.example.project.model.UserGroupsListDTO;
+import com.example.project.model.UserProfileDTO;
 import com.example.project.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +62,13 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<UserProfileDTO> showUserProfile(@PathVariable Long userId){
+        UserProfileDTO temp = userService.getUserProfile(userId);
+        if(temp == null){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+            return ResponseEntity.ok(temp);
+    }
 
 }

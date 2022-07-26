@@ -10,6 +10,7 @@ import com.example.project.mappers.UserMapper;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.model.UserDTO;
 import com.example.project.model.UserGroupsListDTO;
+import com.example.project.model.UserProfileDTO;
 import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
@@ -110,6 +111,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return userMapper.mapUserToUserDTO(user);
         }
+    }
+
+    @Override
+    public UserProfileDTO getUserProfile(Long userId) {
+
+        return userRepository.findById(userId)
+                .map(userMapper::mapUserToUserProfileDTO)
+                .orElseThrow(() -> new NotFoundException("Group room not found"));
     }
 
     @Override
