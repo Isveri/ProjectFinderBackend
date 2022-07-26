@@ -8,6 +8,7 @@ import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.repositories.*;
+import com.example.project.utils.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -133,15 +134,10 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     @Override
     public JoinCodeDTO generateJoinCode(Long groupId) {
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group room no found id:" + groupId));
-        String generatedCode = getString();
-
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (groupRepository.findGroupRoomByJoinCode(generatedCode) != null) {
-            generateJoinCode(groupId);
-
-        }
         if (groupRoom.getJoinCode() == null && groupRoom.getGroupLeader().getId().equals(currentUser.getId())) {
+            String generatedCode = getUniqueCode();
             groupRoom.setJoinCode(generatedCode);
             groupRepository.save(groupRoom);
             return JoinCodeDTO.builder().code(generatedCode).build();
@@ -150,17 +146,12 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         }
     }
 
-    private String getString() {
-        int leftLimit = 48; // numeral '0'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-
-        return random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
+    private String getUniqueCode() {
+        String generatedCode = RandomStringUtils.getRandomString();
+        if (groupRepository.existsByJoinCode(generatedCode)) {
+            return getUniqueCode();
+        }
+        return generatedCode;
     }
 
     public GroupRoomDTO joinGroupByCode(String code){

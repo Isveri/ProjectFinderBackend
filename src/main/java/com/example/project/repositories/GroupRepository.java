@@ -12,6 +12,8 @@ public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
 
     GroupRoom findGroupRoomByJoinCode(String joinCode);
 
+    boolean existsByJoinCode(String joinCode);
+
     List<GroupRoom> findAllByGameNameAndOpenIsTrue(String name);
 
     List<GroupRoom> findAllByGameIdAndCategoryIdAndOpenIsTrue(Long gameId, Long categoryId);
