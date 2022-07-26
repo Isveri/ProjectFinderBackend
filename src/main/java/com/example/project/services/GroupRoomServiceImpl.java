@@ -170,6 +170,33 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
+    public GroupRoomDTO makePartyLeader(Long groupId, Long userId) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(()-> new NotFoundException("Group room not found id:"+groupId));
+        User userToBeLeader = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found id:"+userId));
+        if(currentUser.getId().equals(groupRoom.getGroupLeader().getId())){
+            groupRoom.setGroupLeader(userToBeLeader);
+            return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
+        }
+        return null;
+    }
+
+    @Override
+    public GroupRoomDTO removeUserFromGroup(Long groupId, Long userId) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(()-> new NotFoundException("Group room not found id:"+groupId));
+        User userToRemove = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found id:"+userId));
+
+        if(currentUser.getId().equals(groupRoom.getGroupLeader().getId())){
+            groupRoom.getUsers().remove(userToRemove);
+            userToRemove.getGroupRooms().remove(groupRoom);
+            userRepository.save(userToRemove);
+            return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
+        }
+        return null;
+    }
+
+    @Override
     public void deleteGroupRoomById(Long id) {
         GroupRoom groupRoom = groupRepository.findById(id).orElseThrow(() -> new NotFoundException("Group room not found id:" + id));
         for (User user : groupRoom.getUsers()) {

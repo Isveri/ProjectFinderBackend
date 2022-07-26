@@ -35,6 +35,10 @@ public interface GroupRoomService {
 
     GroupRoomDTO joinGroupByCode(String code);
 
+    GroupRoomDTO makePartyLeader(Long groupId,Long userId);
+
+    GroupRoomDTO removeUserFromGroup(Long groupId,Long userId);
+
     void deleteGroupRoomById(Long id);
 
     void addMessage(MessageDTO messageDTO);
