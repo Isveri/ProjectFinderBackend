@@ -5,10 +5,13 @@ import com.example.project.model.UserGroupsListDTO;
 import com.example.project.model.UserProfileDTO;
 import com.example.project.services.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 @Controller
@@ -69,6 +72,12 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
             return ResponseEntity.ok(temp);
+    }
+
+    @PostMapping(path="/profilePicture")
+    public ResponseEntity<Void> setProfilePicture(@RequestParam("profilePicture") MultipartFile pictureFile){
+        userService.changeProfilePicture(pictureFile);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

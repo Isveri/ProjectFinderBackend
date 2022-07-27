@@ -19,7 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -111,6 +113,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return userMapper.mapUserToUserDTO(user);
         }
+    }
+
+    @Override
+    public void changeProfilePicture(MultipartFile profilePicture) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new NotFoundException("User not found id:"+currentUser.getId()));
     }
 
     @Override
