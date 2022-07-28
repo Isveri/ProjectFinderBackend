@@ -10,4 +10,5 @@ import org.mapstruct.Mapper;
 public abstract class InGameRolesMapper {
 
     public abstract InGameRolesDTO mapInGameRolesToInGameRolesDTO(InGameRole inGameRole);
+    public abstract InGameRole mapInGameRolesDTOToInGameRole(InGameRolesDTO inGameRolesDTO);
 }
