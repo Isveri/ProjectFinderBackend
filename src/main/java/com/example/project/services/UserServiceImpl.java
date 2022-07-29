@@ -14,7 +14,9 @@ import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.InGameRoleRepository;
 import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
+import com.example.project.utils.FileHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -117,6 +119,21 @@ public class UserServiceImpl implements UserService {
     public void changeProfilePicture(MultipartFile profilePicture) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new NotFoundException("User not found id:"+currentUser.getId()));
+        //TODO zrobic usuwanie aktualnego zdjecia z folderu zeby nie bylo syfu
+        user.setProfileImgName(user.getId()+"-"+FileHandler.save(profilePicture,user.getId()));
+        userRepository.save(user);
+    }
+
+    @Override
+    public Resource getProfilePicture(Long userId) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(Objects.equals(currentUser.getId(), userId)) {
+            User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new NotFoundException("User not found id:" + currentUser.getId()));
+            if (user.getProfileImgName() != null) {
+                return FileHandler.load(user.getProfileImgName());
+            }
+        }
+        return null;
     }
 
     @Override

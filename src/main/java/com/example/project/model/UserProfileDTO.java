@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @Getter
 public class UserProfileDTO {
+    private Long id;
     private String name;
     private String username;
     private String email;

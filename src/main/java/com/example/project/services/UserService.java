@@ -4,6 +4,7 @@ import com.example.project.domain.User;
 import com.example.project.model.UserDTO;
 import com.example.project.model.UserGroupsListDTO;
 import com.example.project.model.UserProfileDTO;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,7 @@ public interface UserService {
     UserDTO joinGroupRoom(Long groupRoomId);
 
     void changeProfilePicture(MultipartFile profilePicture);
+    Resource getProfilePicture(Long userId);
     UserProfileDTO getUserProfile(Long userId);
     void getOutOfGroup(Long groupRoomId);
 

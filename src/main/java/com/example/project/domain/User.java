@@ -41,6 +41,8 @@ public class User implements UserDetails, CredentialsContainer {
 
     private String city;
 
+    private String profileImgName;
+
 
 
     @ManyToMany
