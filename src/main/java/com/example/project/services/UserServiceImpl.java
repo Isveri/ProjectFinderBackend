@@ -72,20 +72,7 @@ public class UserServiceImpl implements UserService {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:"+id));
-        user.setId(id);
-        user.setUsername(userDTO.getUsername());
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setAge(userDTO.getAge());
-        user.setCity(userDTO.getCity());
-        user.setPhone(userDTO.getPhone());
-
-        List<Long> ids = userDTO.getInGameRoles().stream()
-                .map(InGameRolesDTO::getId).collect(Collectors.toList());
-        List<InGameRole> inGameRoleList = inGameRoleRepository.findAllById(ids);
-
-        user.setInGameRoles(inGameRoleList);
-        return saveAndReturnDTO(user);
+        return saveAndReturnDTO(userMapper.updateUserFromUserDTO(userDTO,user));
     }
 
     @Override
