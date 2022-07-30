@@ -126,13 +126,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resource getProfilePicture(Long userId) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(Objects.equals(currentUser.getId(), userId)) {
-            User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new NotFoundException("User not found id:" + currentUser.getId()));
+            User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found id:" + userId));
             if (user.getProfileImgName() != null) {
                 return FileHandler.load(user.getProfileImgName());
             }
-        }
         return null;
     }
 
