@@ -1,5 +1,6 @@
 package com.example.project.domain;
 
+import com.example.project.chat.model.Chat;
 import lombok.*;
 
 import javax.persistence.*;

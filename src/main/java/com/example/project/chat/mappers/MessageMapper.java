@@ -1,7 +1,8 @@
-package com.example.project.mappers;
+package com.example.project.chat.mappers;
 
-import com.example.project.domain.Message;
-import com.example.project.model.MessageDTO;
+import com.example.project.chat.model.Message;
+import com.example.project.mappers.UserMapper;
+import com.example.project.chat.model.MessageDTO;
 import org.mapstruct.Builder;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;

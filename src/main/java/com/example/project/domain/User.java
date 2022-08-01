@@ -1,5 +1,6 @@
 package com.example.project.domain;
 
+import com.example.project.chat.model.Message;
 import lombok.*;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;

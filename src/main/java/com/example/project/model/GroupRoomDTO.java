@@ -1,5 +1,6 @@
 package com.example.project.model;
 
+import com.example.project.chat.model.ChatDTO;
 import lombok.*;
 
 import java.util.List;

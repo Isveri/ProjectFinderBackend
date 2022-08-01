@@ -2,7 +2,7 @@ package com.example.project.services;
 
 import com.example.project.domain.GroupRoom;
 import com.example.project.model.JoinCodeDTO;
-import com.example.project.model.MessageDTO;
+import com.example.project.chat.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
 
 import java.util.List;
@@ -40,9 +40,5 @@ public interface GroupRoomService {
     GroupRoomDTO removeUserFromGroup(Long groupId,Long userId);
 
     void deleteGroupRoomById(Long id);
-
-    void addMessage(MessageDTO messageDTO);
-
-    void deleteMessageById(Long commentId);
 }
 

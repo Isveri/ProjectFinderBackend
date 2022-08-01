@@ -1,7 +1,6 @@
 package com.example.project.controllers;
 
 import com.example.project.model.JoinCodeDTO;
-import com.example.project.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.services.GroupRoomService;
 import org.springframework.http.HttpStatus;

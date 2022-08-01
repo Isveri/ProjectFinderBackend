@@ -1,5 +1,9 @@
 package com.example.project.bootdata;
 
+import com.example.project.chat.model.Chat;
+import com.example.project.chat.model.Message;
+import com.example.project.chat.repositories.ChatRepository;
+import com.example.project.chat.repositories.MessageRepository;
 import com.example.project.domain.*;
 import com.example.project.repositories.*;
 import lombok.RequiredArgsConstructor;

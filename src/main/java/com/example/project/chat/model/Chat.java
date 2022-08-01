@@ -1,10 +1,10 @@
-package com.example.project.domain;
+package com.example.project.chat.model;
 
-import com.sun.istack.NotNull;
+import com.example.project.chat.model.Message;
+import com.example.project.domain.GroupRoom;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @AllArgsConstructor

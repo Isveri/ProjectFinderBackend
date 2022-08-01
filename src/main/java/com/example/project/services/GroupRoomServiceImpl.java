@@ -1,11 +1,15 @@
 package com.example.project.services;
 
+import com.example.project.chat.model.Chat;
+import com.example.project.chat.model.Message;
+import com.example.project.chat.repositories.ChatRepository;
+import com.example.project.chat.repositories.MessageRepository;
 import com.example.project.domain.*;
 import com.example.project.exceptions.NotFoundException;
-import com.example.project.mappers.MessageMapper;
+import com.example.project.chat.mappers.MessageMapper;
 import com.example.project.mappers.GroupRoomMapper;
 import com.example.project.model.JoinCodeDTO;
-import com.example.project.model.MessageDTO;
+import com.example.project.chat.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.repositories.*;
 import com.example.project.utils.RandomStringUtils;
@@ -14,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -204,27 +207,5 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         }
         groupRoom.setUsers(null);
         groupRepository.deleteById(id);
-    }
-
-
-    @Override
-    public void addMessage(MessageDTO messageDTO) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long id = currentUser.getId();
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found id:" + id));
-
-        Message message = messageMapper.mapMessageDTOTOMessage(messageDTO);
-
-        message.setUser(user);
-        GroupRoom gr = groupRepository.findById(messageDTO.getGroupId()).orElseThrow(() -> new NotFoundException("Group not found id:" + id));
-        Chat chat = chatRepository.findById(gr.getChat().getId()).orElseThrow(() -> new NotFoundException("Chat unavailable"));
-        message.setChat(chat);
-        messageRepository.save(message);
-
-    }
-
-    @Override
-    public void deleteMessageById(Long commentId) {
-        messageRepository.deleteById(commentId);
     }
 }

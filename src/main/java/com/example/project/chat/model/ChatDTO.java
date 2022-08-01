@@ -1,5 +1,6 @@
-package com.example.project.model;
+package com.example.project.chat.model;
 
+import com.example.project.chat.model.MessageDTO;
 import lombok.*;
 
 import java.util.List;
