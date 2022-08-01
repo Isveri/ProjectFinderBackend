@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,5 +28,7 @@ public class Message {
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name="chat_id")
     private Chat chat;
+
+    private LocalDateTime time;
 
 }

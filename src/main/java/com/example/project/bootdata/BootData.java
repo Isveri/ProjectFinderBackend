@@ -120,42 +120,6 @@ public class BootData implements CommandLineRunner {
         userRepository.save(u5);
         userRepository.save(u6);
 
-        Message c1 = Message.builder()
-                .text("To jest moj pierwszy komentarz tutaj")
-                .user(u1)
-                .build();
-
-
-        Message c2 = Message.builder()
-                .text("To jest moj pierwszy komentarz tutaj")
-                .user(u2)
-                .build();
-
-        Message c3 = Message.builder()
-                .text("To jest moj drugi komentarz tutaj")
-                .user(u1)
-                .build();
-
-        Message c4 = Message.builder()
-                .text("To jest moj trzeci komentarz tutaj")
-                .user(u1)
-                .build();
-
-        Chat ch1 = Chat.builder().build();
-        Chat ch2 = Chat.builder().build();
-        Chat ch3 = Chat.builder().build();
-        Chat ch4 = Chat.builder().build();
-        Chat ch5 = Chat.builder().build();
-        Chat ch6 = Chat.builder().build();
-        Chat ch7 = Chat.builder().build();
-
-        chatRepository.save(ch1);
-        chatRepository.save(ch2);
-        chatRepository.save(ch3);
-        chatRepository.save(ch4);
-        chatRepository.save(ch5);
-        chatRepository.save(ch6);
-        chatRepository.save(ch7);
 
 
         InGameRole igr1 = InGameRole.builder().name("Mid").build();
@@ -268,7 +232,6 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 1")
                 .description("Poszukuje osób do wspólnego pogrania w CS:GO")
                 .users(new ArrayList<>(cat1.getBasicMaxUsers()))
-                .chat(ch1)
                 .maxUsers(cat1.getBasicMaxUsers())
                 .category(cat1)
                 .game(game1)
@@ -284,7 +247,6 @@ public class BootData implements CommandLineRunner {
                 .groupLeader(u2)
                 .category(cat4)
                 .maxUsers(cat4.getBasicMaxUsers())
-                .chat(ch2)
                 .game(game1)
                 .build();
 
@@ -294,7 +256,6 @@ public class BootData implements CommandLineRunner {
                 .users(new ArrayList<>(cat2.getBasicMaxUsers()))
                 .groupLeader(u3)
                 .description("Poszukuje osób do wspólnego wyjścia na kręgle ")
-                .chat(ch3)
                 .game(game1)
                 .category(cat2)
                 .maxUsers(cat2.getBasicMaxUsers())
@@ -305,7 +266,6 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 4")
                 .users(new ArrayList<>(cat3.getBasicMaxUsers()))
                 .description("Poszukuje osób do wspólnego wyjścia na mecz koszykówki")
-                .chat(ch4)
                 .groupLeader(u2)
                 .game(game1)
                 .category(cat3)
@@ -317,7 +277,6 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 5")
                 .users(Collections.singletonList(u1))
                 .description("Grupa do rozmowy na różne tematy")
-                .chat(ch5)
                 .game(game2)
                 .category(cat5)
                 .maxUsers(cat5.getBasicMaxUsers())
@@ -329,7 +288,6 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 6")
                 .users(Collections.singletonList(u1))
                 .description("Poszukuje osób zainteresowanych programowaniem i pracą w zespole")
-                .chat(ch6)
                 .game(game2)
                 .category(cat6)
                 .maxUsers(cat6.getBasicMaxUsers())
@@ -341,7 +299,6 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 7")
                 .users(Collections.singletonList(u1))
                 .description("Szukam osób do wspólnego pogrania w League of Legends. Ranga plat+")
-                .chat(ch7)
                 .groupLeader(u3)
                 .category(cat8)
                 .maxUsers(cat8.getBasicMaxUsers())
@@ -349,31 +306,8 @@ public class BootData implements CommandLineRunner {
                 .build();
         groupRepository.save(g7);
 
-        ch1.setGroupRoom(g1);
-        ch2.setGroupRoom(g2);
-        ch3.setGroupRoom(g3);
-        ch4.setGroupRoom(g4);
-        ch5.setGroupRoom(g5);
-        ch6.setGroupRoom(g6);
-        ch7.setGroupRoom(g7);
 
-        chatRepository.save(ch1);
-        chatRepository.save(ch2);
-        chatRepository.save(ch3);
-        chatRepository.save(ch4);
-        chatRepository.save(ch5);
-        chatRepository.save(ch6);
-        chatRepository.save(ch7);
 
-        c1.setChat(g2.getChat());
-        c2.setChat(g3.getChat());
-        c3.setChat(g1.getChat());
-        c4.setChat(g4.getChat());
-
-        messageRepository.save(c1);
-        messageRepository.save(c2);
-        messageRepository.save(c3);
-        messageRepository.save(c4);
 
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege
