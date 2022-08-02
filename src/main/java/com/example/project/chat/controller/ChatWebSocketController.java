@@ -8,6 +8,8 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
+
 
 @Controller
 @AllArgsConstructor
@@ -16,6 +18,6 @@ public class ChatWebSocketController {
     @MessageMapping("/temp/**")
     @SendTo("/topic/messages")
     public MessageDTO send(MessageDTO messageDTO) throws Exception {
-        return MessageDTO.builder().username("test").build();
+        return MessageDTO.builder().user(messageDTO.getUser()).text(messageDTO.getText()).time(LocalDateTime.now()).build();
     }
 }
