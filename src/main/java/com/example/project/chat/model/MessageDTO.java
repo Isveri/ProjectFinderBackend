@@ -1,7 +1,6 @@
 package com.example.project.chat.model;
 
-import com.example.project.model.UserDTO;
-import com.example.project.model.UserProfileDTO;
+import com.example.project.model.UserMsgDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,6 +13,6 @@ import java.time.LocalDateTime;
 public class MessageDTO {
     private Long id;
     private String text;
-    private UserProfileDTO user;
+    private UserMsgDTO user;
     private LocalDateTime time;
 }
