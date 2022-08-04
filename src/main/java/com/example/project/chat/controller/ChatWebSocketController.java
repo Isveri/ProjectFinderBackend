@@ -2,6 +2,7 @@ package com.example.project.chat.controller;
 
 import com.example.project.chat.model.Message;
 import com.example.project.chat.model.MessageDTO;
+import com.example.project.chat.service.ChatService;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -16,9 +17,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ChatWebSocketController {
 
+    private final ChatService chatService;
+
     @MessageMapping("/chat/{groupId}")
     @SendTo("/topic/messages/{groupId}")
     public MessageDTO send(MessageDTO messageDTO, @DestinationVariable Long groupId) throws Exception {
-        return MessageDTO.builder().user(messageDTO.getUser()).groupId(messageDTO.getGroupId()).text(messageDTO.getText()).time(LocalDateTime.now()).build();
+        return chatService.save(messageDTO, groupId);
+
     }
 }

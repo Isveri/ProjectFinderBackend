@@ -21,4 +21,6 @@ public abstract class UserMapper {
 
     public abstract UserMsgDTO mapUserToUserMsgDTO(User user);
 
+    public abstract User mapUserMsgDTOToUser(UserMsgDTO userMsgDTO);
+
 }

@@ -120,6 +120,21 @@ public class BootData implements CommandLineRunner {
         userRepository.save(u5);
         userRepository.save(u6);
 
+        Chat chat1 = Chat.builder().messages(Arrays.asList()).build();
+        Chat chat2 = Chat.builder().messages(Arrays.asList()).build();
+        Chat chat3 = Chat.builder().messages(Arrays.asList()).build();
+        Chat chat4 = Chat.builder().messages(Arrays.asList()).build();
+        Chat chat5 = Chat.builder().messages(Arrays.asList()).build();
+        Chat chat6 = Chat.builder().messages(Arrays.asList()).build();
+        Chat chat7 = Chat.builder().messages(Arrays.asList()).build();
+
+        chatRepository.save(chat7);
+        chatRepository.save(chat6);
+        chatRepository.save(chat5);
+        chatRepository.save(chat4);
+        chatRepository.save(chat3);
+        chatRepository.save(chat2);
+        chatRepository.save(chat1);
 
 
         InGameRole igr1 = InGameRole.builder().name("Mid").build();
@@ -234,6 +249,7 @@ public class BootData implements CommandLineRunner {
                 .users(new ArrayList<>(cat1.getBasicMaxUsers()))
                 .maxUsers(cat1.getBasicMaxUsers())
                 .category(cat1)
+                .chat(chat1)
                 .game(game1)
                 .groupLeader(u1)
                 .build();
@@ -244,6 +260,7 @@ public class BootData implements CommandLineRunner {
                 .name("Grupa 2")
                 .description("Poszukuje osób do wspólnego pogrania w League of Legends. Wymagana ranga gold+")
                 .users(new ArrayList<>(cat4.getBasicMaxUsers()))
+                .chat(chat2)
                 .groupLeader(u2)
                 .category(cat4)
                 .maxUsers(cat4.getBasicMaxUsers())
@@ -257,6 +274,7 @@ public class BootData implements CommandLineRunner {
                 .groupLeader(u3)
                 .description("Poszukuje osób do wspólnego wyjścia na kręgle ")
                 .game(game1)
+                .chat(chat3)
                 .category(cat2)
                 .maxUsers(cat2.getBasicMaxUsers())
                 .build();
@@ -268,6 +286,7 @@ public class BootData implements CommandLineRunner {
                 .description("Poszukuje osób do wspólnego wyjścia na mecz koszykówki")
                 .groupLeader(u2)
                 .game(game1)
+                .chat(chat4)
                 .category(cat3)
                 .maxUsers(cat3.getBasicMaxUsers())
                 .build();
@@ -278,6 +297,7 @@ public class BootData implements CommandLineRunner {
                 .users(Collections.singletonList(u1))
                 .description("Grupa do rozmowy na różne tematy")
                 .game(game2)
+                .chat(chat5)
                 .category(cat5)
                 .maxUsers(cat5.getBasicMaxUsers())
                 .groupLeader(u2)
@@ -289,6 +309,7 @@ public class BootData implements CommandLineRunner {
                 .users(Collections.singletonList(u1))
                 .description("Poszukuje osób zainteresowanych programowaniem i pracą w zespole")
                 .game(game2)
+                .chat(chat6)
                 .category(cat6)
                 .maxUsers(cat6.getBasicMaxUsers())
                 .groupLeader(u3)
@@ -303,11 +324,26 @@ public class BootData implements CommandLineRunner {
                 .category(cat8)
                 .maxUsers(cat8.getBasicMaxUsers())
                 .game(game3)
+                .chat(chat7)
                 .build();
         groupRepository.save(g7);
 
 
+        chat1.setGroupRoom(g1);
+        chat2.setGroupRoom(g2);
+        chat3.setGroupRoom(g3);
+        chat4.setGroupRoom(g4);
+        chat5.setGroupRoom(g5);
+        chat6.setGroupRoom(g6);
+        chat7.setGroupRoom(g7);
 
+        chatRepository.save(chat1);
+        chatRepository.save(chat2);
+        chatRepository.save(chat3);
+        chatRepository.save(chat4);
+        chatRepository.save(chat5);
+        chatRepository.save(chat6);
+        chatRepository.save(chat7);
 
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege
