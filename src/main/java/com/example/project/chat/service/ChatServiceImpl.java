@@ -5,14 +5,12 @@ import com.example.project.chat.model.Chat;
 import com.example.project.chat.model.Message;
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.chat.repositories.ChatRepository;
-import com.example.project.chat.repositories.MessageRepository;
 import com.example.project.domain.GroupRoom;
+import com.example.project.domain.User;
 import com.example.project.exceptions.NotFoundException;
-import com.example.project.mappers.UserMapper;
 import com.example.project.repositories.GroupRepository;
-import com.example.project.repositories.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -24,12 +22,13 @@ public class ChatServiceImpl implements ChatService {
 
     private final GroupRepository groupRepository;
     private final ChatRepository chatRepository;
-    private final MessageRepository messageRepository;
-    private final UserMapper userMapper;
     private final MessageMapper messageMapper;
     @Transactional
     @Override
     public MessageDTO save(MessageDTO messageDTO, Long groupId) {
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(user.getUsername());
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group not found"));
         Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(()->new NotFoundException("Chat not found"));
         Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
