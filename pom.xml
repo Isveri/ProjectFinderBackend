@@ -79,12 +79,6 @@
             <artifactId>javax.el</artifactId>
             <version>3.0.0</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-websocket</artifactId>-->
-<!--            <version>5.3.18</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-messaging</artifactId>
@@ -115,6 +109,15 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-messaging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.4.18</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>

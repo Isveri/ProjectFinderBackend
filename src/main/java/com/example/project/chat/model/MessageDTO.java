@@ -15,5 +15,5 @@ public class MessageDTO {
     private String text;
     private UserMsgDTO user;
     private Long groupId;
-    private LocalDateTime time;
+    private String time;
 }

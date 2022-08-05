@@ -11,8 +11,10 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,7 +33,6 @@ import java.util.List;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtTokenUtil jwtTokenUtil;
-
     private final UserRepository userRepository;
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -43,9 +44,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOrigins("http://localhost:4200")
-                .withSockJS()
-                .setWebSocketEnabled(false)
-                .setSessionCookieNeeded(false);;
+                .withSockJS();
     }
 
     @Override
@@ -54,33 +53,30 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                Principal principal = SecurityContextHolder.getContext().getAuthentication();
-                System.out.println("PRINCIPAL PRE-SEND START:" + principal); // shows annonymous user
 
-                StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-                List<String> tokenList = accessor.getNativeHeader("Authorization");
-                String jwt = null;
-                if (tokenList == null || tokenList.size() < 1) {
-                    return message;
-                } else {
-                    jwt = tokenList.get(0).substring(7);
-                    if (jwt == null) {
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message,StompHeaderAccessor.class);
+                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                    List<String> tokenList = accessor.getNativeHeader("Authorization");
+                    String jwt = null;
+                    if (tokenList == null || tokenList.size() < 1) {
                         return message;
+                    } else {
+                        jwt = tokenList.get(0).substring(7);
+                        if (jwt == null) {
+                            return message;
+                        }
                     }
-                }
-                String username = jwtTokenUtil.getUsername(jwt);
+                    String username = jwtTokenUtil.getUsername(jwt);
 
-                User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-                if (jwtTokenUtil.validate(jwt)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            user, null, user.getAuthorities());
+                    User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                    if (jwtTokenUtil.validate(jwt)) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                user, null, user.getAuthorities());
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    principal = SecurityContextHolder.getContext().getAuthentication();
-                    User usr =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                    accessor.setUser(authentication);
-                    System.out.println("PRINCIPAL PRE-SEND END:" + principal + usr.getUsername());
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        accessor.setUser(authentication);
 
+                    }
                 }
                 return message;
             }

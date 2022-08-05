@@ -17,6 +17,7 @@ import java.util.*;
 @Getter
 @Entity
 @Builder
+@EqualsAndHashCode(of = {"id","username","email"})
 public class User implements UserDetails, CredentialsContainer {
 
     @Id

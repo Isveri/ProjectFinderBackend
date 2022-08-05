@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -23,19 +24,23 @@ public class ChatServiceImpl implements ChatService {
     private final GroupRepository groupRepository;
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
+
     @Transactional
     @Override
     public MessageDTO save(MessageDTO messageDTO, Long groupId) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println(user.getUsername());
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group not found"));
-        Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(()->new NotFoundException("Chat not found"));
-        Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
-        msg.setTime(LocalDateTime.now());
-        msg.setChat(chat);
-        chat.getMessages().add(msg);
-        chatRepository.save(chat);
-        return messageMapper.mapMessageToMessageDTO(msg);
+        if (groupRoom.getUsers().contains(user)) {
+            Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(() -> new NotFoundException("Chat not found"));
+            Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
+            LocalDateTime now = LocalDateTime.now();
+            msg.setTime(now.format(DateTimeFormatter.ofPattern("HH:mm")));
+            msg.setChat(chat);
+            chat.getMessages().add(msg);
+            chatRepository.save(chat);
+            return messageMapper.mapMessageToMessageDTO(msg);
+        }
+        return null;
     }
 }
