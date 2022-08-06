@@ -153,8 +153,14 @@ public class UserServiceImpl implements UserService {
         user.getGroupRooms().remove(groupRoom);
         if(Objects.equals(groupRoom.getGroupLeader(),user)){
         groupRoom.setGroupLeader(groupRoom.getUsers().get(0));}
-        groupRepository.save(groupRoom);
+        if(groupRoom.getUsers().size()==1){
+            groupRepository.delete(groupRoom);
+        }else
+        {
+            groupRepository.save(groupRoom);
+        }
         userRepository.save(currentUser);
+
     }
 
     @Override

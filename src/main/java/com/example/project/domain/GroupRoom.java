@@ -44,7 +44,7 @@ public class GroupRoom {
     @ManyToMany(mappedBy = "groupRooms",cascade = CascadeType.MERGE)
     private List<User> users = new ArrayList<>();
 
-    @OneToOne(mappedBy = "groupRoom",cascade = CascadeType.MERGE)
+    @OneToOne(mappedBy = "groupRoom",cascade = CascadeType.REMOVE)
     private Chat chat;
 
     @ManyToOne(cascade=CascadeType.MERGE)

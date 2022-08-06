@@ -18,9 +18,9 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade=CascadeType.MERGE)
+    @OneToOne(cascade=CascadeType.REMOVE)
     private GroupRoom groupRoom;
 
-    @OneToMany(mappedBy = "chat",cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "chat",cascade = CascadeType.REMOVE)
     private List<Message> messages;
 }
