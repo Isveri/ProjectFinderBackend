@@ -1,6 +1,9 @@
 package com.example.project.chat.config;
 
+import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
+import com.example.project.exceptions.NotFoundException;
+import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.UserRepository;
 import com.example.project.security.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,7 @@ import java.util.List;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtTokenUtil jwtTokenUtil;
+    private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -58,6 +62,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     List<String> tokenList = accessor.getNativeHeader("Authorization");
                     String jwt = null;
+
+                    List<String> groupIdList = accessor.getNativeHeader("groupId");
+
+                    Long groupId = null;
+                    if(groupIdList != null) {
+                        String groupIdString = groupIdList.get(0).substring(0);
+                        groupId = Long.valueOf(groupIdString);
+                    }
                     if (tokenList == null || tokenList.size() < 1) {
                         return message;
                     } else {
@@ -74,8 +86,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                 user, null, user.getAuthorities());
 
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                        accessor.setUser(authentication);
-
+                        User usr = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group not found"));
+                        if (groupRoom.getUsers().contains(usr)) {
+                            accessor.setUser(authentication);
+                        }
                     }
                 }
                 return message;
