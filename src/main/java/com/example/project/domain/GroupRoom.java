@@ -2,6 +2,7 @@ package com.example.project.domain;
 
 import com.example.project.chat.model.Chat;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -15,6 +16,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@Where(clause = "deleted=false")
 public class GroupRoom {
 
     @Id
@@ -51,6 +53,7 @@ public class GroupRoom {
     @JoinColumn(name="groupLeader_id")
     private User groupLeader;
 
-//    @NotBlank
     private String joinCode;
+
+    private boolean deleted = false;
 }

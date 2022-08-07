@@ -2,8 +2,10 @@ package com.example.project.repositories;
 
 import com.example.project.domain.GroupRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +15,6 @@ public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
     Optional<GroupRoom> findByName(String name);
 
     GroupRoom findGroupRoomByJoinCode(String joinCode);
-
-//    @Query("Select GroupRoom from GroupRoom JOIN FETCH GroupRoom.users")
-//    Optional<GroupRoom> findByGroupId(Long groupId);
 
     boolean existsByJoinCode(String joinCode);
 
@@ -28,6 +27,11 @@ public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
     List<GroupRoom> findAllByGameIdAndGame_InGameRolesIdAndOpenIsTrue(Long gameId, Long inGameRoleId);
 
     List<GroupRoom> findAllByGameIdAndCategoryIdAndGameInGameRolesIdAndOpenIsTrue(Long gameId, Long categoryId, Long inGameRoleId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE GroupRoom g set g.deleted=true WHERE g.id=:id")
+    void softDeleteById(@Param("id") Long id);
 
 
 }

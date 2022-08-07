@@ -205,7 +205,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         for (User user : groupRoom.getUsers()) {
             user.getGroupRooms().remove(groupRoom);
         }
-        groupRoom.setUsers(null);
-        groupRepository.deleteById(id);
+//        groupRoom.setUsers(null);
+        groupRepository.softDeleteById(id);
     }
 }
