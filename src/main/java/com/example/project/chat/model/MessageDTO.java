@@ -3,7 +3,7 @@ package com.example.project.chat.model;
 import com.example.project.model.UserMsgDTO;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,4 +16,5 @@ public class MessageDTO {
     private UserMsgDTO user;
     private Long groupId;
     private String time;
+    private List<Long> connectedUsers;
 }
