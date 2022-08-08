@@ -21,6 +21,6 @@ public class Chat {
     @OneToOne(cascade=CascadeType.REMOVE)
     private GroupRoom groupRoom;
 
-    @OneToMany(mappedBy = "chat",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "chat",cascade = CascadeType.MERGE)
     private List<Message> messages;
 }

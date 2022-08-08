@@ -2,17 +2,12 @@ package com.example.project.chat.controller;
 
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.domain.User;
-import com.example.project.exceptions.NotFoundException;
-import com.example.project.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
@@ -41,7 +36,9 @@ public class WebSocketEventListener {
 
         Map<String,Long> users = getMapById(id) ;
 
-        users.put(headers.getSessionId(),user.getId());
+        if(!users.containsKey(headers.getSessionId())) {
+            users.put(headers.getSessionId(), user.getId());
+        }
         connectedUsers.put(id,users);
         Set<Long> usersIdToSend = getIds(id);
 

@@ -1,5 +1,6 @@
 package com.example.project.services;
 
+import com.example.project.chat.model.MessageDTO;
 import com.example.project.domain.User;
 import com.example.project.model.UserDTO;
 import com.example.project.model.UserGroupsListDTO;
@@ -28,4 +29,5 @@ public interface UserService {
     void getOutOfGroup(Long groupRoomId);
 
     void deleteUserById(Long id);
+
 }

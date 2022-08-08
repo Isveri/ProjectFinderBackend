@@ -2,6 +2,7 @@ package com.example.project.services;
 
 import com.example.project.chat.model.Chat;
 import com.example.project.chat.model.Message;
+import com.example.project.chat.model.NotificationMsg;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.chat.repositories.MessageRepository;
 import com.example.project.domain.*;
@@ -27,14 +28,9 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     private final GroupRoomMapper groupRoomMapper;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
-    private final MessageRepository messageRepository;
-    private final MessageMapper messageMapper;
     private final ChatRepository chatRepository;
-
     private final CategoryRepository categoryRepository;
-
-    private final GameRepository gameRepository;
-
+    private final SseService sseService;
 
     @Override
     public List<GroupRoomDTO> getAllGroups() {
@@ -168,6 +164,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         }else{
             user.getGroupRooms().add(groupRoom);
             userRepository.save(user);
+            sseService.sendSseEventToUser(NotificationMsg.builder().text(user.getUsername()+" joined group").isNegative(false).build());
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
         }
     }
@@ -179,6 +176,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         User userToBeLeader = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found id:"+userId));
         if(currentUser.getId().equals(groupRoom.getGroupLeader().getId())){
             groupRoom.setGroupLeader(userToBeLeader);
+            sseService.sendSseEventToUser(NotificationMsg.builder().text(userToBeLeader.getUsername()+" is now group leader").isNegative(false).build());
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         return null;
@@ -194,6 +192,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
             groupRoom.getUsers().remove(userToRemove);
             userToRemove.getGroupRooms().remove(groupRoom);
             userRepository.save(userToRemove);
+            sseService.sendSseEventToUser(NotificationMsg.builder().text(userToRemove.getUsername()+" has been removed from group").isNegative(true).build());
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         return null;
@@ -205,7 +204,6 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         for (User user : groupRoom.getUsers()) {
             user.getGroupRooms().remove(groupRoom);
         }
-//        groupRoom.setUsers(null);
         groupRepository.softDeleteById(id);
     }
 }

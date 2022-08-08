@@ -1,33 +1,27 @@
 package com.example.project.services;
 
+import com.example.project.chat.model.NotificationMsg;
 import com.example.project.domain.GroupRoom;
-import com.example.project.domain.InGameRole;
 import com.example.project.domain.Role;
 import com.example.project.domain.User;
 import com.example.project.exceptions.NotFoundException;
-import com.example.project.mappers.GroupRoomMapper;
-import com.example.project.mappers.InGameRolesMapper;
 import com.example.project.mappers.UserGroupListMapper;
 import com.example.project.mappers.UserMapper;
-import com.example.project.model.*;
+import com.example.project.model.UserDTO;
+import com.example.project.model.UserGroupsListDTO;
+import com.example.project.model.UserProfileDTO;
 import com.example.project.repositories.GroupRepository;
-import com.example.project.repositories.InGameRoleRepository;
 import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
 import com.example.project.utils.FileHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -37,11 +31,10 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
-    private final GroupRoomMapper groupRoomMapper;
     private final RoleRepository roleRepository;
     private final UserGroupListMapper userGroupListMapper;
-    private final InGameRoleRepository inGameRoleRepository;
-    private final InGameRolesMapper inGameRolesMapper;
+    private final SseService sseService;
+
 
 
     @Override
@@ -111,7 +104,8 @@ public class UserServiceImpl implements UserService {
         }else{
         user.getGroupRooms().add(groupRoom);
         userRepository.save(user);
-        return userMapper.mapUserToUserDTO(user);
+            sseService.sendSseEventToUser(NotificationMsg.builder().text(user.getUsername()+" joined group").isNegative(false).build());
+            return userMapper.mapUserToUserDTO(user);
         }
     }
 
@@ -167,6 +161,4 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
-
-
 }
