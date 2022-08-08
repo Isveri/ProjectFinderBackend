@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
         }else{
         user.getGroupRooms().add(groupRoom);
         userRepository.save(user);
-            sseService.sendSseEventToUser(NotificationMsg.builder().text(user.getUsername()+" joined group").isNegative(false).build());
+            sseService.sendSseEventToUser(NotificationMsg.builder().text(user.getUsername()+" joined group").isNegative(false).build(),groupRoom);
             return userMapper.mapUserToUserDTO(user);
         }
     }
