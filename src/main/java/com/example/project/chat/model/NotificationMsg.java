@@ -10,4 +10,6 @@ import lombok.*;
 public class NotificationMsg {
     private String text;
     private boolean isNegative;
+
+    private String type;
 }

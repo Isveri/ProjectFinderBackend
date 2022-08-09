@@ -164,7 +164,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         }else{
             user.getGroupRooms().add(groupRoom);
             userRepository.save(user);
-            sseService.sendSseEventToUser(NotificationMsg.builder().text(user.getUsername()+" joined group").isNegative(false).build(),groupRoom);
+            sseService.sendSseEventToUser(NotificationMsg.builder().text(user.getUsername()+" joined group").isNegative(false).build(),groupRoom,null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
         }
     }
@@ -176,7 +176,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         User userToBeLeader = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User not found id:"+userId));
         if(currentUser.getId().equals(groupRoom.getGroupLeader().getId())){
             groupRoom.setGroupLeader(userToBeLeader);
-            sseService.sendSseEventToUser(NotificationMsg.builder().text(userToBeLeader.getUsername()+" is now group leader").isNegative(false).build(),groupRoom);
+            sseService.sendSseEventToUser(NotificationMsg.builder().text(userToBeLeader.getUsername()+" is now group leader").isNegative(false).build(),groupRoom,null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         return null;
@@ -192,7 +192,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
             groupRoom.getUsers().remove(userToRemove);
             userToRemove.getGroupRooms().remove(groupRoom);
             userRepository.save(userToRemove);
-            sseService.sendSseEventToUser(NotificationMsg.builder().text(userToRemove.getUsername()+" has been removed from group").isNegative(true).build(),groupRoom);
+            sseService.sendSseEventToUser(NotificationMsg.builder().text(userToRemove.getUsername()+" has been removed from group").type("REMOVED").isNegative(true).build(),groupRoom,userToRemove.getId());
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         return null;

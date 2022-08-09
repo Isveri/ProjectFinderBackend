@@ -4,6 +4,6 @@ import com.example.project.chat.model.NotificationMsg;
 import com.example.project.domain.GroupRoom;
 
 public interface SseService {
-    void sendSseEventToUser(NotificationMsg notificationMsg, GroupRoom groupRoom);
+    void sendSseEventToUser(NotificationMsg notificationMsg, GroupRoom groupRoom,Long modifiedUserId);
 
 }

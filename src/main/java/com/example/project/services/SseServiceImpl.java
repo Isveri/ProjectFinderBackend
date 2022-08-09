@@ -14,26 +14,29 @@ import java.util.Map;
 @Service
 public class SseServiceImpl implements SseService {
     @Override
-    public void sendSseEventToUser(NotificationMsg notificationMsg, GroupRoom groupRoom){
-        List<SseEmitter> sseEmitterListToRemove = new ArrayList<>();
+    public void sendSseEventToUser(NotificationMsg notificationMsg, GroupRoom groupRoom,Long modifiedUserId){
         List<Long> usersId = new ArrayList<>();
         groupRoom.getUsers().forEach((user -> {
             usersId.add(user.getId());
         }));
         usersId.forEach((id)->{
-            SseEmitter emitter = SseController.emitters.get(id);
-            try{
-                if(emitter!=null) {
-                    emitter.send(notificationMsg);
+                    notificationMsg.setType("");
+                    sendMsgToEmitter(notificationMsg,id);
                 }
-            }catch (IOException e){
-                emitter.complete();
-                sseEmitterListToRemove.add(emitter);
-                e.printStackTrace();
-            }
-            SseController.emitters.remove(id);
-        }
         );
+        notificationMsg.setType("REMOVED");
+            sendMsgToEmitter(notificationMsg,modifiedUserId);
+    }
 
+    private void sendMsgToEmitter(NotificationMsg notificationMsg,  Long id) {
+        SseEmitter emitter = SseController.emitters.get(id);
+        try{
+            if(emitter!=null) {
+                emitter.send(notificationMsg);
+            }
+        }catch (IOException e){
+            emitter.complete();
+            e.printStackTrace();
+        }
     }
 }

@@ -30,17 +30,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain chain)
             throws ServletException, IOException {
 
+        boolean isTokenParam = false;
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (isEmpty(header) || !header.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
+            isTokenParam = true;
+            if(request.getParameter("token")==null){
+                chain.doFilter(request, response);
+                return;
+            }
         }
+        String token = isTokenParam ? request.getParameter("token") : header.split(" ")[1].trim();
 
-        final String token = header.split(" ")[1].trim();
         if (!jwtTokenUtil.validate(token)) {
             chain.doFilter(request, response);
             return;
         }
+
+
 
         User user = userRepository.findByUsername(jwtTokenUtil.getUsername(token))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
