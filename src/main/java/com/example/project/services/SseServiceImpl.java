@@ -25,6 +25,8 @@ public class SseServiceImpl implements SseService {
                 }
         );
         notificationMsg.setType("REMOVED");
+        notificationMsg.setText("You have been removed from "+groupRoom.getName());
+        notificationMsg.setGroupId(groupRoom.getId());
             sendMsgToEmitter(notificationMsg,modifiedUserId);
     }
 
