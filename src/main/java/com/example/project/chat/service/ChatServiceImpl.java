@@ -7,7 +7,7 @@ import com.example.project.chat.model.MessageDTO;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
-import com.example.project.exceptions.NotFoundException;
+import com.example.project.exceptions.GroupNotFoundException;
 import com.example.project.repositories.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,9 +30,9 @@ public class ChatServiceImpl implements ChatService {
     public MessageDTO save(MessageDTO messageDTO, Long groupId) {
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group not found"));
+        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
         if (groupRoom.getUsers().contains(user)) {
-            Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(() -> new NotFoundException("Chat not found"));
+            Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(() -> new GroupNotFoundException("Chat not found"));
             Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
             LocalDateTime now = LocalDateTime.now();
             msg.setTime(now.format(DateTimeFormatter.ofPattern("HH:mm")));

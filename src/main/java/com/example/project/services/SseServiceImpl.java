@@ -1,40 +1,59 @@
 package com.example.project.services;
 
-import com.example.project.chat.model.NotificationMsg;
-import com.example.project.controllers.SseController;
+import com.example.project.domain.User;
+import com.example.project.model.NotificationMsgDTO;
 import com.example.project.domain.GroupRoom;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@RequiredArgsConstructor
 @Service
 public class SseServiceImpl implements SseService {
+
+    public static final Map<Long,SseEmitter> emitters = new HashMap<>();
+
     @Override
-    public void sendSseEventToUser(NotificationMsg notificationMsg, GroupRoom groupRoom,Long modifiedUserId){
+    public void sendSseEventToUser(NotificationMsgDTO notificationMsgDTO, GroupRoom groupRoom, Long modifiedUserId){
         List<Long> usersId = new ArrayList<>();
         groupRoom.getUsers().forEach((user -> {
             usersId.add(user.getId());
         }));
         usersId.forEach((id)->{
-                    notificationMsg.setType("");
-                    sendMsgToEmitter(notificationMsg,id);
+                    notificationMsgDTO.setType("");
+                    sendMsgToEmitter(notificationMsgDTO,id);
                 }
         );
-        notificationMsg.setType("REMOVED");
-        notificationMsg.setText("You have been removed from "+groupRoom.getName());
-        notificationMsg.setGroupId(groupRoom.getId());
-            sendMsgToEmitter(notificationMsg,modifiedUserId);
+        notificationMsgDTO.setType("REMOVED");
+        notificationMsgDTO.setText("You have been removed from "+groupRoom.getName());
+        notificationMsgDTO.setGroupId(groupRoom.getId());
+            sendMsgToEmitter(notificationMsgDTO,modifiedUserId);
     }
 
-    private void sendMsgToEmitter(NotificationMsg notificationMsg,  Long id) {
-        SseEmitter emitter = SseController.emitters.get(id);
+    @Override
+    public SseEmitter createEmitter() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId= user.getId();
+        SseEmitter emitter = new SseEmitter(150000L);
+        emitters.put(userId,emitter);
+        emitter.onTimeout(emitter::complete);
+        emitter.onCompletion(()-> emitters.remove(userId));
+        return emitter;
+    }
+
+    private void sendMsgToEmitter(NotificationMsgDTO notificationMsgDTO, Long id) {
+        SseEmitter emitter = emitters.get(id);
         try{
             if(emitter!=null) {
-                emitter.send(notificationMsg);
+                emitter.send(notificationMsgDTO);
             }
         }catch (IOException e){
             emitter.complete();

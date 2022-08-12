@@ -2,7 +2,7 @@ package com.example.project.chat.config;
 
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
-import com.example.project.exceptions.NotFoundException;
+import com.example.project.exceptions.GroupNotFoundException;
 import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.UserRepository;
 import com.example.project.security.JwtTokenUtil;
@@ -25,7 +25,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import java.security.Principal;
 import java.util.List;
 
 
@@ -87,7 +86,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         User usr = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group not found"));
+                        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
                         if (groupRoom.getUsers().contains(usr)) {
                             accessor.setUser(authentication);
                         }

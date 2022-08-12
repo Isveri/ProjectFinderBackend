@@ -86,31 +86,18 @@ public class GroupRoomController {
 
     @PatchMapping("/joinByCode/{code}")
     public ResponseEntity<GroupRoomDTO> joinGroupByCode(@PathVariable String code){
-        GroupRoomDTO groupRoomDTO = groupRoomService.joinGroupByCode(code);
-        if(groupRoomDTO == null){
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }else{
         return ResponseEntity.ok(groupRoomService.joinGroupByCode(code));
-    }
     }
 
     @PatchMapping("/makeLeader/{groupId}/{userId}")
     public ResponseEntity<GroupRoomDTO> makeGroupRoomLeader(@PathVariable Long groupId, @PathVariable Long userId){
         GroupRoomDTO groupRoomDTO = groupRoomService.makePartyLeader(groupId,userId);
-        if (groupRoomDTO == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }else {
-            return ResponseEntity.ok(groupRoomDTO);
-        }
+        return ResponseEntity.ok(groupRoomDTO);
     }
 
     @PatchMapping("/removeUser/{groupId}/{userId}")
     public ResponseEntity<GroupRoomDTO> removeUserFromGroup(@PathVariable Long groupId, @PathVariable Long userId){
         GroupRoomDTO groupRoomDTO = groupRoomService.removeUserFromGroup(groupId,userId);
-        if (groupRoomDTO == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }else {
-            return ResponseEntity.ok(groupRoomDTO);
-        }
+        return ResponseEntity.ok(groupRoomDTO);
     }
 }

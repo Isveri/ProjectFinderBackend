@@ -1,4 +1,4 @@
-package com.example.project.chat.model;
+package com.example.project.model;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @Setter
 @Getter
-public class NotificationMsg {
+public class NotificationMsgDTO {
     private String text;
     private boolean isNegative;
     private String type;
