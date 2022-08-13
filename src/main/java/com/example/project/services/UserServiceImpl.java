@@ -16,11 +16,13 @@ import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
 import com.example.project.utils.FileHandler;
+import com.example.project.utils.DataValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final UserGroupListMapper userGroupListMapper;
     private final SseService sseService;
+    private final DataValidation dataValidation;
 
 
 
@@ -68,6 +71,8 @@ public class UserServiceImpl implements UserService {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("User not found id:"+id));
+        //dataValidation.email(userDTO.getEmail());
+        //dataValidation.age(userDTO.getAge());
         return saveAndReturnDTO(userMapper.updateUserFromUserDTO(userDTO,user));
     }
 
