@@ -78,6 +78,9 @@ public class User implements UserDetails, CredentialsContainer {
 
 
 
+    public String roleToString(){
+        return this.role.getName();
+    }
 
     @Transient
     @Override

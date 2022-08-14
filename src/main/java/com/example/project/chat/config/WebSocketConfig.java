@@ -27,6 +27,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 import java.util.List;
 
+import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
+
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -37,6 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final JwtTokenUtil jwtTokenUtil;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -57,7 +60,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
-                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message,StompHeaderAccessor.class);
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     List<String> tokenList = accessor.getNativeHeader("Authorization");
                     String jwt = null;
@@ -65,7 +68,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     List<String> groupIdList = accessor.getNativeHeader("groupId");
 
                     Long groupId = null;
-                    if(groupIdList != null) {
+                    if (groupIdList != null) {
                         String groupIdString = groupIdList.get(0).substring(0);
                         groupId = Long.valueOf(groupIdString);
                     }
@@ -85,7 +88,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                 user, null, user.getAuthorities());
 
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                        User usr = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                        User usr = getCurrentUser();
                         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
                         if (groupRoom.getUsers().contains(usr)) {
                             accessor.setUser(authentication);

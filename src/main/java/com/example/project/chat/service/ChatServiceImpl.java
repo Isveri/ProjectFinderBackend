@@ -17,6 +17,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
+
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
@@ -29,7 +31,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public MessageDTO save(MessageDTO messageDTO, Long groupId) {
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = getCurrentUser();
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
         if (groupRoom.getUsers().contains(user)) {
             Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(() -> new GroupNotFoundException("Chat not found"));

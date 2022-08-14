@@ -17,6 +17,7 @@ import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
 import com.example.project.utils.FileHandler;
 import com.example.project.utils.DataValidation;
+import com.example.project.utils.UserDetailsHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.example.project.utils.UserDetailsHelper.*;
 
 @RequiredArgsConstructor
 @Service
@@ -41,14 +44,12 @@ public class UserServiceImpl implements UserService {
     private final DataValidation dataValidation;
 
 
-
     @Override
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(user->userMapper.mapUserToUserDTO(user))
+                .map(user -> userMapper.mapUserToUserDTO(user))
                 .collect(Collectors.toList());
     }
-
 
 
     @Override
@@ -68,68 +69,68 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUserByDTO(UserDTO userDTO) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User currentUser = getCurrentUser();
         long id = currentUser.getId();
-        User user = userRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("User not found id:"+id));
+        User user = userRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("User not found id:" + id));
         //dataValidation.email(userDTO.getEmail());
         //dataValidation.age(userDTO.getAge());
-        return saveAndReturnDTO(userMapper.updateUserFromUserDTO(userDTO,user));
+        return saveAndReturnDTO(userMapper.updateUserFromUserDTO(userDTO, user));
     }
 
     @Override
     public UserDTO getLoggedUser() {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User currentUser = getCurrentUser();
         long id = currentUser.getId();
         return userRepository.findById(id)
                 .map(userMapper::mapUserToUserDTO)
                 .map(userDTO -> {
                     userDTO.setId(id);
-                    return userDTO;})
-                .orElseThrow(() -> new UserNotFoundException("User not found id:" +id));
+                    return userDTO;
+                })
+                .orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
     }
 
     @Override
     public UserGroupsListDTO getUserGroups() {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User currentUser = getCurrentUser();
         long id = currentUser.getId();
         return userRepository.findById(id)
-                .map(userGroupListMapper::mapuserToUserGroupsListDTO).orElseThrow(() -> new UserNotFoundException("User not found id:"+id));
+                .map(userGroupListMapper::mapuserToUserGroupsListDTO).orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
     }
 
     @Override
     public UserDTO joinGroupRoom(Long groupRoomId) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:"+currentUser.getId()));;
-
+        User currentUser = getCurrentUser();
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:" + currentUser.getId()));
 
         GroupRoom groupRoom = groupRepository.findById(groupRoomId)
                 .orElseThrow(() -> new GroupNotFoundException("Group room not found"));
 
-        if(user.getGroupRooms().contains(groupRoom)){
-            throw new AlreadyInGroupException("User id:"+user.getId()+" is already in group");
-        }else{
-        user.getGroupRooms().add(groupRoom);
-        userRepository.save(user);
-            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(user.getUsername()+" joined group").isNegative(false).build(),groupRoom,null);
+        if (user.getGroupRooms().contains(groupRoom)) {
+            throw new AlreadyInGroupException("User id:" + user.getId() + " is already in group");
+        } else {
+            user.getGroupRooms().add(groupRoom);
+            userRepository.save(user);
+            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(user.getUsername() + " joined group").isNegative(false).build(), groupRoom, null);
             return userMapper.mapUserToUserDTO(user);
         }
     }
 
     @Override
     public void changeProfilePicture(MultipartFile profilePicture) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:"+currentUser.getId()));
+        User currentUser = getCurrentUser();
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:" + currentUser.getId()));
         //TODO zrobic usuwanie aktualnego zdjecia z folderu zeby nie bylo syfu
-        user.setProfileImgName(user.getId()+"-"+FileHandler.save(profilePicture,user.getId()));
+        user.setProfileImgName(user.getId() + "-" + FileHandler.save(profilePicture, user.getId()));
         userRepository.save(user);
     }
 
     @Override
     public Resource getProfilePicture(Long userId) {
-            User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
-            if (user.getProfileImgName() != null) {
-                return FileHandler.load(user.getProfileImgName());
-            }
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
+        if (user.getProfileImgName() != null) {
+            return FileHandler.load(user.getProfileImgName());
+        }
         return null;
     }
 
@@ -143,20 +144,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void getOutOfGroup(Long groupRoomId) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new GroupNotFoundException("User not found id:"+currentUser.getId()));;
-
-
+        User currentUser = getCurrentUser();
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new GroupNotFoundException("User not found id:" + currentUser.getId()));
         GroupRoom groupRoom = groupRepository.findById(groupRoomId)
                 .orElseThrow(() -> new GroupNotFoundException("Group room not found"));
 
         user.getGroupRooms().remove(groupRoom);
-        if(Objects.equals(groupRoom.getGroupLeader(),user)){
-        groupRoom.setGroupLeader(groupRoom.getUsers().get(0));}
-        if(groupRoom.getUsers().size()==1){
+        if (Objects.equals(groupRoom.getGroupLeader(), user)) {
+            groupRoom.setGroupLeader(groupRoom.getUsers().get(0));
+        }
+        if (groupRoom.getUsers().size() == 1) {
             groupRepository.softDeleteById(groupRoom.getId());
-        }else
-        {
+        } else {
             groupRepository.save(groupRoom);
         }
         userRepository.save(currentUser);

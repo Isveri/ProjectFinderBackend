@@ -21,13 +21,14 @@ public class JwtTokenUtil {
     public String generateAccessToken(User user) {
         Claims claims = Jwts.claims().setSubject(user.getUsername());
 
-        return buildToken(user.getUsername(), claims);
+        return buildToken(user.getUsername(), claims,user);
     }
 
-    private String buildToken(String subject, Claims claims) {
+    private String buildToken(String subject, Claims claims,User user) {
         return Jwts.builder()
                 .setSubject(subject)
                 .setClaims(claims)
+                .claim("role",user.roleToString())
                 .setIssuer(jwtIssuer)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)) // 1 week

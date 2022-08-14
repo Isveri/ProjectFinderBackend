@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
+
 @RequiredArgsConstructor
 @Service
 
@@ -83,7 +85,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public GroupRoomDTO save(GroupRoomDTO groupRoomDTO) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User currentUser = getCurrentUser();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
         GroupRoom groupRoom = createGroupRoom(groupRoomDTO, user);
@@ -110,7 +112,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     public GroupRoomDTO getGroupById(Long id) {
         return groupRepository.findById(id)
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
-                .orElseThrow(() -> new GroupNotFoundException("Group room not found, ID:"+id));
+                .orElseThrow(() -> new GroupNotFoundException("Group room not found, ID:" + id));
     }
 
     @Override
@@ -129,7 +131,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     @Override
     public JoinCodeDTO generateJoinCode(Long groupId) {
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group room no found id:" + groupId));
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User currentUser = getCurrentUser();
 
         if (groupRoom.getJoinCode() == null && groupRoom.getGroupLeader().getId().equals(currentUser.getId())) {
             String generatedCode = getUniqueCode();
@@ -149,34 +151,34 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         return generatedCode;
     }
 
-    public GroupRoomDTO joinGroupByCode(String code){
+    public GroupRoomDTO joinGroupByCode(String code) {
 
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:"+currentUser.getId()));;
+        User currentUser = getCurrentUser();
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:" + currentUser.getId()));
+        ;
 
         GroupRoom groupRoom = groupRepository.findGroupRoomByJoinCode(code);
-        if(groupRoom == null){
+        if (groupRoom == null) {
             throw new CodeDoesntExistException("Code doesnt fit any group");
         }
-        if(user.getGroupRooms().contains(groupRoom)){
-            throw new AlreadyInGroupException("You already joined group "+groupRoom.getName());
-        }
-        else{
+        if (user.getGroupRooms().contains(groupRoom)) {
+            throw new AlreadyInGroupException("You already joined group " + groupRoom.getName());
+        } else {
             user.getGroupRooms().add(groupRoom);
             userRepository.save(user);
-            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(user.getUsername()+" joined group").isNegative(false).build(),groupRoom,null);
+            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(user.getUsername() + " joined group").isNegative(false).build(), groupRoom, null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
         }
     }
 
     @Override
     public GroupRoomDTO makePartyLeader(Long groupId, Long userId) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(()-> new GroupNotFoundException("Group room not found id:"+groupId));
-        User userToBeLeader = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found id:"+userId));
-        if(currentUser.getId().equals(groupRoom.getGroupLeader().getId())){
+        User currentUser = getCurrentUser();
+        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + groupId));
+        User userToBeLeader = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
+        if (currentUser.getId().equals(groupRoom.getGroupLeader().getId())) {
             groupRoom.setGroupLeader(userToBeLeader);
-            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(userToBeLeader.getUsername()+" is now group leader").isNegative(false).build(),groupRoom,null);
+            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(userToBeLeader.getUsername() + " is now group leader").isNegative(false).build(), groupRoom, null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         throw new NotGroupLeaderException("Not a group leader");
@@ -184,15 +186,15 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public GroupRoomDTO removeUserFromGroup(Long groupId, Long userId) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(()-> new GroupNotFoundException("Group room not found id:"+groupId));
-        User userToRemove = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found id:"+userId));
+        User currentUser = getCurrentUser();
+        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + groupId));
+        User userToRemove = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
 
-        if(currentUser.getId().equals(groupRoom.getGroupLeader().getId())){
+        if (currentUser.getId().equals(groupRoom.getGroupLeader().getId())) {
             groupRoom.getUsers().remove(userToRemove);
             userToRemove.getGroupRooms().remove(groupRoom);
             userRepository.save(userToRemove);
-            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(userToRemove.getUsername()+" has been removed from group").type("REMOVED").isNegative(true).build(),groupRoom,userToRemove.getId());
+            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(userToRemove.getUsername() + " has been removed from group").type("REMOVED").isNegative(true).build(), groupRoom, userToRemove.getId());
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         throw new NotGroupLeaderException("Not a group leader");
