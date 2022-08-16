@@ -21,29 +21,30 @@ public class DataValidation {
     private final GroupRepository groupRepository;
 
     public  String email(String email){
-        EmailValidator validator = new EmailValidator();
-        if(email==null || !validator.isValid(email,null)){
+
+        if(email==null || !Pattern.matches("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$",email)){
             throw new BadEmailException("Wrong email structure");
         }
         //TODO dodac aby znalesc czy email istnieje w bazie i wyrzucic wyjatek
-
+        if(userRepository.existsByEmail(email)){
+            throw new EmailAlreadyTakenException("email is already connected to account");
+        }
         return email;
     }
     public  String username(String username){
         if(username==null || !Pattern.matches("^\\w{3,}$",username)){//TODO zmienic patern dla username (narazie jest minimum 3 znaki)
             throw new BadUsernameException("Wrong username structure");
         }
-        //TODO dodac aby znalesc czy username istnieje w bazie
+
         if(userRepository.findByUsername(username).isPresent()){
             throw new UsernameAlreadyTakenException("Username already taken");
         }
         return username;
     }
     public  String password(String pswd){
-        if(pswd==null || !Pattern.matches("^\\w{3,}$",pswd)){//TODO zmienic patern dla hasla (narazie jest minimum 3 znaki)
+        if(pswd==null || !Pattern.matches("^\\w{3,}$",pswd)){//TODO ustalic jakie wymagania co do hasla
             throw new BadPasswordException("Wrong password structure");
         }
-
         return pswd;
     }
     public  String profileName(String name){
@@ -56,8 +57,6 @@ public class DataValidation {
         if (name==null || !Pattern.matches("^\\w{2,}$", name)) {
             throw new BadGroupNameException("Name must required at least 2 characters");
         }
-
-        //TODO sprawdzic czy dana nazwa istnieje, jesli tak wywala wyjatek
         if(groupRepository.findByName(name).isPresent()){
             throw new GroupnameAlreadyTakenException("Group name already exists");
         }
@@ -70,10 +69,11 @@ public class DataValidation {
         return age;
     }
     public  Integer phone(Integer phone){
-       /* if (age!=null && (age<=0||age>150)) {
-            throw new BadPhoneException("Age must be in range from 1 to 150");
-        }*/
-        //TODO int na string i sprawdzic numer paternem rozszerzonym (rozne wariacje numeru )
+        String phoneString = phone.toString();
+        if(!Pattern.matches("^\\d{9}$", phoneString)){//check if number has 9 digits
+            throw new BadPhoneException("Phone number must have 9 digits");
+        }
+        //TODO dodac sprawdzanie dla roznych wersji numeru
         return phone;
     }
     public  String city(String city){
@@ -95,7 +95,7 @@ public class DataValidation {
         return text;
     }
     public  Integer userLimit(Integer users){
-        if (users<=0||users>150) {
+        if (users<=0||users>5) {
             throw new BadUserLimitException("Max users be in range from 1 to 5");
         }
         return users;
