@@ -10,4 +10,5 @@ import lombok.*;
 public class UserMsgDTO {
     private Long id;
     private String username;
+    private RoleDTO role;
 }

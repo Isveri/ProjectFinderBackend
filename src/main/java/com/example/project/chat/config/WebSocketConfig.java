@@ -90,7 +90,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         User usr = getCurrentUser();
                         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
-                        if (groupRoom.getUsers().contains(usr)) {
+                        if (groupRoom.getUsers().contains(usr) || usr.getRole().getName().equals("ROLE_ADMIN")) {
                             accessor.setUser(authentication);
                         }
                     }

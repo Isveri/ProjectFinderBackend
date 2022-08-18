@@ -8,6 +8,7 @@ import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
 import com.example.project.exceptions.GroupNotFoundException;
+import com.example.project.exceptions.NotGroupLeaderException;
 import com.example.project.repositories.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
 
@@ -27,13 +30,14 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
 
+
     @Transactional
     @Override
     public MessageDTO save(MessageDTO messageDTO, Long groupId) {
 
         User user = getCurrentUser();
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
-        if (groupRoom.getUsers().contains(user)) {
+        if (groupRoom.getUsers().contains(user) || user.getRole().getName().equals("ROLE_ADMIN")) {
             Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(() -> new GroupNotFoundException("Chat not found"));
             Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
             LocalDateTime now = LocalDateTime.now();
@@ -44,5 +48,17 @@ public class ChatServiceImpl implements ChatService {
             return messageMapper.mapMessageToMessageDTO(msg);
         }
         return null;
+    }
+
+    @Override
+    public List<MessageDTO> getChatLogs(Long groupId) {
+        User user = getCurrentUser();
+        if (user.getRole().getName().equals("ROLE_ADMIN")) {
+            return chatRepository.findChatByGroupRoomId(groupId).getMessages()
+                    .stream()
+                    .map(messageMapper::mapMessageToMessageDTO)
+                    .collect(Collectors.toList());
+        }
+        throw new NotGroupLeaderException("Not authorized");
     }
 }

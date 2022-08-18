@@ -6,10 +6,16 @@ import lombok.AllArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.security.RolesAllowed;
+import java.util.List;
 
 
-@Controller
+@RestController
 @AllArgsConstructor
 public class ChatWebSocketController {
 
@@ -20,5 +26,10 @@ public class ChatWebSocketController {
     public MessageDTO send(MessageDTO messageDTO, @DestinationVariable Long groupId) throws Exception {
         return chatService.save(messageDTO, groupId);
 
+    }
+    @GetMapping("/api/v1/chatLogs/{groupId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<MessageDTO> getChatLogs(@PathVariable Long groupId){
+        return chatService.getChatLogs(groupId);
     }
 }

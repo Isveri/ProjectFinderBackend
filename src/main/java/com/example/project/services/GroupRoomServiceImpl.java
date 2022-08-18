@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.project.utils.UserDetailsHelper.checkPrivilages;
 import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
 
 @RequiredArgsConstructor
@@ -50,8 +51,12 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     @Override
     public void updateVisibility(Long groupId, boolean result) {
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group room not found"));
-        groupRoom.setOpen(result);
-        groupRepository.save(groupRoom);
+        if(checkPrivilages(groupRoom)){
+            groupRoom.setOpen(result);
+            groupRepository.save(groupRoom);}
+        else{
+            throw new NotGroupLeaderException("You are not group leader or admin to change visibility");
+        }
     }
 
     @Override
@@ -173,10 +178,9 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public GroupRoomDTO makePartyLeader(Long groupId, Long userId) {
-        User currentUser = getCurrentUser();
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + groupId));
         User userToBeLeader = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
-        if (currentUser.getId().equals(groupRoom.getGroupLeader().getId())) {
+        if (checkPrivilages(groupRoom)) {
             groupRoom.setGroupLeader(userToBeLeader);
             sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(userToBeLeader.getUsername() + " is now group leader").isNegative(false).build(), groupRoom, null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
@@ -186,11 +190,10 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public GroupRoomDTO removeUserFromGroup(Long groupId, Long userId) {
-        User currentUser = getCurrentUser();
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + groupId));
         User userToRemove = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
 
-        if (currentUser.getId().equals(groupRoom.getGroupLeader().getId())) {
+        if (checkPrivilages(groupRoom)) {
             groupRoom.getUsers().remove(userToRemove);
             userToRemove.getGroupRooms().remove(groupRoom);
             userRepository.save(userToRemove);
@@ -203,9 +206,14 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     @Override
     public void deleteGroupRoomById(Long id) {
         GroupRoom groupRoom = groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + id));
-        for (User user : groupRoom.getUsers()) {
-            user.getGroupRooms().remove(groupRoom);
+        if (checkPrivilages(groupRoom)) {
+            for (User user : groupRoom.getUsers()) {
+                user.getGroupRooms().remove(groupRoom);
+            }
+            groupRepository.softDeleteById(id);
+        } else {
+            throw new NotGroupLeaderException("You are not a leader of this group or admin");
+
         }
-        groupRepository.softDeleteById(id);
     }
 }
