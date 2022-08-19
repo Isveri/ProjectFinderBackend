@@ -43,11 +43,24 @@ public class CustomExceptionHandler {
         log.error(e.getMessage());
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }
-    @ExceptionHandler(UsernameNotFoundException.class)
+    @ExceptionHandler({UsernameNotFoundException.class})
     public ResponseEntity<ErrorCodeMsg> usernameNotFound(UsernameNotFoundException e){
         log.error(e.getMessage());
-        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().build());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code("6").build());
     }
+
+    @ExceptionHandler({AlreadyBannedException.class})
+    public ResponseEntity<ErrorCodeMsg> alreadyBannedException(AlreadyBannedException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+
+    @ExceptionHandler({AccountBannedException.class})
+    public ResponseEntity<ErrorCodeMsg> accountBannedException(AccountBannedException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+
     @ExceptionHandler({BadAgeException.class})
     public ResponseEntity<ErrorCodeMsg> badAge(BadAgeException e){
         log.error(e.getMessage());

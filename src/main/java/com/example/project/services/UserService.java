@@ -2,6 +2,7 @@ package com.example.project.services;
 
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.domain.User;
+import com.example.project.model.BannedUserDTO;
 import com.example.project.model.UserDTO;
 import com.example.project.model.UserGroupsListDTO;
 import com.example.project.model.UserProfileDTO;
@@ -20,6 +21,8 @@ public interface UserService {
     UserDTO saveAndReturnDTO(User user);
     UserDTO updateUserByDTO(UserDTO userDTO);
     UserDTO getLoggedUser();
+    UserDTO getUserByUsername(String username);
+    List<BannedUserDTO> getBannedUsers();
     UserGroupsListDTO getUserGroups();
     UserDTO joinGroupRoom(Long groupRoomId);
 
@@ -28,6 +31,8 @@ public interface UserService {
     UserProfileDTO getUserProfile(Long userId);
     void getOutOfGroup(Long groupRoomId);
 
+    void banUser(BannedUserDTO bannedUserDTO);
+    void unbanUser(Long userId);
     void deleteUserById(Long id);
 
 }

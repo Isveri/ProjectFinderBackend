@@ -8,4 +8,5 @@ public interface ChatService {
 
     MessageDTO save(MessageDTO messageDTO,Long groupId);
     List<MessageDTO> getChatLogs(Long groupId);
+    List<MessageDTO> getUserChatLogs(Long userId);
 }

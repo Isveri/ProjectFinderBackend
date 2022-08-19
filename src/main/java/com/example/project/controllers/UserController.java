@@ -1,6 +1,7 @@
 package com.example.project.controllers;
 
 import com.example.project.domain.User;
+import com.example.project.model.BannedUserDTO;
 import com.example.project.model.UserDTO;
 import com.example.project.model.UserGroupsListDTO;
 import com.example.project.model.UserProfileDTO;
@@ -10,12 +11,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.websocket.server.PathParam;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +39,28 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @GetMapping("/{username}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username){
+        return ResponseEntity.ok(userService.getUserByUsername(username));
+    }
+
+    @GetMapping("/banned")
+    public ResponseEntity<List<BannedUserDTO>> getBannedUsers(){
+        return ResponseEntity.ok(userService.getBannedUsers());
+    }
+
+    @GetMapping("/unban/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> unbanUser(@PathVariable Long userId){
+        userService.unbanUser(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/banUser")
+    public ResponseEntity<?> banUser(@RequestBody BannedUserDTO bannedUserDTO){
+        userService.banUser(bannedUserDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
         return ResponseEntity.ok(userService.save(userDTO));

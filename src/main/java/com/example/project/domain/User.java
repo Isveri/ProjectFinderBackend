@@ -45,7 +45,11 @@ public class User implements UserDetails, CredentialsContainer {
 
     private String profileImgName;
 
+    private boolean banned = false;
 
+    private String reason;
+
+    private String bannedBy;
 
     @ManyToMany
     @JoinTable(

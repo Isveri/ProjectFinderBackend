@@ -5,11 +5,14 @@ import com.example.project.chat.model.Chat;
 import com.example.project.chat.model.Message;
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.chat.repositories.ChatRepository;
+import com.example.project.chat.repositories.MessageRepository;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
 import com.example.project.exceptions.GroupNotFoundException;
 import com.example.project.exceptions.NotGroupLeaderException;
+import com.example.project.exceptions.UserNotFoundException;
 import com.example.project.repositories.GroupRepository;
+import com.example.project.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ public class ChatServiceImpl implements ChatService {
     private final GroupRepository groupRepository;
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
+    private final UserRepository userRepository;
+    private final MessageRepository messageRepository;
 
 
     @Transactional
@@ -61,4 +66,17 @@ public class ChatServiceImpl implements ChatService {
         }
         throw new NotGroupLeaderException("Not authorized");
     }
+
+    @Override
+    public List<MessageDTO> getUserChatLogs(Long userId) {
+        User admin = getCurrentUser();
+        if(admin.getRole().getName().equals("ROLE_ADMIN")) {
+            return messageRepository.findAllByUserId(userId)
+                    .stream()
+                    .map(messageMapper::mapMessageToMessageDTO)
+                    .collect(Collectors.toList());
+        }
+        throw new NotGroupLeaderException("Not authorized");
+    }
 }
+

@@ -1,6 +1,7 @@
 package com.example.project.mappers;
 
 import com.example.project.domain.User;
+import com.example.project.model.BannedUserDTO;
 import com.example.project.model.UserDTO;
 import com.example.project.model.UserMsgDTO;
 import com.example.project.model.UserProfileDTO;
@@ -23,4 +24,5 @@ public abstract class UserMapper {
 
     public abstract User mapUserMsgDTOToUser(UserMsgDTO userMsgDTO);
 
+    public abstract BannedUserDTO mapUserToBannedUserDTO(User user);
 }

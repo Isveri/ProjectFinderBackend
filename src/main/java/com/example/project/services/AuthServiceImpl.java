@@ -2,6 +2,7 @@ package com.example.project.services;
 
 import com.example.project.domain.Role;
 import com.example.project.domain.User;
+import com.example.project.exceptions.AccountBannedException;
 import com.example.project.mappers.UserMapper;
 import com.example.project.model.UserDTO;
 import com.example.project.model.auth.TokenResponse;
@@ -31,7 +32,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponse getToken(UserCredentials userCredentials) {
         User user = (User) userDetailsService.loadUserByUsername(userCredentials.getUsername());
-        if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword()))
+        if(user.isBanned()){
+            throw new AccountBannedException("Account banned");
+        }
+        else if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword()))
             return new TokenResponse(jwtTokenUtil.generateAccessToken(user));
         return null;
     }

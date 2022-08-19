@@ -32,4 +32,11 @@ public class ChatWebSocketController {
     public List<MessageDTO> getChatLogs(@PathVariable Long groupId){
         return chatService.getChatLogs(groupId);
     }
+
+    @GetMapping("/api/v1/users/chatLogs/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<MessageDTO> getUserChatLogs(@PathVariable Long userId){
+
+        return chatService.getUserChatLogs(userId);
+    }
 }

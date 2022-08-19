@@ -105,12 +105,18 @@ public class BootData implements CommandLineRunner {
                 .username("Yeager")
                 .email("yeager@gmail.com")
                 .password(passwordEncoder.encode("yeager"))
+                .banned(true)
+                .reason("Toxicity, many reports")
+                .bannedBy("Evi")
                 .build();
 
         User u6 = User.builder()
                 .username("Satoru")
                 .email("satoru@gmail.com")
                 .password(passwordEncoder.encode("satoru"))
+                .banned(true)
+                .bannedBy("Evi")
+                .reason("Toxicity, trolling, not taking serious warning from administration")
                 .build();
 
         userRepository.save(u1);
