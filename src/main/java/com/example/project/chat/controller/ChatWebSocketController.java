@@ -1,6 +1,7 @@
 package com.example.project.chat.controller;
 
 import com.example.project.chat.model.MessageDTO;
+import com.example.project.chat.model.MessageLogsDTO;
 import com.example.project.chat.service.ChatService;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -35,7 +36,7 @@ public class ChatWebSocketController {
 
     @GetMapping("/api/v1/users/chatLogs/{userId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<MessageDTO> getUserChatLogs(@PathVariable Long userId){
+    public List<MessageLogsDTO> getUserChatLogs(@PathVariable Long userId){
 
         return chatService.getUserChatLogs(userId);
     }

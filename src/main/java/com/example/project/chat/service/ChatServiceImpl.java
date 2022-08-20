@@ -4,6 +4,7 @@ import com.example.project.chat.mappers.MessageMapper;
 import com.example.project.chat.model.Chat;
 import com.example.project.chat.model.Message;
 import com.example.project.chat.model.MessageDTO;
+import com.example.project.chat.model.MessageLogsDTO;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.chat.repositories.MessageRepository;
 import com.example.project.domain.GroupRoom;
@@ -68,12 +69,13 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<MessageDTO> getUserChatLogs(Long userId) {
+    public List<MessageLogsDTO> getUserChatLogs(Long userId) {
         User admin = getCurrentUser();
+
         if(admin.getRole().getName().equals("ROLE_ADMIN")) {
             return messageRepository.findAllByUserId(userId)
                     .stream()
-                    .map(messageMapper::mapMessageToMessageDTO)
+                    .map(messageMapper::mapMessageToMessageLogsDTO)
                     .collect(Collectors.toList());
         }
         throw new NotGroupLeaderException("Not authorized");

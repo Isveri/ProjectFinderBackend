@@ -1,6 +1,7 @@
 package com.example.project.chat.service;
 
 import com.example.project.chat.model.MessageDTO;
+import com.example.project.chat.model.MessageLogsDTO;
 
 import java.util.List;
 
@@ -8,5 +9,5 @@ public interface ChatService {
 
     MessageDTO save(MessageDTO messageDTO,Long groupId);
     List<MessageDTO> getChatLogs(Long groupId);
-    List<MessageDTO> getUserChatLogs(Long userId);
+    List<MessageLogsDTO> getUserChatLogs(Long userId);
 }
