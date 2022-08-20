@@ -2,6 +2,7 @@ package com.example.project.services;
 
 import com.example.project.chat.model.Chat;
 import com.example.project.exceptions.*;
+import com.example.project.model.GroupRoomUpdateDTO;
 import com.example.project.model.NotificationMsgDTO;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.domain.*;
@@ -126,11 +127,11 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
-    public GroupRoomDTO updateGroupRoomByDTO(Long id, GroupRoomDTO groupRoomDTO) {
-        groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + id));
-        GroupRoom groupRoom = groupRoomMapper.mapGroupRoomDTOToGroupRoom(groupRoomDTO);
-        groupRoom.setId(id);
-        return saveAndReturnDTO(groupRoom);
+    public GroupRoomDTO updateGroupRoomByDTO(Long id, GroupRoomUpdateDTO groupRoomUpdateDTO) {
+        GroupRoom groupRoom = groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + id));
+        // groupRoom = groupRoomMapper.mapGroupRoomDTOToGroupRoom(groupRoomDTO);
+        //groupRoom.setId(id);
+        return saveAndReturnDTO(groupRoomMapper.updateGroupRoomFromGroupRoomUpdateDTO(groupRoomUpdateDTO, groupRoom));
     }
 
     @Override

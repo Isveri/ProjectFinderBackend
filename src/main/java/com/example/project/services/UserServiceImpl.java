@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         User currentUser = getCurrentUser();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("User not found id:" + id));
-        dataValidation.email(userDTO.getEmail());
+        dataValidation.email(userDTO.getEmail(),user);
         dataValidation.age(userDTO.getAge());
         return saveAndReturnDTO(userMapper.updateUserFromUserDTO(userDTO, user));
     }

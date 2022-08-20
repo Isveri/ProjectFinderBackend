@@ -1,6 +1,7 @@
 package com.example.project.services;
 
 import com.example.project.domain.GroupRoom;
+import com.example.project.model.GroupRoomUpdateDTO;
 import com.example.project.model.JoinCodeDTO;
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
@@ -29,7 +30,7 @@ public interface GroupRoomService {
 
     GroupRoomDTO saveAndReturnDTO(GroupRoom groupRoom);
 
-    GroupRoomDTO updateGroupRoomByDTO(Long id, GroupRoomDTO groupRoomDTO);
+    GroupRoomDTO updateGroupRoomByDTO(Long id, GroupRoomUpdateDTO groupRoomUpdateDTO);
 
     JoinCodeDTO generateJoinCode(Long groupId);
 

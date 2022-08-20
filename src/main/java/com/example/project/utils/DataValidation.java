@@ -3,6 +3,9 @@ package com.example.project.utils;
 
 
 
+import com.example.project.domain.GroupRoom;
+import com.example.project.domain.User;
+import com.example.project.exceptions.GroupNotFoundException;
 import com.example.project.exceptions.validation.*;
 import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.UserRepository;
@@ -10,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 
@@ -20,24 +24,28 @@ public class DataValidation {
     private final UserRepository userRepository ;
     private final GroupRepository groupRepository;
 
-    public  String email(String email){
+    public  String email(String email, User user){
 
         if(email==null || !Pattern.matches("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$",email)){
             throw new BadEmailException("Wrong email structure");
         }
-        //TODO dodac aby znalesc czy email istnieje w bazie i wyrzucic wyjatek
-        if(userRepository.existsByEmail(email)){
-            throw new EmailAlreadyTakenException("email is already connected to account");
+
+        if(!Objects.equals(user.getEmail(), email)){
+            if (userRepository.existsByEmail(email)) {
+                throw new EmailAlreadyTakenException("email is already connected to account");
+            }
         }
         return email;
     }
-    public  String username(String username){
+    public  String username(String username,User user){
         if(username==null || !Pattern.matches("^\\w{3,}$",username)){//TODO zmienic patern dla username (narazie jest minimum 3 znaki)
             throw new BadUsernameException("Wrong username structure");
         }
 
-        if(userRepository.findByUsername(username).isPresent()){
-            throw new UsernameAlreadyTakenException("Username already taken");
+        if(!Objects.equals(user.getUsername(), username)){
+            if (userRepository.findByUsername(username).isPresent()) {
+                throw new UsernameAlreadyTakenException("Username already taken");
+            }
         }
         return username;
     }
@@ -53,12 +61,14 @@ public class DataValidation {
         }
         return name;
     }
-    public  String groupName(String name){
+    public  String groupName(String name, GroupRoom group){
         if (name==null || !Pattern.matches("^\\w{2,}$", name)) {
             throw new BadGroupNameException("Name must required at least 2 characters");
         }
-        if(groupRepository.findByName(name).isPresent()){
-            throw new GroupnameAlreadyTakenException("Group name already exists");
+        if(!Objects.equals(group.getName(), name)){
+            if (groupRepository.findByName(name).isPresent()) {
+                throw new GroupnameAlreadyTakenException("Group name already exists");
+            }
         }
         return name;
     }

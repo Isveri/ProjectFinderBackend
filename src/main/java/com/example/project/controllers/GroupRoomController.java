@@ -1,5 +1,6 @@
 package com.example.project.controllers;
 
+import com.example.project.model.GroupRoomUpdateDTO;
 import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.services.GroupRoomService;
@@ -44,8 +45,8 @@ public class GroupRoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateGroupRoom(@PathVariable Long id, @RequestBody GroupRoomDTO groupRoomDTO){
-        return ResponseEntity.ok(groupRoomService.updateGroupRoomByDTO(id,groupRoomDTO));
+    public ResponseEntity<?> updateGroupRoom(@PathVariable Long id, @RequestBody GroupRoomUpdateDTO groupRoomUpdateDTO){
+        return ResponseEntity.ok(groupRoomService.updateGroupRoomByDTO(id,groupRoomUpdateDTO));
     }
 
     @DeleteMapping("/{id}")
