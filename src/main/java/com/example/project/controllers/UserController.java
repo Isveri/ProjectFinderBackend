@@ -1,28 +1,16 @@
 package com.example.project.controllers;
 
-import com.example.project.domain.User;
-import com.example.project.model.BannedUserDTO;
-import com.example.project.model.UserDTO;
-import com.example.project.model.UserGroupsListDTO;
-import com.example.project.model.UserProfileDTO;
+import com.example.project.model.*;
 import com.example.project.services.UserService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.websocket.server.PathParam;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -42,6 +30,17 @@ public class UserController {
     @GetMapping("/{username}")
     public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username){
         return ResponseEntity.ok(userService.getUserByUsername(username));
+    }
+
+    @PutMapping("/report/{userId}")
+    public ResponseEntity<?> reportUser(@RequestBody ReportDTO reportDTO, @PathVariable Long userId){
+        userService.reportUser(reportDTO,userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/reportedUsers")
+    public ResponseEntity<List<ReportedUserDTO>> getReportedUsers(){
+        return ResponseEntity.ok(userService.getReportedUsers());
     }
 
     @GetMapping("/banned")

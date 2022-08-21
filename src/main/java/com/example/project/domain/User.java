@@ -79,6 +79,9 @@ public class User implements UserDetails, CredentialsContainer {
             inverseJoinColumns = @JoinColumn(name = "platform"))
     private List<Platform> platforms;
 
+    @OneToMany(mappedBy="reportedUser")
+    private List<Report> reports;
+
 
 
 

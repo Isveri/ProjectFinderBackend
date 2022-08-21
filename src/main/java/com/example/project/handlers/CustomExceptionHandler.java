@@ -55,6 +55,12 @@ public class CustomExceptionHandler {
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }
 
+    @ExceptionHandler({AlreadyReportedException.class})
+    public ResponseEntity<ErrorCodeMsg> alreadyBannedException(AlreadyReportedException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+
     @ExceptionHandler({AccountBannedException.class})
     public ResponseEntity<ErrorCodeMsg> accountBannedException(AccountBannedException e){
         log.error(e.getMessage());

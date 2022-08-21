@@ -1,34 +1,30 @@
 package com.example.project.services;
 
-import com.example.project.exceptions.AlreadyBannedException;
-import com.example.project.exceptions.AlreadyInGroupException;
-import com.example.project.exceptions.UserNotFoundException;
-import com.example.project.model.*;
 import com.example.project.domain.GroupRoom;
+import com.example.project.domain.Report;
 import com.example.project.domain.Role;
 import com.example.project.domain.User;
-import com.example.project.exceptions.GroupNotFoundException;
+import com.example.project.exceptions.*;
+import com.example.project.mappers.ReportMapper;
 import com.example.project.mappers.UserGroupListMapper;
 import com.example.project.mappers.UserMapper;
+import com.example.project.model.*;
 import com.example.project.repositories.GroupRepository;
+import com.example.project.repositories.ReportRepository;
 import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
-import com.example.project.utils.FileHandler;
 import com.example.project.utils.DataValidation;
-import com.example.project.utils.UserDetailsHelper;
+import com.example.project.utils.FileHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.example.project.utils.UserDetailsHelper.*;
+import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
 
 @RequiredArgsConstructor
 @Service
@@ -40,8 +36,10 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final UserGroupListMapper userGroupListMapper;
     private final SseService sseService;
-    private final DataValidation dataValidation;
 
+    private final ReportMapper reportMapper;
+    private final DataValidation dataValidation;
+    private final ReportRepository reportRepository;
 
     @Override
     public List<UserDTO> getAllUsers() {
@@ -103,6 +101,24 @@ public class UserServiceImpl implements UserService {
                 .map(userMapper::mapUserToBannedUserDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<ReportedUserDTO> getReportedUsers() {
+        Map<String,ReportedUserDTO> reportedUsers = new HashMap<>();
+
+        reportRepository.findAll()
+                .forEach((report)->{
+                    if(!reportedUsers.containsKey(report.getReportedUser().getUsername())) {
+                        reportedUsers.put(report.getReportedUser().getUsername(), new ReportedUserDTO());
+                    }
+                    ReportedUserDTO reportedUserDTO = reportedUsers.get(report.getReportedUser().getUsername());
+                    reportedUserDTO.setReportedUser(userMapper.mapUserToUserMsgDTO(report.getReportedUser()));
+                    reportedUserDTO.addReport(reportMapper.mapReportToReportDTO(report));
+                    reportedUsers.put(report.getReportedUser().getUsername(), reportedUserDTO);
+                    });
+        return new ArrayList<ReportedUserDTO>(reportedUsers.values());
+    }
+
 
     @Override
     public UserGroupsListDTO getUserGroups() {
@@ -173,6 +189,24 @@ public class UserServiceImpl implements UserService {
             groupRepository.save(groupRoom);
         }
         userRepository.save(currentUser);
+
+    }
+
+    @Override
+    public void reportUser(ReportDTO reportDTO,Long userId) {
+        User reportedBy = getCurrentUser();
+        User userToReport = userRepository.findById(userId)
+                .orElseThrow(()-> new UserNotFoundException("User not found id:" +userId));
+
+        if(!reportRepository.existsByReportedByIdAndReportedUserId(reportedBy.getId(),userToReport.getId())) {
+            Report report = reportMapper.mapReportDTOToReport(reportDTO);
+            report.setReportedBy(reportedBy);
+            userToReport.getReports().add(report);
+            report.setReportedUser(userToReport);
+            reportRepository.save(report);
+        }else{
+            throw new AlreadyReportedException("You already reported this user");
+        }
 
     }
 
