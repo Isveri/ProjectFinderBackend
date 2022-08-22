@@ -21,6 +21,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.DateFormatter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -203,6 +206,7 @@ public class UserServiceImpl implements UserService {
             report.setReportedBy(reportedBy);
             userToReport.getReports().add(report);
             report.setReportedUser(userToReport);
+            report.setDate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
             reportRepository.save(report);
         }else{
             throw new AlreadyReportedException("You already reported this user");
