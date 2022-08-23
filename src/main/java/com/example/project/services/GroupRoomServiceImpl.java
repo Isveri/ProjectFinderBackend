@@ -117,6 +117,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         groupRoom.setGame(category.getGame());
         groupRoom.setCity(groupRoomDTO.getCity());
         groupRoom.setGroupLeader(user);
+        groupRoom.setOpen(groupRoomDTO.isOpen());
         return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
     }
 
