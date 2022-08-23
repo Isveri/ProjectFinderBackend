@@ -57,5 +57,7 @@ public class GroupRoom {
 
     private String joinCode;
 
+    private String city;
+
     private boolean deleted = false;
 }

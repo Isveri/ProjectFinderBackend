@@ -76,6 +76,16 @@ public class GroupRoomController {
         return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryRole(gameId,categoryId,roleId));
     }
 
+    @GetMapping("/g&cit/{gameId}/{city}")
+    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCity(@PathVariable Long gameId, @PathVariable String city){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameCity(gameId,city));
+    }
+
+    @GetMapping("/C&C/{gameId}/{categoryId}/{city}")
+    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCategoryCity(@PathVariable Long gameId,@PathVariable Long categoryId, @PathVariable String city){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryCity(gameId,categoryId,city));
+    }
+
     @GetMapping("/generateCode/{groupId}")
     public ResponseEntity<JoinCodeDTO> generateJoinCode(@PathVariable Long groupId){
         JoinCodeDTO joinCodeDTO = groupRoomService.generateJoinCode(groupId);

@@ -23,7 +23,9 @@ public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
     List<GroupRoom> findAllByGameNameAndOpenIsTrue(String name);
 
     List<GroupRoom> findAllByGameIdAndCategoryIdAndOpenIsTrue(Long gameId, Long categoryId);
+    List<GroupRoom> findAllByGameIdAndCityAndOpenIsTrue(Long gameId, String city);
 
+    List<GroupRoom> findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(Long gameId, Long categoryId, String city);
     List<GroupRoom> findAllByGameIdAndGame_InGameRolesIdAndOpenIsTrue(Long gameId, Long inGameRoleId);
 
     List<GroupRoom> findAllByGameIdAndCategoryIdAndGameInGameRolesIdAndOpenIsTrue(Long gameId, Long categoryId, Long inGameRoleId);

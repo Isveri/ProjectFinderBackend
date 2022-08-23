@@ -40,31 +40,11 @@ public class BootData implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
 
-//        createCategory();
         createOther();
 
 
     }
 
-//    private void createCategory() {
-//
-//        categoryRepository.save(Category.builder()
-//                .name("SoloQ")
-//                .build());
-//
-//        categoryRepository.save(Category.builder()
-//                .name("Ranked Flex")
-//                .build());
-//
-//        categoryRepository.save(Category.builder()
-//                .name("ARAM")
-//                .build());
-//
-//        categoryRepository.save(Category.builder()
-//                .name("Nieokreślone")
-//                .build());
-//
-//    }
 
     private void createOther() {
         User u1 = User.builder()
@@ -167,9 +147,8 @@ public class BootData implements CommandLineRunner {
         inGameRoleRepository.save(role4);
 
 
-
         Game game1 = Game.builder().name("League of Legends").inGameRoles(Arrays.asList(igr1, igr2, igr3, igr4, igr5)).build();
-        Game game2 = Game.builder().name("CSGO").inGameRoles(Arrays.asList(role1, role2, role3,role4)).build();
+        Game game2 = Game.builder().name("CSGO").inGameRoles(Arrays.asList(role1, role2, role3, role4)).build();
         Game game3 = Game.builder().name("IRL").build();
 
         gameRepository.save(game1);
@@ -239,6 +218,35 @@ public class BootData implements CommandLineRunner {
                 .game(game2)
                 .basicMaxUsers(5).build();
 
+        Category cat9 = Category.builder()
+                .name("Cinema")
+                .game(game3).basicMaxUsers(3).build();
+
+        Category cat10 = Category.builder()
+                .name("Billiards")
+                .game(game3).basicMaxUsers(3).build();
+
+        Category cat12 = Category.builder()
+                .name("Bowls")
+                .game(game3).basicMaxUsers(3).build();
+
+        Category cat13 = Category.builder()
+                .name("Football")
+                .game(game3).basicMaxUsers(3).build();
+
+        Category cat14 = Category.builder()
+                .name("Volleyball")
+                .game(game3).basicMaxUsers(3).build();
+
+        Category cat15 = Category.builder()
+                .name("Basketball")
+                .game(game3).basicMaxUsers(3).build();
+
+        Category cat16 = Category.builder()
+                .name("Other")
+                .game(game3).basicMaxUsers(3).build();
+
+        categoryRepository.saveAll(Arrays.asList(cat9,cat10,cat12,cat13,cat14,cat15,cat16));
         categoryRepository.save(cat1);
         categoryRepository.save(cat2);
         categoryRepository.save(cat3);
@@ -330,6 +338,8 @@ public class BootData implements CommandLineRunner {
                 .category(cat8)
                 .maxUsers(cat8.getBasicMaxUsers())
                 .game(game3)
+                .category(cat12)
+                .city("Lublin")
                 .chat(chat7)
                 .build();
         groupRepository.save(g7);
@@ -380,12 +390,12 @@ public class BootData implements CommandLineRunner {
         adminRole.setUsers(Arrays.asList(u1));
         userRole.setUsers(Arrays.asList(u2, u3, u4, u5, u6));
 
-        u1.setInGameRoles(Arrays.asList(igr1, igr3, role2, role1, role3,role4));
+        u1.setInGameRoles(Arrays.asList(igr1, igr3, role2, role1, role3, role4));
         u2.setInGameRoles(Arrays.asList(igr2, igr4, role2));
         u3.setInGameRoles(Arrays.asList(igr3, role2));
-        u4.setInGameRoles(Arrays.asList(igr4,role3,role4));
-        u5.setInGameRoles(Arrays.asList(igr5,role1,role4));
-        u6.setInGameRoles(Arrays.asList(igr1, igr2,role2));
+        u4.setInGameRoles(Arrays.asList(igr4, role3, role4));
+        u5.setInGameRoles(Arrays.asList(igr5, role1, role4));
+        u6.setInGameRoles(Arrays.asList(igr1, igr2, role2));
 
         userRepository.save(u1);
         userRepository.save(u2);

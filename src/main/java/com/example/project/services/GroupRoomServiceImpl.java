@@ -85,6 +85,22 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
+    public List<GroupRoomDTO> getGroupsByGameCity(Long gameId, String city) {
+        return groupRepository.findAllByGameIdAndCityAndOpenIsTrue(gameId,city)
+                .stream()
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GroupRoomDTO> getGroupsByGameCategoryCity(Long gameId, Long categoryId, String city) {
+        return groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId,categoryId,city)
+                .stream()
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public GroupRoomDTO getGroupByName(String name) {
         return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.findByName(name).orElseThrow(() -> new GroupNotFoundException("Group room not found")));
     }
@@ -99,6 +115,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         Category category = categoryRepository.findByName(groupRoom.getCategory().getName());
         groupRoom.setCategory(category);
         groupRoom.setGame(category.getGame());
+        groupRoom.setCity(groupRoomDTO.getCity());
         groupRoom.setGroupLeader(user);
         return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
     }

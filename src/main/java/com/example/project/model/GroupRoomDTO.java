@@ -20,6 +20,7 @@ public class GroupRoomDTO {
     private CategoryDTO category;
     private ChatDTO chatDTO;
     private UserDTO groupLeader;
+    private String city;
     private GameDTO game;
     private String joinCode;
 }

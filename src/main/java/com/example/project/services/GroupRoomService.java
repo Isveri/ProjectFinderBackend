@@ -20,6 +20,10 @@ public interface GroupRoomService {
 
     List<GroupRoomDTO> getGroupsByGameRole(Long gameId,Long roleId);
 
+    List<GroupRoomDTO> getGroupsByGameCity(Long gameId, String city);
+
+    List<GroupRoomDTO> getGroupsByGameCategoryCity(Long gameId,Long categoryId, String city);
+
     void updateVisibility(Long groupId, boolean result);
 
     GroupRoomDTO getGroupByName(String name);
