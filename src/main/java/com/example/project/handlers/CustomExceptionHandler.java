@@ -137,4 +137,14 @@ public class CustomExceptionHandler {
         log.error(e.getMessage());
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }
+    @ExceptionHandler({WrongPasswordException.class})
+    public ResponseEntity<ErrorCodeMsg> wrongPasswordTaken(WrongPasswordException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+    @ExceptionHandler({SomethingWrongException.class})
+    public ResponseEntity<ErrorCodeMsg> somethingWrongException(SomethingWrongException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
 }

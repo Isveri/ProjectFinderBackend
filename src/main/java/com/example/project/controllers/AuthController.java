@@ -1,6 +1,7 @@
 package com.example.project.controllers;
 
 import com.example.project.model.UserDTO;
+import com.example.project.model.auth.ChangePasswordDTO;
 import com.example.project.model.auth.TokenResponse;
 import com.example.project.model.auth.UserCredentials;
 import com.example.project.services.AuthService;
@@ -38,8 +39,9 @@ public class AuthController {
         return ResponseEntity.ok(authService.createNewAccount(userDto));
     }
 
-//    @PostMapping("/password-change")
-//    public ResponseEntity<TokenResponse> changeUserPassword(@Valid @RequestBody UserPasswordChangeDto userPasswordChangeDto) {
-//        return ResponseEntity.ok(authService.changePassword(userPasswordChangeDto));
-//    }
+    @PostMapping("/password-change")
+    public ResponseEntity<?> changeUserPassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
+        authService.changePassword(changePasswordDTO);
+        return ResponseEntity.ok("");
+    }
 }
