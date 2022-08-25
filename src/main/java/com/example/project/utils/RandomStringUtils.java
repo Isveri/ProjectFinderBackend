@@ -18,5 +18,6 @@ public class RandomStringUtils {
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
-    };
+    }
+
 }

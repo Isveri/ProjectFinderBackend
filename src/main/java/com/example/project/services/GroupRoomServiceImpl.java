@@ -1,9 +1,11 @@
 package com.example.project.services;
 
 import com.example.project.chat.model.Chat;
+import com.example.project.chat.model.CustomNotification.NotifType;
+import com.example.project.chat.model.CustomNotificationDTO;
+import com.example.project.chat.service.SseService;
 import com.example.project.exceptions.*;
 import com.example.project.model.GroupRoomUpdateDTO;
-import com.example.project.model.NotificationMsgDTO;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.domain.*;
 import com.example.project.mappers.GroupRoomMapper;
@@ -12,7 +14,6 @@ import com.example.project.model.GroupRoomDTO;
 import com.example.project.repositories.*;
 import com.example.project.utils.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -190,7 +191,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         } else {
             user.getGroupRooms().add(groupRoom);
             userRepository.save(user);
-            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(user.getUsername() + " joined group").isNegative(false).build(), groupRoom, null);
+            sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(user.getUsername() + " joined ").type(NotifType.INFO).build(), groupRoom, null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
         }
     }
@@ -201,7 +202,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         User userToBeLeader = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
         if (checkPrivilages(groupRoom)) {
             groupRoom.setGroupLeader(userToBeLeader);
-            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(userToBeLeader.getUsername() + " is now group leader").isNegative(false).build(), groupRoom, null);
+            sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(userToBeLeader.getUsername() + " is now group leader").type(NotifType.INFO).build(),groupRoom,null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         throw new NotGroupLeaderException("Not a group leader");
@@ -216,7 +217,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
             groupRoom.getUsers().remove(userToRemove);
             userToRemove.getGroupRooms().remove(groupRoom);
             userRepository.save(userToRemove);
-            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(userToRemove.getUsername() + " has been removed from group").type("REMOVED").isNegative(true).build(), groupRoom, userToRemove.getId());
+            sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(userToRemove.getUsername()+" has been removed").type(NotifType.REMOVED).build(), groupRoom, userToRemove.getId());
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         throw new NotGroupLeaderException("Not a group leader");

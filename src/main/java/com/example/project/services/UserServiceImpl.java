@@ -1,5 +1,8 @@
 package com.example.project.services;
 
+import com.example.project.chat.model.CustomNotification;
+import com.example.project.chat.model.CustomNotificationDTO;
+import com.example.project.chat.service.SseService;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.Report;
 import com.example.project.domain.Role;
@@ -21,7 +24,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.DateFormatter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -144,7 +146,7 @@ public class UserServiceImpl implements UserService {
         } else {
             user.getGroupRooms().add(groupRoom);
             userRepository.save(user);
-            sseService.sendSseEventToUser(NotificationMsgDTO.builder().text(user.getUsername() + " joined group").isNegative(false).build(), groupRoom, null);
+            sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(user.getUsername() + " joined group").type(CustomNotification.NotifType.INFO).build(), groupRoom, null);
             return userMapper.mapUserToUserDTO(user);
         }
     }

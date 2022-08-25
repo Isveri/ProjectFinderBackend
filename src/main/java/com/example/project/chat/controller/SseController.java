@@ -1,6 +1,6 @@
-package com.example.project.controllers;
+package com.example.project.chat.controller;
 
-import com.example.project.services.SseService;
+import com.example.project.chat.service.SseService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,4 +20,5 @@ public class SseController {
     public SseEmitter notifyUser() throws IOException {
         return sseService.createEmitter();
     }
+
 }
