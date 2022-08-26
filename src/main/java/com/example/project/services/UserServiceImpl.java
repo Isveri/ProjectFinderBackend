@@ -194,6 +194,7 @@ public class UserServiceImpl implements UserService {
             groupRepository.save(groupRoom);
         }
         userRepository.save(currentUser);
+        sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(user.getUsername() + " left group").type(CustomNotification.NotifType.REMOVED).build(), groupRoom, user.getId());
 
     }
 
