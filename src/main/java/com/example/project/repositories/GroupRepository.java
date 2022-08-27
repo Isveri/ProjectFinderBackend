@@ -20,6 +20,12 @@ public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
 
     @Query("SELECT g FROM GroupRoom g JOIN FETCH g.users WHERE g.id = :id")
     Optional<GroupRoom> findById(@Param("id") Long id);
+
+    @Query(value = "SELECT * FROM GROUP_ROOM g WHERE g.deleted=true AND g.id= :id",nativeQuery = true)
+    GroupRoom findDeletedById(@Param("id") Long id);
+
+    @Query(value = "SELECT * FROM GROUP_ROOM g WHERE g.deleted=true",nativeQuery = true)
+    List<GroupRoom> findAllDeletedGroups();
     List<GroupRoom> findAllByGameNameAndOpenIsTrue(String name);
 
     List<GroupRoom> findAllByGameIdAndCategoryIdAndOpenIsTrue(Long gameId, Long categoryId);

@@ -6,6 +6,7 @@ import com.example.project.model.GroupRoomDTO;
 import com.example.project.services.GroupRoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,12 @@ public class GroupRoomController {
     @PostMapping("/add")
     public ResponseEntity<?> createGroupRoom(@RequestBody GroupRoomDTO groupRoomDTO){
         return ResponseEntity.ok(groupRoomService.save(groupRoomDTO));
+    }
+
+    @GetMapping("/deleted")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<GroupRoomDTO>> getDeletedGroups(){
+        return ResponseEntity.ok(groupRoomService.getDeletedGroups());
     }
 
     @GetMapping("/{id}")

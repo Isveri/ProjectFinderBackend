@@ -10,4 +10,6 @@ public interface ChatService {
     MessageDTO save(MessageDTO messageDTO,Long groupId);
     List<MessageDTO> getChatLogs(Long groupId);
     List<MessageLogsDTO> getUserChatLogs(Long userId);
+
+    List<MessageDTO> getDeletedGroupChatLogs(Long groupId);
 }
