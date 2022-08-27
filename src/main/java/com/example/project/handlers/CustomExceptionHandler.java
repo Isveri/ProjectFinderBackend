@@ -147,4 +147,9 @@ public class CustomExceptionHandler {
         log.error(e.getMessage());
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }
+    @ExceptionHandler({TooLowUserLimitException.class})
+    public ResponseEntity<ErrorCodeMsg> tooLowUserLimitException(TooLowUserLimitException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
 }

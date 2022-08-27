@@ -24,29 +24,39 @@ public class DataValidation {
     private final UserRepository userRepository ;
     private final GroupRepository groupRepository;
 
-    public  String email(String email, User user){
+    public  String emailCreate(String email){
+
+        if(email==null || !Pattern.matches("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$",email)){
+            throw new BadEmailException("Wrong email structure");
+        }
+        if (userRepository.existsByEmail(email)) {
+                throw new EmailAlreadyTakenException("email is already connected to account");
+        }
+        return email;
+    }
+    public  String emailUpdate(String email, User user){
 
         if(email==null || !Pattern.matches("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$",email)){
             throw new BadEmailException("Wrong email structure");
         }
 
-        if(!Objects.equals(user.getEmail(), email)){
-            if (userRepository.existsByEmail(email)) {
-                throw new EmailAlreadyTakenException("email is already connected to account");
-            }
-        }
+        if(!Objects.equals(user.getEmail(), email)){emailCreate(email);}
         return email;
     }
-    public  String username(String username,User user){
+    public  String usernameCreate(String username){
         if(username==null || !Pattern.matches("^\\w{3,}$",username)){//TODO zmienic patern dla username (narazie jest minimum 3 znaki)
             throw new BadUsernameException("Wrong username structure");
         }
-
-        if(!Objects.equals(user.getUsername(), username)){
-            if (userRepository.findByUsername(username).isPresent()) {
+        if (userRepository.findByUsername(username).isPresent()) {
                 throw new UsernameAlreadyTakenException("Username already taken");
-            }
         }
+        return username;
+    }
+    public  String usernameUpdate(String username,User user){
+        if(username==null || !Pattern.matches("^\\w{3,}$",username)){//TODO zmienic patern dla username (narazie jest minimum 3 znaki)
+            throw new BadUsernameException("Wrong username structure");
+        }
+        if(!Objects.equals(user.getUsername(), username)){usernameCreate(username);}
         return username;
     }
     public  String password(String pswd){
@@ -104,9 +114,18 @@ public class DataValidation {
         }
         return text;
     }
-    public  Integer userLimit(Integer users){
+    public  Integer userLimitCreate(Integer users){
         if (users<=0||users>5) {
             throw new BadUserLimitException("Max users be in range from 1 to 5");
+        }
+        return users;
+    }
+    public  Integer userLimitUpdate(Integer users, GroupRoom group){
+        if (users<=0||users>5) {
+            throw new BadUserLimitException("Max users be in range from 1 to 5");
+        }
+        if(group.getUsers().size()>users){
+
         }
         return users;
     }
