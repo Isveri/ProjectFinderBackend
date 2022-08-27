@@ -14,6 +14,8 @@ public interface GroupRoomService {
 
     List<GroupRoomDTO> getGroupsByGame(String game);
 
+    List<GroupRoomDTO> getDeletedGroups();
+
     List<GroupRoomDTO> getGroupsByGameCategory(Long gameId,Long categoryId);
 
     List<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId,Long categoryId,Long roleId);

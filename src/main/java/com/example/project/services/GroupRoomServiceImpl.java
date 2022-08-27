@@ -51,6 +51,13 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
+    public List<GroupRoomDTO> getDeletedGroups() {
+        return groupRepository.findAllDeletedGroups().stream()
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void updateVisibility(Long groupId, boolean result) {
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group room not found"));
         if(checkPrivilages(groupRoom)){

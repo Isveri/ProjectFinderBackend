@@ -33,7 +33,6 @@ public class ChatServiceImpl implements ChatService {
     private final GroupRepository groupRepository;
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
-    private final UserRepository userRepository;
     private final MessageRepository messageRepository;
 
 
@@ -76,6 +75,19 @@ public class ChatServiceImpl implements ChatService {
             return messageRepository.findAllByUserId(userId)
                     .stream()
                     .map(messageMapper::mapMessageToMessageLogsDTO)
+                    .collect(Collectors.toList());
+        }
+        throw new NotGroupLeaderException("Not authorized");
+    }
+
+    @Override
+    public List<MessageDTO> getDeletedGroupChatLogs(Long groupId) {
+        User user = getCurrentUser();
+        if (user.getRole().getName().equals("ROLE_ADMIN")) {
+            Chat chat = groupRepository.findDeletedById(groupId).getChat();
+            return chat.getMessages()
+                    .stream()
+                    .map(messageMapper::mapMessageToMessageDTO)
                     .collect(Collectors.toList());
         }
         throw new NotGroupLeaderException("Not authorized");

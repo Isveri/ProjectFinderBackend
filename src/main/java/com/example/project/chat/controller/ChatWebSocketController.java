@@ -40,4 +40,10 @@ public class ChatWebSocketController {
 
         return chatService.getUserChatLogs(userId);
     }
+
+    @GetMapping("/api/v1/deletedGroupLogs/{groupId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<MessageDTO> getDeletedGroupChatLogs(@PathVariable Long groupId) {
+        return chatService.getDeletedGroupChatLogs(groupId);
+    }
 }
