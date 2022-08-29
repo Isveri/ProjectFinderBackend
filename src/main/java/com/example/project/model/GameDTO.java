@@ -14,4 +14,5 @@ public class GameDTO {
     private Long id;
     private List<InGameRolesDTO> inGameRoles;
     private List<CategoryDTO> categories;
+    private boolean assignRolesActive;
 }

@@ -149,7 +149,7 @@ public class BootData implements CommandLineRunner {
 
         Game game1 = Game.builder().name("League of Legends").inGameRoles(Arrays.asList(igr1, igr2, igr3, igr4, igr5)).build();
         Game game2 = Game.builder().name("CSGO").inGameRoles(Arrays.asList(role1, role2, role3, role4)).build();
-        Game game3 = Game.builder().name("IRL").build();
+        Game game3 = Game.builder().name("IRL").assignRolesActive(false).build();
 
         gameRepository.save(game1);
         gameRepository.save(game2);

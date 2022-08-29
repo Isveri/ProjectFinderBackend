@@ -30,5 +30,8 @@ public class Game {
     @OneToMany(mappedBy = "game",cascade =  CascadeType.MERGE)
     private List<GroupRoom> groupRooms;
 
+    @Builder.Default
+    private boolean assignRolesActive = true;
+
 
 }
