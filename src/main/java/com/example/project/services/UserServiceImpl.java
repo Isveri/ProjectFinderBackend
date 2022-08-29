@@ -3,10 +3,7 @@ package com.example.project.services;
 import com.example.project.chat.model.CustomNotification;
 import com.example.project.chat.model.CustomNotificationDTO;
 import com.example.project.chat.service.SseService;
-import com.example.project.domain.GroupRoom;
-import com.example.project.domain.Report;
-import com.example.project.domain.Role;
-import com.example.project.domain.User;
+import com.example.project.domain.*;
 import com.example.project.exceptions.*;
 import com.example.project.mappers.ReportMapper;
 import com.example.project.mappers.UserGroupListMapper;
@@ -134,7 +131,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO joinGroupRoom(Long groupRoomId) {
+    public UserDTO joinGroupRoom(Long groupRoomId, InGameRolesDTO inGameRolesDTO) {
         User currentUser = getCurrentUser();
         User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:" + currentUser.getId()));
 
@@ -145,6 +142,13 @@ public class UserServiceImpl implements UserService {
             throw new AlreadyInGroupException("User id:" + user.getId() + " is already in group");
         } else {
             user.getGroupRooms().add(groupRoom);
+            if(groupRoom.isInGameRolesActive()) {
+                if (inGameRolesDTO.getId() == null) {
+                    groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole -> takenInGameRole.getUser() == null)).findFirst().orElseThrow(null).setUser(currentUser);
+                } else {
+                    groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole -> takenInGameRole.getInGameRole().getId().equals(inGameRolesDTO.getId()))).findFirst().orElseThrow(null).setUser(currentUser);
+                }
+            }
             userRepository.save(user);
             sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(user.getUsername() + " joined group").type(CustomNotification.NotifType.INFO).build(), groupRoom, null);
             return userMapper.mapUserToUserDTO(user);
@@ -185,8 +189,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new GroupNotFoundException("Group room not found"));
 
         user.getGroupRooms().remove(groupRoom);
+        if(groupRoom.isInGameRolesActive()) {
+            groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole) -> user.equals(takenInGameRole.getUser())).findAny().orElse(new TakenInGameRole()).setUser(null);
+        }
         if (Objects.equals(groupRoom.getGroupLeader(), user)) {
-            groupRoom.setGroupLeader(groupRoom.getUsers().get(0));
+            groupRoom.setGroupLeader(groupRoom.getUsers().stream().filter(usr-> !user.equals(usr)).findFirst().orElseThrow(null));
         }
         if (groupRoom.getUsers().size() == 1) {
             groupRepository.softDeleteById(groupRoom.getId());

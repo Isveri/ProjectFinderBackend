@@ -17,8 +17,6 @@ import java.util.List;
 @Getter
 @Entity
 @Where(clause = "deleted=false")
-//TODO w momencie kiedy bedziemy tworzyli panel admina mozliwe ze bedzie trzeba zmienic @Where bo nie bedziemy w stanie wyciagnac
-//TODO usunietych grup itd. Mozliwe tez ze bedzie mozna to obejsc za pomoca Query przy metodzie i uzyciu nativeQuery=true
 public class GroupRoom {
 
     @Id
@@ -41,6 +39,12 @@ public class GroupRoom {
 
     @NotNull
     private int maxUsers;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<TakenInGameRole> takenInGameRoles = new ArrayList<>();
+
+    @Builder.Default
+    private boolean inGameRolesActive = false;
 
     @Builder.Default
     private boolean open = true;

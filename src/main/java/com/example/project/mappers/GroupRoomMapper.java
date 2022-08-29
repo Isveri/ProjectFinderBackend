@@ -12,7 +12,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
 @Mapper(builder = @Builder(disableBuilder = true),
-        uses = UserMapper.class,
+        uses = {UserMapper.class,TakenInGameRoleMapper.class},
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public abstract class GroupRoomMapper {
 

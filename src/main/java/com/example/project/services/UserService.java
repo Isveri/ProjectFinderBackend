@@ -20,7 +20,8 @@ public interface UserService {
 
     List<ReportedUserDTO> getReportedUsers();
     UserGroupsListDTO getUserGroups();
-    UserDTO joinGroupRoom(Long groupRoomId);
+    UserDTO joinGroupRoom(Long groupRoomId,InGameRolesDTO inGameRolesDTO);
+
     void changeProfilePicture(MultipartFile profilePicture);
     Resource getProfilePicture(Long userId);
     UserProfileDTO getUserProfile(Long userId);

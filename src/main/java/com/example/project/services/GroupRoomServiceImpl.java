@@ -5,6 +5,7 @@ import com.example.project.chat.model.CustomNotification.NotifType;
 import com.example.project.chat.model.CustomNotificationDTO;
 import com.example.project.chat.service.SseService;
 import com.example.project.exceptions.*;
+import com.example.project.mappers.TakenInGameRoleMapper;
 import com.example.project.model.GroupRoomUpdateDTO;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.domain.*;
@@ -16,6 +17,7 @@ import com.example.project.utils.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,10 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     private final ChatRepository chatRepository;
     private final CategoryRepository categoryRepository;
     private final SseService sseService;
+
+    private final TakenInGameRoleMapper takenInGameRoleMapper;
+
+    private final TakenInGameRoleRepository takenInGameRoleRepository;
 
     @Override
     public List<GroupRoomDTO> getAllGroups() {
@@ -60,10 +66,10 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     @Override
     public void updateVisibility(Long groupId, boolean result) {
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group room not found"));
-        if(checkPrivilages(groupRoom)){
+        if (checkPrivilages(groupRoom)) {
             groupRoom.setOpen(result);
-            groupRepository.save(groupRoom);}
-        else{
+            groupRepository.save(groupRoom);
+        } else {
             throw new NotGroupLeaderException("You are not group leader or admin to change visibility");
         }
     }
@@ -78,7 +84,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId, Long categoryId, Long roleId) {
-        return groupRepository.findAllByGameIdAndCategoryIdAndGameInGameRolesIdAndOpenIsTrue(gameId, categoryId, roleId)
+        return groupRepository.findAllByGameCategoryRole(gameId, categoryId, roleId)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -86,7 +92,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameRole(Long gameId, Long roleId) {
-        return groupRepository.findAllByGameIdAndGame_InGameRolesIdAndOpenIsTrue(gameId, roleId)
+        return groupRepository.findAllByGameRole(gameId, roleId)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -94,7 +100,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameCity(Long gameId, String city) {
-        return groupRepository.findAllByGameIdAndCityAndOpenIsTrue(gameId,city)
+        return groupRepository.findAllByGameIdAndCityAndOpenIsTrue(gameId, city)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -102,7 +108,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
     @Override
     public List<GroupRoomDTO> getGroupsByGameCategoryCity(Long gameId, Long categoryId, String city) {
-        return groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId,categoryId,city)
+        return groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId, categoryId, city)
                 .stream()
                 .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
                 .collect(Collectors.toList());
@@ -118,6 +124,11 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         User currentUser = getCurrentUser();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
+        GroupRoom groupRoom = prepareGroupRoom(groupRoomDTO, user);
+        return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
+    }
+
+    private GroupRoom prepareGroupRoom(GroupRoomDTO groupRoomDTO, User user) {
         GroupRoom groupRoom = createGroupRoom(groupRoomDTO, user);
         groupRoom.setChat(createChat(groupRoom));
         Category category = categoryRepository.findByName(groupRoom.getCategory().getName());
@@ -126,7 +137,25 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         groupRoom.setCity(groupRoomDTO.getCity());
         groupRoom.setGroupLeader(user);
         groupRoom.setOpen(groupRoomDTO.isOpen());
-        return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
+        groupRoom.setInGameRolesActive(groupRoomDTO.isInGameRolesActive());
+        int i = 0;
+        if (groupRoomDTO.isInGameRolesActive()) {
+            List<TakenInGameRole> list = new ArrayList<>();
+            for (InGameRole inGameRole : category.getGame().getInGameRoles()) {
+                TakenInGameRole takenInGameRole = new TakenInGameRole();
+                takenInGameRole.setInGameRole(inGameRole);
+                if (inGameRole.getId().equals(groupRoomDTO.getTakenInGameRoles().get(0).getInGameRole().getId())) {
+                    takenInGameRole.setUser(getCurrentUser());
+                }
+                list.add(takenInGameRole);
+                takenInGameRoleRepository.save(takenInGameRole);
+            }
+            groupRoom.setTakenInGameRoles(list);
+
+        } else {
+            groupRoom.setTakenInGameRoles(null);
+        }
+        return groupRoom;
     }
 
     private GroupRoom createGroupRoom(GroupRoomDTO groupRoomDTO, User user) {
@@ -197,6 +226,9 @@ public class GroupRoomServiceImpl implements GroupRoomService {
             throw new AlreadyInGroupException("You already joined group " + groupRoom.getName());
         } else {
             user.getGroupRooms().add(groupRoom);
+            if(groupRoom.isInGameRolesActive()){
+                groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole -> takenInGameRole.getUser() == null)).findFirst().orElseThrow(null).setUser(currentUser);
+            }
             userRepository.save(user);
             sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(user.getUsername() + " joined ").type(NotifType.INFO).build(), groupRoom, null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRoom);
@@ -209,7 +241,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         User userToBeLeader = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
         if (checkPrivilages(groupRoom)) {
             groupRoom.setGroupLeader(userToBeLeader);
-            sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(userToBeLeader.getUsername() + " is now group leader").type(NotifType.INFO).build(),groupRoom,null);
+            sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(userToBeLeader.getUsername() + " is now group leader").type(NotifType.INFO).build(), groupRoom, null);
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         throw new NotGroupLeaderException("Not a group leader");
@@ -222,9 +254,12 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
         if (checkPrivilages(groupRoom)) {
             groupRoom.getUsers().remove(userToRemove);
+            if(groupRoom.isInGameRolesActive()) {
+                groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole) -> userToRemove.equals(takenInGameRole.getUser())).findAny().orElse(new TakenInGameRole()).setUser(null);
+            }
             userToRemove.getGroupRooms().remove(groupRoom);
             userRepository.save(userToRemove);
-            sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(userToRemove.getUsername()+" has been removed").type(NotifType.REMOVED).build(), groupRoom, userToRemove.getId());
+            sseService.sendSseEventToUser(CustomNotificationDTO.builder().msg(userToRemove.getUsername() + " has been removed").type(NotifType.REMOVED).build(), groupRoom, userToRemove.getId());
             return groupRoomMapper.mapGroupRoomToGroupRoomDTO(groupRepository.save(groupRoom));
         }
         throw new NotGroupLeaderException("Not a group leader");

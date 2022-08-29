@@ -82,13 +82,9 @@ public class UserController {
     }
 
     @PatchMapping("/joinGroup/{groupId}")
-    public ResponseEntity<Void> joinGroupRoom(@PathVariable Long groupId) {
-        UserDTO temp = userService.joinGroupRoom(groupId);
-        if (temp == null) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
+    public ResponseEntity<Void> joinGroupRoom(@PathVariable Long groupId, @RequestBody InGameRolesDTO inGameRoles) {
+        UserDTO temp = userService.joinGroupRoom(groupId,inGameRoles);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/my-groups/{groupId}")

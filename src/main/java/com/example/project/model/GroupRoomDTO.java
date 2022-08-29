@@ -16,9 +16,11 @@ public class GroupRoomDTO {
     private String description;
     private int maxUsers;
     private boolean open;
+    private boolean inGameRolesActive;
     private List<UserDTO> users;
     private CategoryDTO category;
     private ChatDTO chatDTO;
+    private List<TakenInGameRoleDTO> takenInGameRoles;
     private UserDTO groupLeader;
     private String city;
     private GameDTO game;
