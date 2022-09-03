@@ -152,4 +152,9 @@ public class CustomExceptionHandler {
         log.error(e.getMessage());
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }
+    @ExceptionHandler({DeleteUserException.class})
+    public ResponseEntity<ErrorCodeMsg> deleteUserException(DeleteUserException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
 }

@@ -2,6 +2,7 @@ package com.example.project.domain;
 
 import com.example.project.chat.model.Message;
 import lombok.*;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,7 @@ import java.util.*;
 @Entity
 @Builder
 @EqualsAndHashCode(of = {"id","username","email"})
+@Where(clause = "enabled=true")
 public class User implements UserDetails, CredentialsContainer {
 
     @Id

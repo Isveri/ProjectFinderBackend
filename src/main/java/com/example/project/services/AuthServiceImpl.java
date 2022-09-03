@@ -1,8 +1,10 @@
 package com.example.project.services;
 
+import com.example.project.domain.GroupRoom;
 import com.example.project.domain.Role;
 import com.example.project.domain.User;
 import com.example.project.exceptions.AccountBannedException;
+import com.example.project.exceptions.DeleteUserException;
 import com.example.project.exceptions.GroupNotFoundException;
 import com.example.project.exceptions.UserNotFoundException;
 import com.example.project.exceptions.validation.EmailAlreadyTakenException;
@@ -12,6 +14,7 @@ import com.example.project.model.UserDTO;
 import com.example.project.model.auth.ChangePasswordDTO;
 import com.example.project.model.auth.TokenResponse;
 import com.example.project.model.auth.UserCredentials;
+import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
 import com.example.project.security.JwtTokenUtil;
@@ -23,15 +26,19 @@ import org.springframework.stereotype.Service;
 import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
 import com.example.project.utils.DataValidation;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
 
 
     private final UserDetailsService userDetailsService;
+    private final GroupRoomService groupRoomService;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final UserService userService;
@@ -86,6 +93,23 @@ public class AuthServiceImpl implements AuthService {
         }else{
             throw new WrongPasswordException("Wrong password");
         }
+    }
+    @Override
+    public void deleteUser(){
+        User currentUser = getCurrentUser();
+        long id = currentUser.getId();
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
+        List<GroupRoom> UserGroupRooms= groupRepository.findAllByGroupLeaderId(id);
+        try{
+            userRepository.softDeleteById(id);
+            for (GroupRoom groupRoom : UserGroupRooms) {
+                groupRoomService.deleteGroupRoomById(groupRoom.getId());
+            }
+
+        }catch(Exception e){
+            throw new DeleteUserException("Something wrong with deleting a user");
+        }
+
     }
 
 }

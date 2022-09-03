@@ -30,6 +30,7 @@ public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
 
     List<GroupRoom> findAllByGameIdAndCategoryIdAndOpenIsTrue(Long gameId, Long categoryId);
     List<GroupRoom> findAllByGameIdAndCityAndOpenIsTrue(Long gameId, String city);
+    List<GroupRoom> findAllByGroupLeaderId(Long userId);
 
     List<GroupRoom> findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(Long gameId, Long categoryId, String city);
     @Query("SELECT g FROM GroupRoom g JOIN FETCH g.takenInGameRoles tr JOIN FETCH tr.inGameRole r WHERE g.open=true AND g.game.id=:gameId AND r.id=:inGameRoleId AND tr.user IS NULL")

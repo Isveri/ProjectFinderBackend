@@ -8,10 +8,7 @@ import com.example.project.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Objects;
@@ -42,6 +39,11 @@ public class AuthController {
     @PostMapping("/password-change")
     public ResponseEntity<?> changeUserPassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
         authService.changePassword(changePasswordDTO);
+        return ResponseEntity.ok("");
+    }
+    @DeleteMapping("/delete-user")
+    public ResponseEntity<?> deleteUser(){
+        authService.deleteUser();
         return ResponseEntity.ok("");
     }
 }

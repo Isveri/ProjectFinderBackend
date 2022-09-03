@@ -15,4 +15,5 @@ public interface AuthService {
 
     void changePassword(ChangePasswordDTO changePasswordDTO);
 
+    void deleteUser();
 }
