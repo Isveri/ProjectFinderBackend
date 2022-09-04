@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     Optional<User> findByUsername(String username);
 
-    List<User> findAllByBanned(boolean value);
+    List<User> findAllByAccountNonLockedNot(boolean value);
     Boolean existsByEmail(String email);
 
     @Transactional

@@ -12,6 +12,7 @@ import com.example.project.domain.*;
 import com.example.project.mappers.GroupRoomMapper;
 import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.GroupRoomDTO;
+import com.example.project.model.TakenInGameRoleDTO;
 import com.example.project.repositories.*;
 import com.example.project.utils.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.example.project.utils.UserDetailsHelper.checkPrivilages;
@@ -134,28 +136,40 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         Category category = categoryRepository.findByName(groupRoom.getCategory().getName());
         groupRoom.setCategory(category);
         groupRoom.setGame(category.getGame());
-        groupRoom.setCity(groupRoomDTO.getCity());
         groupRoom.setGroupLeader(user);
-        groupRoom.setOpen(groupRoomDTO.isOpen());
-        groupRoom.setInGameRolesActive(groupRoomDTO.isInGameRolesActive());
-        int i = 0;
-        if (groupRoomDTO.isInGameRolesActive()) {
+        groupRoom.setTakenInGameRoles(createTakenInGameRoles(groupRoomDTO, groupRoom, category));
+        return groupRoom;
+    }
+
+    private List<TakenInGameRole> createTakenInGameRoles(GroupRoomDTO groupRoomDTO, GroupRoom groupRoom, Category category) {
+        if (groupRoom.isInGameRolesActive()) {
             List<TakenInGameRole> list = new ArrayList<>();
-            for (InGameRole inGameRole : category.getGame().getInGameRoles()) {
-                TakenInGameRole takenInGameRole = new TakenInGameRole();
-                takenInGameRole.setInGameRole(inGameRole);
-                if (inGameRole.getId().equals(groupRoomDTO.getTakenInGameRoles().get(0).getInGameRole().getId())) {
-                    takenInGameRole.setUser(getCurrentUser());
+            groupRoom.setMaxUsers(category.getBasicMaxUsers());
+            if (!Objects.equals(groupRoom.getCategory().getName(), "SoloQ")) {
+                for (InGameRole inGameRole : category.getGame().getInGameRoles()) {
+                    TakenInGameRole takenInGameRole = new TakenInGameRole();
+                    takenInGameRole.setInGameRole(inGameRole);
+                    if (inGameRole.getId().equals(groupRoomDTO.getTakenInGameRoles().get(0).getInGameRole().getId())) {
+                        takenInGameRole.setUser(getCurrentUser());
+                    }
+                    list.add(takenInGameRole);
+                    takenInGameRoleRepository.save(takenInGameRole);
                 }
-                list.add(takenInGameRole);
-                takenInGameRoleRepository.save(takenInGameRole);
+            } else {
+                for (int i = 0; i < groupRoomDTO.getTakenInGameRoles().size(); i++) {
+                    TakenInGameRole takenInGameRole = takenInGameRoleMapper.mapTakenInGameRoleDTOToTakenInGameRole(groupRoomDTO.getTakenInGameRoles().get(i));
+                    if (i == 0) {
+                        takenInGameRole.setUser(getCurrentUser());
+                    }
+                    list.add(takenInGameRole);
+                    takenInGameRoleRepository.save(takenInGameRole);
+                }
             }
-            groupRoom.setTakenInGameRoles(list);
+            return list;
 
         } else {
-            groupRoom.setTakenInGameRoles(null);
+            return null;
         }
-        return groupRoom;
     }
 
     private GroupRoom createGroupRoom(GroupRoomDTO groupRoomDTO, User user) {
@@ -226,7 +240,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
             throw new AlreadyInGroupException("You already joined group " + groupRoom.getName());
         } else {
             user.getGroupRooms().add(groupRoom);
-            if(groupRoom.isInGameRolesActive()){
+            if (groupRoom.isInGameRolesActive()) {
                 groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole -> takenInGameRole.getUser() == null)).findFirst().orElseThrow(null).setUser(currentUser);
             }
             userRepository.save(user);
@@ -254,7 +268,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
         if (checkPrivilages(groupRoom)) {
             groupRoom.getUsers().remove(userToRemove);
-            if(groupRoom.isInGameRolesActive()) {
+            if (groupRoom.isInGameRolesActive()) {
                 groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole) -> userToRemove.equals(takenInGameRole.getUser())).findAny().orElse(new TakenInGameRole()).setUser(null);
             }
             userToRemove.getGroupRooms().remove(groupRoom);

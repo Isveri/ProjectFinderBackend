@@ -47,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponse getToken(UserCredentials userCredentials) {
         User user = (User) userDetailsService.loadUserByUsername(userCredentials.getUsername());
-        if(user.isBanned()){
+        if(!user.isAccountNonLocked()){
             throw new AccountBannedException("Account banned");
         }
         else if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword()))

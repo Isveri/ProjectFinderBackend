@@ -29,4 +29,7 @@ public class Category {
     @JoinColumn(name="game_id")
     private Game game;
 
+    @Builder.Default
+    private boolean canAssignRoles = true;
+
 }

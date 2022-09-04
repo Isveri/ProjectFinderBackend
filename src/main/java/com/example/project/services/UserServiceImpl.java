@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<BannedUserDTO> getBannedUsers() {
-        return userRepository.findAllByBanned(true)
+        return userRepository.findAllByAccountNonLockedNot(true)
                 .stream()
                 .map(userMapper::mapUserToBannedUserDTO)
                 .collect(Collectors.toList());
@@ -159,7 +159,6 @@ public class UserServiceImpl implements UserService {
     public void changeProfilePicture(MultipartFile profilePicture) {
         User currentUser = getCurrentUser();
         User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:" + currentUser.getId()));
-        //TODO zrobic usuwanie aktualnego zdjecia z folderu zeby nie bylo syfu
         user.setProfileImgName(user.getId() + "-" + FileHandler.save(profilePicture, user.getId()));
         userRepository.save(user);
     }
@@ -229,10 +228,10 @@ public class UserServiceImpl implements UserService {
         User admin = getCurrentUser();
         Long userId = bannedUserDTO.getId();
         User userToBan = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User doesnt exist id:"+userId));
-        if(userToBan.isBanned()){
+        if(!userToBan.isAccountNonLocked()){
             throw new AlreadyBannedException("User is already banned");
         }
-        userToBan.setBanned(true);
+        userToBan.setAccountNonLocked(false);
         userToBan.setBannedBy(admin.getUsername());
         userToBan.setReason(bannedUserDTO.getReason());
         userRepository.save(userToBan);
@@ -241,7 +240,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void unbanUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User with id:"+userId+" doesnt exist"));
-        user.setBanned(false);
+        user.setAccountNonLocked(true);
         user.setBannedBy(null);
         user.setReason(null);
         userRepository.save(user);

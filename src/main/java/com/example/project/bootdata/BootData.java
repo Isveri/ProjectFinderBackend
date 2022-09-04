@@ -85,7 +85,7 @@ public class BootData implements CommandLineRunner {
                 .username("Yeager")
                 .email("yeager@gmail.com")
                 .password(passwordEncoder.encode("yeager"))
-                .banned(true)
+                .accountNonLocked(false)
                 .reason("Toxicity, many reports")
                 .bannedBy("Evi")
                 .build();
@@ -94,7 +94,7 @@ public class BootData implements CommandLineRunner {
                 .username("Satoru")
                 .email("satoru@gmail.com")
                 .password(passwordEncoder.encode("satoru"))
-                .banned(true)
+                .accountNonLocked(false)
                 .bannedBy("Evi")
                 .reason("Toxicity, trolling, not taking serious warning from administration")
                 .build();
@@ -181,69 +181,84 @@ public class BootData implements CommandLineRunner {
                 .name("SoloQ")
                 .game(game1)
                 .basicMaxUsers(2)
+                .canAssignRoles(true)
                 .build();
         Category cat2 = Category.builder()
                 .name("Ranked Flex")
                 .game(game1)
                 .basicMaxUsers(5)
+                .canAssignRoles(true)
                 .build();
         Category cat3 = Category.builder()
                 .name("ARAM")
                 .game(game1)
+                .canAssignRoles(false)
                 .basicMaxUsers(5)
                 .build();
         Category cat4 = Category.builder()
                 .name("Custom")
                 .game(game1)
+                .canAssignRoles(true)
                 .basicMaxUsers(5)
                 .build();
 
         Category cat5 = Category.builder()
                 .name("Match Making")
                 .game(game2)
+                .canAssignRoles(true)
                 .basicMaxUsers(5).build();
 
         Category cat6 = Category.builder()
                 .name("WingMan")
+                .canAssignRoles(false)
                 .game(game2)
                 .basicMaxUsers(2).build();
 
         Category cat7 = Category.builder()
                 .name("FaceIt")
+                .canAssignRoles(true)
                 .game(game2)
                 .basicMaxUsers(5).build();
 
         Category cat8 = Category.builder()
                 .name("Death Match")
                 .game(game2)
+                .canAssignRoles(false)
                 .basicMaxUsers(5).build();
 
         Category cat9 = Category.builder()
                 .name("Cinema")
+                .canAssignRoles(false)
                 .game(game3).basicMaxUsers(3).build();
 
         Category cat10 = Category.builder()
                 .name("Billiards")
+                .canAssignRoles(false)
                 .game(game3).basicMaxUsers(3).build();
 
         Category cat12 = Category.builder()
                 .name("Bowls")
+                .canAssignRoles(false)
                 .game(game3).basicMaxUsers(3).build();
 
         Category cat13 = Category.builder()
                 .name("Football")
+                .canAssignRoles(false)
                 .game(game3).basicMaxUsers(3).build();
 
         Category cat14 = Category.builder()
                 .name("Volleyball")
+                .canAssignRoles(false)
                 .game(game3).basicMaxUsers(3).build();
 
         Category cat15 = Category.builder()
                 .name("Basketball")
+                .canAssignRoles(false)
                 .game(game3).basicMaxUsers(3).build();
 
         Category cat16 = Category.builder()
                 .name("Other")
+                .canAssignRoles(false)
                 .game(game3).basicMaxUsers(3).build();
 
         categoryRepository.saveAll(Arrays.asList(cat9,cat10,cat12,cat13,cat14,cat15,cat16));

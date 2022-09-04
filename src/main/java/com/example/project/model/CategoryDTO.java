@@ -12,4 +12,5 @@ public class CategoryDTO {
     private Long id;
     private String name;
     private int basicMaxUsers;
+    private boolean canAssignRoles;
 }
