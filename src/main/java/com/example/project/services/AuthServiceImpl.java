@@ -101,10 +101,10 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
         List<GroupRoom> UserGroupRooms= groupRepository.findAllByGroupLeaderId(id);
         try{
-            userRepository.softDeleteById(id);
             for (GroupRoom groupRoom : UserGroupRooms) {
-                groupRoomService.deleteGroupRoomById(groupRoom.getId());
+                userService.getOutOfGroup(groupRoom.getId());
             }
+            userRepository.softDeleteById(id);
 
         }catch(Exception e){
             throw new DeleteUserException("Something wrong with deleting a user");

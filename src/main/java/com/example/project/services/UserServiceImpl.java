@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
     public List<ReportedUserDTO> getReportedUsers() {
         Map<String,ReportedUserDTO> reportedUsers = new HashMap<>();
 
-        reportRepository.findAll()
+        reportRepository.findAllByReportedUserEnabled(true)
                 .forEach((report)->{
                     if(!reportedUsers.containsKey(report.getReportedUser().getUsername())) {
                         reportedUsers.put(report.getReportedUser().getUsername(), new ReportedUserDTO());
