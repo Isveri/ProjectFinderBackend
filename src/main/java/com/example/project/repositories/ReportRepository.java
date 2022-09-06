@@ -10,4 +10,5 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
      List<Report> findAllByReportedUserEnabled(boolean value);
      boolean existsByReportedByIdAndReportedUserId(Long reportedById, Long reportedUserId);
 
+     List<Report> findAllByReportedUserId(Long id);
 }

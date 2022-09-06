@@ -28,6 +28,8 @@ public interface UserService {
     void getOutOfGroup(Long groupRoomId);
     void reportUser(ReportDTO reportDTO, Long userId);
     void banUser(BannedUserDTO bannedUserDTO);
+
+    void deleteReports(Long userId);
     void unbanUser(Long userId);
     void deleteUserById(Long id);
 

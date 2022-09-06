@@ -234,7 +234,17 @@ public class UserServiceImpl implements UserService {
         userToBan.setAccountNonLocked(false);
         userToBan.setBannedBy(admin.getUsername());
         userToBan.setReason(bannedUserDTO.getReason());
+        userToBan.setReports(null);
+        reportRepository.deleteAll(reportRepository.findAllByReportedUserId(userId));
         userRepository.save(userToBan);
+    }
+
+    @Override
+    public void deleteReports(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User doesnt exist id:"+userId));
+        user.setReports(null);
+        reportRepository.deleteAll(reportRepository.findAllByReportedUserId(userId));
+        userRepository.save(user);
     }
 
     @Override

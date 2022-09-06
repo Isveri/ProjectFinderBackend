@@ -2,6 +2,7 @@ package com.example.project.controllers;
 
 import com.example.project.model.*;
 import com.example.project.services.UserService;
+import org.apache.coyote.Response;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getReportedUsers());
     }
 
+    @DeleteMapping("/deleteReports/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> deleteReports(@PathVariable Long userId){
+        userService.deleteReports(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     @GetMapping("/banned")
     public ResponseEntity<List<BannedUserDTO>> getBannedUsers(){
         return ResponseEntity.ok(userService.getBannedUsers());
