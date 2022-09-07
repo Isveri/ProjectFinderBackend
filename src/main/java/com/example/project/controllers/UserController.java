@@ -39,6 +39,34 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/sendFriendRequest/{invitedUserId}")
+    public ResponseEntity<?> sendFriendRequest(@PathVariable Long invitedUserId){
+        userService.sendFriendRequest(invitedUserId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/loadFriendRequests")
+    public ResponseEntity<List<FriendRequestDTO>> getFriendRequests(){
+        return ResponseEntity.ok(userService.loadFriendRequests());
+    }
+
+    @PutMapping("/acceptFriendRequest/{requestId}")
+    public ResponseEntity<?> acceptFriendRequest(@PathVariable Long requestId){
+        userService.acceptFriendRequest(requestId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/declineFriendRequest/{requestId}")
+    public ResponseEntity<?> declineFriendRequest(@PathVariable Long requestId){
+        userService.declineFriendRequest(requestId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/loadFriends")
+    public ResponseEntity<List<FriendDTO>> getFriendList(){
+        return ResponseEntity.ok(userService.getFriendList());
+    }
+
     @GetMapping("/reportedUsers")
     public ResponseEntity<List<ReportedUserDTO>> getReportedUsers(){
         return ResponseEntity.ok(userService.getReportedUsers());

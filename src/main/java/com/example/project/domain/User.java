@@ -82,7 +82,13 @@ public class User implements UserDetails, CredentialsContainer {
     @OneToMany(mappedBy="reportedUser")
     private List<Report> reports;
 
-
+    @ManyToMany
+    @JoinTable(
+            name="users_friends",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="friend_id")
+    )
+    private List<Friend> friendList;
 
 
     public String roleToString(){

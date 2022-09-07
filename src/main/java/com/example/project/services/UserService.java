@@ -28,9 +28,18 @@ public interface UserService {
     void getOutOfGroup(Long groupRoomId);
     void reportUser(ReportDTO reportDTO, Long userId);
     void banUser(BannedUserDTO bannedUserDTO);
-
     void deleteReports(Long userId);
     void unbanUser(Long userId);
+
+    void sendFriendRequest(Long invitedUserId);
+
+    List<FriendRequestDTO> loadFriendRequests();
+
+    void acceptFriendRequest(Long friendRequestId);
+
+    void declineFriendRequest(Long friendRequestId);
+
+    List<FriendDTO> getFriendList();
     void deleteUserById(Long id);
 
 }

@@ -1,18 +1,15 @@
 package com.example.project.services;
 
+import com.example.project.chat.model.Chat;
 import com.example.project.chat.model.CustomNotification;
 import com.example.project.chat.model.CustomNotificationDTO;
+import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.chat.service.SseService;
 import com.example.project.domain.*;
 import com.example.project.exceptions.*;
-import com.example.project.mappers.ReportMapper;
-import com.example.project.mappers.UserGroupListMapper;
-import com.example.project.mappers.UserMapper;
+import com.example.project.mappers.*;
 import com.example.project.model.*;
-import com.example.project.repositories.GroupRepository;
-import com.example.project.repositories.ReportRepository;
-import com.example.project.repositories.RoleRepository;
-import com.example.project.repositories.UserRepository;
+import com.example.project.repositories.*;
 import com.example.project.utils.DataValidation;
 import com.example.project.utils.FileHandler;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +37,11 @@ public class UserServiceImpl implements UserService {
     private final SseService sseService;
 
     private final ReportMapper reportMapper;
+    private final ChatRepository chatRepository;
+    private final FriendRequestRepository friendRequestRepository;
+    private final FriendRepository friendRepository;
+    private final FriendMapper friendMapper;
+    private final FriendRequestMapper friendRequestMapper;
     private final DataValidation dataValidation;
     private final ReportRepository reportRepository;
 
@@ -254,6 +256,56 @@ public class UserServiceImpl implements UserService {
         user.setBannedBy(null);
         user.setReason(null);
         userRepository.save(user);
+    }
+
+    @Override
+    public void sendFriendRequest(Long invitedUserId) {
+        //TODO ZABEZPIECZYC I ZROBIC OBSLUGE WYJATKU
+        User user = getCurrentUser();
+        User invitedUser = userRepository.findById(invitedUserId).orElseThrow(()-> new UserNotFoundException("User with id:"+invitedUserId+" doesnt exist"));
+        FriendRequest friendRequest = FriendRequest.builder().sendingUser(user).invitedUser(invitedUser).build();
+        friendRequestRepository.save(friendRequest);
+    }
+
+    @Override
+    public List<FriendRequestDTO> loadFriendRequests() {
+        return friendRequestRepository.findAllByInvitedUserId(getCurrentUser().getId())
+                .stream()
+                .map(friendRequestMapper::mapFriendRequestToFriendRequestDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public void acceptFriendRequest(Long friendRequestId) {
+        //TODO OBSLUGA WYJATKOW DODAC POTEM
+        FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId).orElseThrow();
+        User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(()-> new UserNotFoundException("User doesnt exist"));
+        User sendingUser = userRepository.findById(friendRequest.getSendingUser().getId()).orElseThrow(()-> new UserNotFoundException("User doesnt exist"));
+
+        Chat chat = Chat.builder().build();
+        chatRepository.save(chat);
+        Friend friend = Friend.builder().chat(chat).user(sendingUser).build();
+        friendRepository.save(friend);
+        user.getFriendList().add(friend);
+        friend = Friend.builder().chat(chat).user(user).build();
+        sendingUser.getFriendList().add(friend);
+        friendRepository.save(friend);
+
+        userRepository.saveAll(Arrays.asList(user,sendingUser));
+        friendRequestRepository.delete(friendRequest);
+    }
+
+    @Override
+    public void declineFriendRequest(Long friendRequestId) {
+        friendRequestRepository.delete(friendRequestRepository.findById(friendRequestId).orElseThrow());
+    }
+
+    @Override
+    public List<FriendDTO> getFriendList() {
+        User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(()-> new UserNotFoundException("User not found"));
+
+        return user.getFriendList().stream().map(friendMapper::mapFriendToFriendDTO).collect(Collectors.toList());
     }
 
     @Override
