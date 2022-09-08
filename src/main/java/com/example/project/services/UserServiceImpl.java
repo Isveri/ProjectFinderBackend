@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
         User currentUser = getCurrentUser();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("User not found id:" + id));
-        dataValidation.emailUpdate(userDTO.getEmail(),user);
+        dataValidation.emailUpdate(userDTO.getEmail(), user);
         dataValidation.age(userDTO.getAge());
         return saveAndReturnDTO(userMapper.updateUserFromUserDTO(userDTO, user));
     }
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .map(userMapper::mapUserToUserDTO)
-                .orElseThrow(()-> new UsernameNotFoundException("There is no user with this username"));
+                .orElseThrow(() -> new UsernameNotFoundException("There is no user with this username"));
     }
 
     @Override
@@ -108,18 +108,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<ReportedUserDTO> getReportedUsers() {
-        Map<String,ReportedUserDTO> reportedUsers = new HashMap<>();
+        Map<String, ReportedUserDTO> reportedUsers = new HashMap<>();
 
         reportRepository.findAllByReportedUserEnabled(true)
-                .forEach((report)->{
-                    if(!reportedUsers.containsKey(report.getReportedUser().getUsername())) {
+                .forEach((report) -> {
+                    if (!reportedUsers.containsKey(report.getReportedUser().getUsername())) {
                         reportedUsers.put(report.getReportedUser().getUsername(), new ReportedUserDTO());
                     }
                     ReportedUserDTO reportedUserDTO = reportedUsers.get(report.getReportedUser().getUsername());
                     reportedUserDTO.setReportedUser(userMapper.mapUserToUserMsgDTO(report.getReportedUser()));
                     reportedUserDTO.addReport(reportMapper.mapReportToReportDTO(report));
                     reportedUsers.put(report.getReportedUser().getUsername(), reportedUserDTO);
-                    });
+                });
         return new ArrayList<ReportedUserDTO>(reportedUsers.values());
     }
 
@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
             throw new AlreadyInGroupException("User id:" + user.getId() + " is already in group");
         } else {
             user.getGroupRooms().add(groupRoom);
-            if(groupRoom.isInGameRolesActive()) {
+            if (groupRoom.isInGameRolesActive()) {
                 if (inGameRolesDTO.getId() == null) {
                     groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole -> takenInGameRole.getUser() == null)).findFirst().orElseThrow(null).setUser(currentUser);
                 } else {
@@ -190,11 +190,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new GroupNotFoundException("Group room not found"));
 
         user.getGroupRooms().remove(groupRoom);
-        if(groupRoom.isInGameRolesActive()) {
+        if (groupRoom.isInGameRolesActive()) {
             groupRoom.getTakenInGameRoles().stream().filter((takenInGameRole) -> user.equals(takenInGameRole.getUser())).findAny().orElse(new TakenInGameRole()).setUser(null);
         }
         if (Objects.equals(groupRoom.getGroupLeader(), user)) {
-            groupRoom.setGroupLeader(groupRoom.getUsers().stream().filter(usr-> !user.equals(usr)).findFirst().orElseThrow(null));
+            groupRoom.setGroupLeader(groupRoom.getUsers().stream().filter(usr -> !user.equals(usr)).findFirst().orElseThrow(null));
         }
         if (groupRoom.getUsers().size() == 1) {
             groupRepository.softDeleteById(groupRoom.getId());
@@ -207,19 +207,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void reportUser(ReportDTO reportDTO,Long userId) {
+    public void reportUser(ReportDTO reportDTO, Long userId) {
         User reportedBy = getCurrentUser();
         User userToReport = userRepository.findById(userId)
-                .orElseThrow(()-> new UserNotFoundException("User not found id:" +userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found id:" + userId));
 
-        if(!reportRepository.existsByReportedByIdAndReportedUserId(reportedBy.getId(),userToReport.getId())) {
+        if (!reportRepository.existsByReportedByIdAndReportedUserId(reportedBy.getId(), userToReport.getId())) {
             Report report = reportMapper.mapReportDTOToReport(reportDTO);
             report.setReportedBy(reportedBy);
             userToReport.getReports().add(report);
             report.setReportedUser(userToReport);
             report.setDate(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
             reportRepository.save(report);
-        }else{
+        } else {
             throw new AlreadyReportedException("You already reported this user");
         }
 
@@ -229,8 +229,8 @@ public class UserServiceImpl implements UserService {
     public void banUser(BannedUserDTO bannedUserDTO) {
         User admin = getCurrentUser();
         Long userId = bannedUserDTO.getId();
-        User userToBan = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User doesnt exist id:"+userId));
-        if(!userToBan.isAccountNonLocked()){
+        User userToBan = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User doesnt exist id:" + userId));
+        if (!userToBan.isAccountNonLocked()) {
             throw new AlreadyBannedException("User is already banned");
         }
         userToBan.setAccountNonLocked(false);
@@ -243,7 +243,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteReports(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User doesnt exist id:"+userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User doesnt exist id:" + userId));
         user.setReports(null);
         reportRepository.deleteAll(reportRepository.findAllByReportedUserId(userId));
         userRepository.save(user);
@@ -251,7 +251,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void unbanUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User with id:"+userId+" doesnt exist"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with id:" + userId + " doesnt exist"));
         user.setAccountNonLocked(true);
         user.setBannedBy(null);
         user.setReason(null);
@@ -260,11 +260,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendFriendRequest(Long invitedUserId) {
-        //TODO ZABEZPIECZYC I ZROBIC OBSLUGE WYJATKU
+        //TODO ZABEZPIECZYC I ZROBIC OBSLUGE WYJATKU PO IF DODAC EXISTSBYSENDINUSER I INVITED USER DO REPO FRIEND REQUEST I NOWE EXCEPTION
         User user = getCurrentUser();
-        User invitedUser = userRepository.findById(invitedUserId).orElseThrow(()-> new UserNotFoundException("User with id:"+invitedUserId+" doesnt exist"));
-        FriendRequest friendRequest = FriendRequest.builder().sendingUser(user).invitedUser(invitedUser).build();
-        friendRequestRepository.save(friendRequest);
+        User invitedUser = userRepository.findById(invitedUserId).orElseThrow(() -> new UserNotFoundException("User with id:" + invitedUserId + " doesnt exist"));
+        if(invitedUser.getFriendList().stream().filter(friend -> user.equals(friend.getUser())).findFirst().orElse(null)==null) {
+            FriendRequest friendRequest = FriendRequest.builder().sendingUser(user).invitedUser(invitedUser).build();
+            friendRequestRepository.save(friendRequest);
+        }
     }
 
     @Override
@@ -280,19 +282,20 @@ public class UserServiceImpl implements UserService {
     public void acceptFriendRequest(Long friendRequestId) {
         //TODO OBSLUGA WYJATKOW DODAC POTEM
         FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId).orElseThrow();
-        User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(()-> new UserNotFoundException("User doesnt exist"));
-        User sendingUser = userRepository.findById(friendRequest.getSendingUser().getId()).orElseThrow(()-> new UserNotFoundException("User doesnt exist"));
+        User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(() -> new UserNotFoundException("User doesnt exist"));
+        User sendingUser = userRepository.findById(friendRequest.getSendingUser().getId()).orElseThrow(() -> new UserNotFoundException("User doesnt exist"));
+        if (user.getFriendList().stream().filter(friend -> sendingUser.equals(friend.getUser())).findFirst().orElse(null) == null) {
+            Chat chat = Chat.builder().build();
+            chatRepository.save(chat);
+            Friend friend = Friend.builder().chat(chat).user(sendingUser).build();
+            friendRepository.save(friend);
+            user.getFriendList().add(friend);
+            friend = Friend.builder().chat(chat).user(user).build();
+            sendingUser.getFriendList().add(friend);
+            friendRepository.save(friend);
 
-        Chat chat = Chat.builder().build();
-        chatRepository.save(chat);
-        Friend friend = Friend.builder().chat(chat).user(sendingUser).build();
-        friendRepository.save(friend);
-        user.getFriendList().add(friend);
-        friend = Friend.builder().chat(chat).user(user).build();
-        sendingUser.getFriendList().add(friend);
-        friendRepository.save(friend);
-
-        userRepository.saveAll(Arrays.asList(user,sendingUser));
+            userRepository.saveAll(Arrays.asList(user, sendingUser));
+        }
         friendRequestRepository.delete(friendRequest);
     }
 
@@ -303,7 +306,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<FriendDTO> getFriendList() {
-        User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(()-> new UserNotFoundException("User not found"));
+        User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return user.getFriendList().stream().map(friendMapper::mapFriendToFriendDTO).collect(Collectors.toList());
     }

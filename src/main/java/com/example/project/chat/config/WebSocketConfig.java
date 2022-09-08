@@ -1,5 +1,7 @@
 package com.example.project.chat.config;
 
+import com.example.project.chat.model.Chat;
+import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
 import com.example.project.exceptions.GroupNotFoundException;
@@ -38,6 +40,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final GroupRepository groupRepository;
+    private final ChatRepository chatRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -64,13 +67,20 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     List<String> tokenList = accessor.getNativeHeader("Authorization");
                     String jwt = null;
+                    boolean isPrivateChat = true;
 
                     List<String> groupIdList = accessor.getNativeHeader("groupId");
-
+                    List<String> chatIdList = accessor.getNativeHeader("chatId");
                     Long groupId = null;
+                    Long chatId = null;
                     if (groupIdList != null) {
                         String groupIdString = groupIdList.get(0).substring(0);
                         groupId = Long.valueOf(groupIdString);
+                        isPrivateChat = false;
+                    }
+                    else if(chatIdList != null){
+                        String chatIdString = chatIdList.get(0).substring(0);
+                        chatId = Long.valueOf(chatIdString);
                     }
                     if (tokenList == null || tokenList.size() < 1) {
                         return message;
@@ -89,9 +99,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         User usr = getCurrentUser();
-                        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
-                        if (groupRoom.getUsers().contains(usr) || usr.getRole().getName().equals("ROLE_ADMIN")) {
-                            accessor.setUser(authentication);
+                        if(!isPrivateChat) {
+                            GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
+                            if (groupRoom.getUsers().contains(usr) || usr.getRole().getName().equals("ROLE_ADMIN")) {
+                                accessor.setUser(authentication);
+                            }
+                        }else{
+                            //TODO OBSLUZYC WYJATEK
+                            Chat chat = chatRepository.findByIdFetch(chatId).orElseThrow();
+                            if(chat.getUsers().stream().filter((friend -> friend.getUser().equals(usr))).findFirst().orElseThrow(null)!=null){
+                                accessor.setUser(authentication);
+                            }
                         }
                     }
                 }

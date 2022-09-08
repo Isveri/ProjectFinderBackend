@@ -28,6 +28,13 @@ public class ChatWebSocketController {
         return chatService.save(messageDTO, groupId);
 
     }
+
+    @MessageMapping("/privateChat/{chatId}")
+    @SendTo("/topic/privateMessages/{chatId}")
+    public MessageDTO sendPrivateMessage(MessageDTO messageDTO, @DestinationVariable Long chatId) throws Exception{
+        return chatService.savePrivate(messageDTO,chatId);
+    }
+
     @GetMapping("/api/v1/chatLogs/{groupId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<MessageDTO> getChatLogs(@PathVariable Long groupId){

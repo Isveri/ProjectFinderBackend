@@ -8,6 +8,9 @@ import java.util.List;
 public interface ChatService {
 
     MessageDTO save(MessageDTO messageDTO,Long groupId);
+
+    MessageDTO savePrivate(MessageDTO messageDTO, Long chatId);
+
     List<MessageDTO> getChatLogs(Long groupId);
     List<MessageLogsDTO> getUserChatLogs(Long userId);
 

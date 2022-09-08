@@ -44,15 +44,31 @@ public class ChatServiceImpl implements ChatService {
         GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
         if (groupRoom.getUsers().contains(user) || user.getRole().getName().equals("ROLE_ADMIN")) {
             Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(() -> new GroupNotFoundException("Chat not found"));
-            Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
-            LocalDateTime now = LocalDateTime.now();
-            msg.setTime(now.format(DateTimeFormatter.ofPattern("HH:mm")));
-            msg.setChat(chat);
-            chat.getMessages().add(msg);
-            chatRepository.save(chat);
+            Message msg = getMessage(messageDTO, chat);
             return messageMapper.mapMessageToMessageDTO(msg);
         }
         return null;
+    }
+
+    private Message getMessage(MessageDTO messageDTO, Chat chat) {
+        Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
+        LocalDateTime now = LocalDateTime.now();
+        msg.setTime(now.format(DateTimeFormatter.ofPattern("HH:mm")));
+        msg.setChat(chat);
+        msg.setUser(getCurrentUser());
+        chat.getMessages().add(msg);
+        chatRepository.save(chat);
+        return msg;
+    }
+
+    @Transactional
+    @Override
+    public MessageDTO savePrivate(MessageDTO messageDTO, Long chatId) {
+        //TODO EXCEPTION dodac
+        Chat chat = chatRepository.findById(chatId).orElseThrow();
+        Message msg = getMessage(messageDTO,chat);
+        return messageMapper.mapMessageToMessageDTO(msg);
+
     }
 
     @Override
