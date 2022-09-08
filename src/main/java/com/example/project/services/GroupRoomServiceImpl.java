@@ -14,10 +14,12 @@ import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.model.TakenInGameRoleDTO;
 import com.example.project.repositories.*;
+import com.example.project.utils.DataValidation;
 import com.example.project.utils.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.xml.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +38,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     private final ChatRepository chatRepository;
     private final CategoryRepository categoryRepository;
     private final SseService sseService;
-
+    private final DataValidation dataValidation;
     private final TakenInGameRoleMapper takenInGameRoleMapper;
 
     private final TakenInGameRoleRepository takenInGameRoleRepository;
@@ -200,6 +202,9 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         GroupRoom groupRoom = groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + id));
         // groupRoom = groupRoomMapper.mapGroupRoomDTOToGroupRoom(groupRoomDTO);
         //groupRoom.setId(id);
+        //dataValidation.groupName(groupRoomUpdateDTO.getName(),groupRoom);
+        dataValidation.userLimitUpdate(groupRoomUpdateDTO.getMaxUsers(),groupRoom);
+        dataValidation.groupDesc(groupRoomUpdateDTO.getDescription());
         return saveAndReturnDTO(groupRoomMapper.updateGroupRoomFromGroupRoomUpdateDTO(groupRoomUpdateDTO, groupRoom));
     }
 

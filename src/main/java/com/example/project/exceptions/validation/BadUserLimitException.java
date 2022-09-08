@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class BadUserLimitException extends RuntimeException{
-    private final String code = "21";
+    private final String code = "36";
 
     public BadUserLimitException(String message){super(message);}
 

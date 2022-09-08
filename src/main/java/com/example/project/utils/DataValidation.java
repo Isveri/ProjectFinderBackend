@@ -6,7 +6,9 @@ package com.example.project.utils;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
 import com.example.project.exceptions.GroupNotFoundException;
+import com.example.project.exceptions.SomethingWrongException;
 import com.example.project.exceptions.validation.*;
+import com.example.project.model.GroupRoomDTO;
 import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -75,11 +77,12 @@ public class DataValidation {
         if (name==null || !Pattern.matches("^\\w{2,}$", name)) {
             throw new BadGroupNameException("Name must required at least 2 characters");
         }
-        if(!Objects.equals(group.getName(), name)){
+        //sprawdzenie czy nazwa jest unikalna
+        /*if(!Objects.equals(group.getName(), name)){
             if (groupRepository.findByName(name).isPresent()) {
                 throw new GroupnameAlreadyTakenException("Group name already exists");
             }
-        }
+        }*/
         return name;
     }
     public  Integer age(Integer age){
@@ -114,19 +117,29 @@ public class DataValidation {
         }
         return text;
     }
-    public  Integer userLimitCreate(Integer users){
-        if (users<=0||users>5) {
-            throw new BadUserLimitException("Max users be in range from 1 to 5");
+    public  Integer userLimitCreate(Integer users, GroupRoomDTO groupRoomDTO){
+        if(groupRoomDTO.isInGameRolesActive()){
+            if(users!=groupRoomDTO.getCategory().getBasicMaxUsers()){
+                throw new SomethingWrongException("MaxUsers not same as category");
+            }
+        }else{
+            if (users<2||users>10) {
+                throw new BadUserLimitException("Max users must be in range from 2 to 10");
+            }
         }
         return users;
     }
-    public  Integer userLimitUpdate(Integer users, GroupRoom group){
-        if (users<=0||users>5) {
-            throw new BadUserLimitException("Max users be in range from 1 to 5");
+    public  Integer userLimitUpdate(Integer users, GroupRoom groupRoom){
+        if(groupRoom.isInGameRolesActive()){
+            if(users!=groupRoom.getCategory().getBasicMaxUsers()){
+                throw new SomethingWrongException("MaxUsers not same as category");
+            }
+        }else{
+            if(groupRoom.getUsers().size()>users || users>10){
+                throw new TooLowUserLimitException("MaxUsers must be above user count in group ");
+            }
         }
-        if(group.getUsers().size()>users){
 
-        }
         return users;
     }
 }
