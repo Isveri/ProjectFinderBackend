@@ -260,13 +260,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendFriendRequest(Long invitedUserId) {
-        //TODO ZABEZPIECZYC I ZROBIC OBSLUGE WYJATKU PO IF DODAC EXISTSBYSENDINUSER I INVITED USER DO REPO FRIEND REQUEST I NOWE EXCEPTION
         User user = getCurrentUser();
         User invitedUser = userRepository.findById(invitedUserId).orElseThrow(() -> new UserNotFoundException("User with id:" + invitedUserId + " doesnt exist"));
-        if(invitedUser.getFriendList().stream().filter(friend -> user.equals(friend.getUser())).findFirst().orElse(null)==null) {
-            FriendRequest friendRequest = FriendRequest.builder().sendingUser(user).invitedUser(invitedUser).build();
-            friendRequestRepository.save(friendRequest);
+        if (!friendRequestRepository.existsBySendingUserIdAndInvitedUserId(user.getId(), invitedUserId)) {
+            if (user.equals(invitedUser)) {
+                throw new AlreadyFriendException("Cant invite yourself");
+            } else if (IsNotOnFriendList(user, invitedUser)) {
+                FriendRequest friendRequest = FriendRequest.builder().sendingUser(user).invitedUser(invitedUser).build();
+                friendRequestRepository.save(friendRequest);
+                sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New friend request").type(CustomNotification.NotifType.FRIENDREQUEST).build(),invitedUserId);
+            } else {
+                throw new AlreadyInvitedException(invitedUser.getUsername() + " already friend");
+            }
+        } else {
+            throw new AlreadyInvitedException(invitedUser.getUsername() + " already invited");
         }
+    }
+
+    private boolean IsNotOnFriendList(User user, User invitedUser) {
+        return invitedUser.getFriendList().stream().filter(friend -> user.equals(friend.getUser())).findFirst().orElse(null) == null;
     }
 
     @Override
@@ -280,11 +292,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void acceptFriendRequest(Long friendRequestId) {
-        //TODO OBSLUGA WYJATKOW DODAC POTEM
         FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId).orElseThrow();
         User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(() -> new UserNotFoundException("User doesnt exist"));
         User sendingUser = userRepository.findById(friendRequest.getSendingUser().getId()).orElseThrow(() -> new UserNotFoundException("User doesnt exist"));
-        if (user.getFriendList().stream().filter(friend -> sendingUser.equals(friend.getUser())).findFirst().orElse(null) == null) {
+        if (IsNotOnFriendList(sendingUser, user)) {
             Chat chat = Chat.builder().build();
             chatRepository.save(chat);
             Friend friend = Friend.builder().chat(chat).user(sendingUser).build();
@@ -295,6 +306,10 @@ public class UserServiceImpl implements UserService {
             friendRepository.save(friend);
 
             userRepository.saveAll(Arrays.asList(user, sendingUser));
+            sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New friend request").type(CustomNotification.NotifType.FRIENDREQUEST).build(),sendingUser.getId());
+            sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New friend request").type(CustomNotification.NotifType.FRIENDREQUEST).build(),user.getId());
+        } else {
+            throw new AlreadyFriendException(sendingUser.getUsername() + " is already your friend");
         }
         friendRequestRepository.delete(friendRequest);
     }

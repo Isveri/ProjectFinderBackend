@@ -56,7 +56,23 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler({AlreadyReportedException.class})
-    public ResponseEntity<ErrorCodeMsg> alreadyBannedException(AlreadyReportedException e){
+    public ResponseEntity<ErrorCodeMsg> alreadyReportedException(AlreadyReportedException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+    @ExceptionHandler({AlreadyInvitedException.class})
+    public ResponseEntity<ErrorCodeMsg> alreadyInvitedException(AlreadyInvitedException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+    @ExceptionHandler({AlreadyFriendException.class})
+    public ResponseEntity<ErrorCodeMsg> alreadyFriendException(AlreadyFriendException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+
+    @ExceptionHandler({ChatNotFoundException.class})
+    public ResponseEntity<ErrorCodeMsg> chatNotFoundException(ChatNotFoundException e){
         log.error(e.getMessage());
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }

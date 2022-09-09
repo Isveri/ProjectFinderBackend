@@ -7,6 +7,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public interface SseService {
     void sendSseEventToUser(CustomNotificationDTO customNotificationDTO, GroupRoom groupRoom, Long modifiedUserId);
 
+    void sendSseFriendEvent(CustomNotificationDTO customNotificationDTO,Long userId);
+
     SseEmitter createEmitter();
 
 }

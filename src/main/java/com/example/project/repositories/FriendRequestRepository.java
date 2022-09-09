@@ -9,4 +9,5 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest,Lon
 
 
     List<FriendRequest> findAllByInvitedUserId(Long invitedUserId);
+    boolean existsBySendingUserIdAndInvitedUserId(Long sendinUserId, Long invitedUserId);
 }

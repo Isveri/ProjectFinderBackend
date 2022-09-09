@@ -61,10 +61,15 @@ public class SseServiceImpl implements SseService {
     }
 
     @Override
+    public void sendSseFriendEvent(CustomNotificationDTO customNotificationDTO, Long userId) {
+        sendMsgToEmitter(customNotificationDTO,userId);
+    }
+
+    @Override
     public SseEmitter createEmitter() {
         User user = getCurrentUser();
         Long userId = user.getId();
-        SseEmitter emitter = new SseEmitter(150000L);
+        SseEmitter emitter = new SseEmitter(7_200_000L);
         emitters.put(userId, emitter);
         emitter.onTimeout(emitter::complete);
         emitter.onCompletion(() -> emitters.remove(userId));

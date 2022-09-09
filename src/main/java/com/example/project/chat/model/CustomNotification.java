@@ -18,7 +18,8 @@ public class CustomNotification {
     public enum NotifType{
         REMOVED,
         INFO,
-        WARNING
+        WARNING,
+        FRIENDREQUEST,
     }
 
     @Id

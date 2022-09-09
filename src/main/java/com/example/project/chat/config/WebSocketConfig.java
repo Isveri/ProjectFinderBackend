@@ -4,6 +4,7 @@ import com.example.project.chat.model.Chat;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
+import com.example.project.exceptions.ChatNotFoundException;
 import com.example.project.exceptions.GroupNotFoundException;
 import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.UserRepository;
@@ -66,13 +67,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     List<String> tokenList = accessor.getNativeHeader("Authorization");
-                    String jwt = null;
+                    String jwt;
                     boolean isPrivateChat = true;
 
                     List<String> groupIdList = accessor.getNativeHeader("groupId");
                     List<String> chatIdList = accessor.getNativeHeader("chatId");
                     Long groupId = null;
                     Long chatId = null;
+
                     if (groupIdList != null) {
                         String groupIdString = groupIdList.get(0).substring(0);
                         groupId = Long.valueOf(groupIdString);
@@ -86,9 +88,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         return message;
                     } else {
                         jwt = tokenList.get(0).substring(7);
-                        if (jwt == null) {
-                            return message;
-                        }
+
                     }
                     String username = jwtTokenUtil.getUsername(jwt);
 
@@ -105,8 +105,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                 accessor.setUser(authentication);
                             }
                         }else{
-                            //TODO OBSLUZYC WYJATEK
-                            Chat chat = chatRepository.findByIdFetch(chatId).orElseThrow();
+                            Chat chat = chatRepository.findByIdFetch(chatId).orElseThrow(()-> new ChatNotFoundException("Chat doesnt exist"));
                             if(chat.getUsers().stream().filter((friend -> friend.getUser().equals(usr))).findFirst().orElseThrow(null)!=null){
                                 accessor.setUser(authentication);
                             }
