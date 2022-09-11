@@ -1,8 +1,11 @@
 package com.example.project.chat.model;
 
 import com.example.project.model.UserMsgDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -15,6 +18,8 @@ public class MessageDTO {
     private String text;
     private UserMsgDTO user;
     private Long groupId;
-    private String time;
+    @JsonSerialize(as = LocalDateTime.class)
+    @JsonFormat(shape= JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm")
+    private LocalDateTime date;
     private List<Long> connectedUsers;
 }

@@ -53,7 +53,8 @@ public class ChatServiceImpl implements ChatService {
     private Message getMessage(MessageDTO messageDTO, Chat chat) {
         Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
         LocalDateTime now = LocalDateTime.now();
-        msg.setTime(now.format(DateTimeFormatter.ofPattern("HH:mm")));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        msg.setDate(LocalDateTime.parse(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),formatter));
         msg.setChat(chat);
         msg.setUser(getCurrentUser());
         chat.getMessages().add(msg);

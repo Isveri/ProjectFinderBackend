@@ -1,6 +1,9 @@
 package com.example.project.chat.model;
 
 import com.example.project.domain.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,6 +32,7 @@ public class Message {
     @JoinColumn(name="chat_id")
     private Chat chat;
 
-    private String time;
+    private LocalDateTime date;
+
 
 }
