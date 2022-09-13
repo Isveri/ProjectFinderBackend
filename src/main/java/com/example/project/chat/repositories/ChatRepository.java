@@ -13,4 +13,6 @@ public interface ChatRepository extends JpaRepository<Chat,Long> {
 
     @Query("SELECT c FROM Chat c JOIN FETCH c.users WHERE c.id = :id")
     Optional<Chat> findByIdFetch(@Param("id") Long id);
+
+
 }

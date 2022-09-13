@@ -22,4 +22,5 @@ public class MessageDTO {
     @JsonFormat(shape= JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm")
     private LocalDateTime date;
     private List<Long> connectedUsers;
+    private List<MessageStatusDTO> statuses;
 }

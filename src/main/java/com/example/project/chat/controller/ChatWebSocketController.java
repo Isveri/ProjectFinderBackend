@@ -2,17 +2,16 @@ package com.example.project.chat.controller;
 
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.chat.model.MessageLogsDTO;
+import com.example.project.chat.model.UnreadMessageCountDTO;
 import com.example.project.chat.service.ChatService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 
@@ -52,5 +51,15 @@ public class ChatWebSocketController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<MessageDTO> getDeletedGroupChatLogs(@PathVariable Long groupId) {
         return chatService.getDeletedGroupChatLogs(groupId);
+    }
+
+    @PatchMapping("/api/v1/messageRead/{chatId}")
+    public ResponseEntity<List<MessageDTO>> setMessageAsRead(@PathVariable Long chatId){
+        return ResponseEntity.ok(chatService.setMessagesAsRead(chatId));
+    }
+
+    @GetMapping("/api/v1/unreadMessages")
+    public ResponseEntity<List<UnreadMessageCountDTO>> countUnreadMessages(){
+        return ResponseEntity.ok(chatService.countUnreadMessages());
     }
 }
