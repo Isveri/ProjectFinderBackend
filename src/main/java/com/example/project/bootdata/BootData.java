@@ -28,7 +28,7 @@ public class BootData implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final MessageRepository messageRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final PlatformRepository platformRepository;
     private final ChatRepository chatRepository;
 
     private final InGameRoleRepository inGameRoleRepository;
@@ -47,6 +47,7 @@ public class BootData implements CommandLineRunner {
 
 
     private void createOther() {
+
         User u1 = User.builder()
                 .username("Evi")
                 .email("evi@gmail.com")
@@ -105,6 +106,14 @@ public class BootData implements CommandLineRunner {
         userRepository.save(u4);
         userRepository.save(u5);
         userRepository.save(u6);
+
+        Platform p1 = Platform.builder()
+                .platformType(Platform.PlatformType.STEAM)
+                .username("TEST")
+                .user(u2)
+                .build();
+
+        platformRepository.save(p1);
 
         Chat chat1 = Chat.builder().messages(Arrays.asList()).build();
         Chat chat2 = Chat.builder().messages(Arrays.asList()).build();

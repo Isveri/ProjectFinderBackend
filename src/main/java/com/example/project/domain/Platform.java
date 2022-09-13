@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @AllArgsConstructor
@@ -13,13 +14,24 @@ import java.util.List;
 @Getter
 @Entity
 public class Platform {
+    public enum PlatformType{
+        STEAM,
+        DISCORD,
+        RIOTGAMES,
+        FACEBOOK
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    private String name;
+    @NotNull
+    private PlatformType platformType;
 
-    @ManyToMany(mappedBy = "platforms")
-    private List<User> users;
+   @NotBlank
+    private String username;
+
+   @ManyToOne(cascade = CascadeType.MERGE)
+   @JoinColumn(name = "user_id")
+    private User user;
 }

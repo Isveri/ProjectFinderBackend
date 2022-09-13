@@ -72,11 +72,7 @@ public class User implements UserDetails, CredentialsContainer {
             inverseJoinColumns = @JoinColumn(name = "ingamerole_id"))
     private List<InGameRole> inGameRoles;
 
-    @ManyToMany
-    @JoinTable(
-            name = "users_platforms",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "platform"))
+    @OneToMany(mappedBy = "user",cascade = CascadeType.MERGE)
     private List<Platform> platforms;
 
     @OneToMany(mappedBy="reportedUser")
