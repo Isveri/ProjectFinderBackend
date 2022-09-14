@@ -35,6 +35,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
     private final UserRepository userRepository;
+    private final SseService sseService;
     private final MessageRepository messageRepository;
     private final MessageStatusRepository messageStatusRepository;
 
@@ -68,17 +69,16 @@ public class ChatServiceImpl implements ChatService {
     @Transactional
     @Override
     public MessageDTO savePrivate(MessageDTO messageDTO, Long chatId) {
-        //TODO EXCEPTION dodac message zapisuja sie 2 razy cos z tym zrobic
         Chat chat = chatRepository.findById(chatId).orElseThrow();
         Message msg = getMessage(messageDTO,chat);
         Friend friend = chat.getUsers().stream().filter((fr-> !getCurrentUser().equals(fr.getUser()))).findAny().orElseThrow(()->new UserNotFoundException("User doesnt exist"));
         MessageStatus msgStatus = MessageStatus.builder().user(friend.getUser()).build();
-        msg.setStatuses(Arrays.asList(msgStatus));
-        chat.getMessages().add(msg);
-        chatRepository.save(chat);
-        messageRepository.save(msg);
         msgStatus.setMessage(msg);
         messageStatusRepository.save(msgStatus);
+        msg.setStatuses(List.of(msgStatus));
+        chat.getMessages().add(msg);
+        chatRepository.save(chat);
+        sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New message").type(CustomNotification.NotifType.PRIVATE_MESSAGE).build(),friend.getUser().getId());
         return messageMapper.mapMessageToMessageDTO(msg);
 
     }
@@ -91,7 +91,16 @@ public class ChatServiceImpl implements ChatService {
         messageList.forEach((message -> {
             messageRepository.save( setStatus(user, message));
         }));
+        sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New message").type(CustomNotification.NotifType.PRIVATE_MESSAGE).build(),user.getId());
         return null;
+    }
+
+    @Override
+    public List<MessageDTO> getChatMessages(Long chatId) {
+        return messageRepository.findAllByChatId(chatId)
+                .stream()
+                .map(messageMapper::mapMessageToMessageDTO)
+                .collect(Collectors.toList());
     }
 
     private Message setStatus(User user, Message message) {
@@ -136,7 +145,7 @@ public class ChatServiceImpl implements ChatService {
         user.getFriendList().forEach((friend -> {
             UnreadMessageCountDTO unreadMessageCountDTO = new UnreadMessageCountDTO();
             unreadMessageCountDTO.setUserId(friend.getUser().getId());
-            unreadMessageCountDTO.setCount(messageRepository.countAllByStatusesUser(MessageStatus.Status.UNREAD,friend.getUser().getId()));
+            unreadMessageCountDTO.setCount(messageRepository.countAllByStatusesUser(MessageStatus.Status.UNREAD,friend.getUser().getId(),friend.getChat().getId()));
             unreadMessages.add(unreadMessageCountDTO);
         }));
         return unreadMessages;

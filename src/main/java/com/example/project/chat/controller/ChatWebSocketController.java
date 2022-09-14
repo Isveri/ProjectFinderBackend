@@ -1,5 +1,6 @@
 package com.example.project.chat.controller;
 
+import com.example.project.chat.model.ChatDTO;
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.chat.model.MessageLogsDTO;
 import com.example.project.chat.model.UnreadMessageCountDTO;
@@ -34,6 +35,11 @@ public class ChatWebSocketController {
         return chatService.savePrivate(messageDTO,chatId);
     }
 
+
+    @GetMapping("/api/v1/chat/{chatId}")
+    public ResponseEntity<List<MessageDTO>> getChat(@PathVariable Long chatId){
+        return ResponseEntity.ok(chatService.getChatMessages(chatId));
+    }
     @GetMapping("/api/v1/chatLogs/{groupId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<MessageDTO> getChatLogs(@PathVariable Long groupId){

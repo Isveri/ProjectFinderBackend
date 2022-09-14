@@ -1,5 +1,6 @@
 package com.example.project.chat.service;
 
+import com.example.project.chat.model.ChatDTO;
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.chat.model.MessageLogsDTO;
 import com.example.project.chat.model.UnreadMessageCountDTO;
@@ -14,6 +15,7 @@ public interface ChatService {
 
     List<MessageDTO> setMessagesAsRead(Long chatId);
 
+    List<MessageDTO> getChatMessages(Long chatId);
     List<MessageDTO> getChatLogs(Long groupId);
     List<MessageLogsDTO> getUserChatLogs(Long userId);
     List<UnreadMessageCountDTO> countUnreadMessages();

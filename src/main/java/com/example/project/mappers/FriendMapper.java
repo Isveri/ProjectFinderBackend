@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 public abstract class FriendMapper {
 
 
+    @Mapping(target = "chatId",source = "chat.id")
     public abstract FriendDTO mapFriendToFriendDTO(Friend friend);
 
 }

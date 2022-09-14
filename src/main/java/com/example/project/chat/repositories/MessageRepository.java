@@ -13,9 +13,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     List<Message> findAllByUserId(Long id);
 
-    @Query("Select m from Message m join fetch m.statuses ms where m.chat.id =:chatId and ms.status=:status and ms.user.id=:userId")
+    @Query("SELECT m FROM Message m JOIN FETCH m.statuses ms WHERE m.chat.id =:chatId AND ms.status=:status AND ms.user.id=:userId")
     List<Message> findAllNotReadByChatId(@Param("chatId") Long chatId, @Param("status")MessageStatus.Status status,@Param("userId") Long userId);
 
-    @Query("SELECT COUNT (m) FROM Message m JOIN m.statuses ms WHERE ms.status=:status and m.user.id=:userId")
-    int countAllByStatusesUser(@Param("status") MessageStatus.Status status, @Param("userId") Long userId);
+    @Query("SELECT COUNT (m) FROM Message m JOIN m.statuses ms WHERE ms.status=:status AND m.user.id=:userId AND m.chat.id=:chatId ")
+    int countAllByStatusesUser(@Param("status") MessageStatus.Status status, @Param("userId") Long userId, @Param("chatId") Long chatId);
+
+    List<Message> findAllByChatId(Long chatId);
 }

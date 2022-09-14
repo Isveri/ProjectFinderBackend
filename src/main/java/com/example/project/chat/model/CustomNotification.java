@@ -20,6 +20,7 @@ public class CustomNotification {
         INFO,
         WARNING,
         FRIENDREQUEST,
+        PRIVATE_MESSAGE,
     }
 
     @Id

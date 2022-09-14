@@ -31,5 +31,6 @@ public class MessageStatus {
     private User user;
 
     @ManyToOne(cascade=CascadeType.MERGE)
+    @JoinColumn(name="message_id")
     private Message message;
 }
