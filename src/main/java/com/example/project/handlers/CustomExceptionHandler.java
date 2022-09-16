@@ -5,6 +5,7 @@ import com.example.project.exceptions.validation.*;
 import com.example.project.model.ErrorCodeMsg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -77,6 +78,11 @@ public class CustomExceptionHandler {
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }
 
+    @MessageExceptionHandler({EmptyMessageException.class})
+    public ResponseEntity<ErrorCodeMsg> emptyMessageException(EmptyMessageException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
     @ExceptionHandler({AccountBannedException.class})
     public ResponseEntity<ErrorCodeMsg> accountBannedException(AccountBannedException e){
         log.error(e.getMessage());

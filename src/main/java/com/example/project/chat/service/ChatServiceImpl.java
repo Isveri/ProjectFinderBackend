@@ -8,6 +8,7 @@ import com.example.project.chat.repositories.MessageStatusRepository;
 import com.example.project.domain.Friend;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
+import com.example.project.exceptions.EmptyMessageException;
 import com.example.project.exceptions.GroupNotFoundException;
 import com.example.project.exceptions.NotGroupLeaderException;
 import com.example.project.exceptions.UserNotFoundException;
@@ -44,54 +45,61 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public MessageDTO save(MessageDTO messageDTO, Long groupId) {
 
-        User user = getCurrentUser();
-        GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
-        if (groupRoom.getUsers().contains(user) || user.getRole().getName().equals("ROLE_ADMIN")) {
-            Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(() -> new GroupNotFoundException("Chat not found"));
-            Message msg = getMessage(messageDTO, chat);
-            chat.getMessages().add(msg);
-            chatRepository.save(chat);
-            return messageMapper.mapMessageToMessageDTO(msg);
+        if (messageDTO.getText() != null) {
+            User user = getCurrentUser();
+            GroupRoom groupRoom = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Group not found"));
+            if (groupRoom.getUsers().contains(user) || user.getRole().getName().equals("ROLE_ADMIN")) {
+                Chat chat = chatRepository.findById(groupRoom.getChat().getId()).orElseThrow(() -> new GroupNotFoundException("Chat not found"));
+                Message msg = getMessage(messageDTO, chat);
+                chat.getMessages().add(msg);
+                chatRepository.save(chat);
+                return messageMapper.mapMessageToMessageDTO(msg);
+            }
         }
-        return null;
+        throw new EmptyMessageException("Cannot send empty message");
     }
 
     private Message getMessage(MessageDTO messageDTO, Chat chat) {
-        Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        msg.setDate(LocalDateTime.parse(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),formatter));
-        msg.setChat(chat);
-        msg.setUser(getCurrentUser());
-        return msg;
+        if (!messageDTO.getText().isBlank()) {
+            Message msg = messageMapper.mapMessageDTOTOMessage(messageDTO);
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            msg.setDate(LocalDateTime.parse(now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), formatter));
+            msg.setChat(chat);
+            msg.setUser(getCurrentUser());
+            return msg;
+        }
+        throw new EmptyMessageException("Cannot send empty message");
     }
 
     @Transactional
     @Override
     public MessageDTO savePrivate(MessageDTO messageDTO, Long chatId) {
-        Chat chat = chatRepository.findById(chatId).orElseThrow();
-        Message msg = getMessage(messageDTO,chat);
-        Friend friend = chat.getUsers().stream().filter((fr-> !getCurrentUser().equals(fr.getUser()))).findAny().orElseThrow(()->new UserNotFoundException("User doesnt exist"));
-        MessageStatus msgStatus = MessageStatus.builder().user(friend.getUser()).build();
-        msgStatus.setMessage(msg);
-        messageStatusRepository.save(msgStatus);
-        msg.setStatuses(List.of(msgStatus));
-        chat.getMessages().add(msg);
-        chatRepository.save(chat);
-        sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New message").type(CustomNotification.NotifType.PRIVATE_MESSAGE).build(),friend.getUser().getId());
-        return messageMapper.mapMessageToMessageDTO(msg);
-
+        if (messageDTO.getText() != null) {
+            Chat chat = chatRepository.findById(chatId).orElseThrow();
+            Message msg = getMessage(messageDTO, chat);
+            Friend friend = chat.getUsers().stream().filter((fr -> !getCurrentUser().equals(fr.getUser()))).findAny().orElseThrow(() -> new UserNotFoundException("User doesnt exist"));
+            MessageStatus msgStatus = MessageStatus.builder().user(friend.getUser()).build();
+            msgStatus.setMessage(msg);
+            messageStatusRepository.save(msgStatus);
+            msg.setStatuses(List.of(msgStatus));
+            chat.getMessages().add(msg);
+            chatRepository.save(chat);
+            sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New message").type(CustomNotification.NotifType.PRIVATE_MESSAGE).build(), friend.getUser().getId());
+            return messageMapper.mapMessageToMessageDTO(msg);
+        }
+        throw new EmptyMessageException("Cannot send empty message");
     }
 
     @Override
     public List<MessageDTO> setMessagesAsRead(Long chatId) {
         //TODO jak bedzie sie chcialo to mozna zrobic 2 oddzielne wyjatki
         User user = getCurrentUser();
-        List<Message> messageList = messageRepository.findAllNotReadByChatId(chatId, MessageStatus.Status.UNREAD,user.getId());
+        List<Message> messageList = messageRepository.findAllNotReadByChatId(chatId, MessageStatus.Status.UNREAD, user.getId());
         messageList.forEach((message -> {
-            messageRepository.save( setStatus(user, message));
+            messageRepository.save(setStatus(user, message));
         }));
-        sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New message").type(CustomNotification.NotifType.PRIVATE_MESSAGE).build(),user.getId());
+        sseService.sendSseFriendEvent(CustomNotificationDTO.builder().msg("New message").type(CustomNotification.NotifType.PRIVATE_MESSAGE).build(), user.getId());
         return null;
     }
 
@@ -108,7 +116,7 @@ public class ChatServiceImpl implements ChatService {
                 .stream()
                 .filter(messageStatus ->
                         user.equals(messageStatus.getUser())
-                ).findFirst().orElseThrow(()-> new NotFoundException("Status of message not found")).setStatus(MessageStatus.Status.READ);
+                ).findFirst().orElseThrow(() -> new NotFoundException("Status of message not found")).setStatus(MessageStatus.Status.READ);
         return message;
     }
 
@@ -128,7 +136,7 @@ public class ChatServiceImpl implements ChatService {
     public List<MessageLogsDTO> getUserChatLogs(Long userId) {
         User admin = getCurrentUser();
 
-        if(admin.getRole().getName().equals("ROLE_ADMIN")) {
+        if (admin.getRole().getName().equals("ROLE_ADMIN")) {
             return messageRepository.findAllByUserId(userId)
                     .stream()
                     .map(messageMapper::mapMessageToMessageLogsDTO)
@@ -141,11 +149,11 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<UnreadMessageCountDTO> countUnreadMessages() {
         List<UnreadMessageCountDTO> unreadMessages = new ArrayList<>();
-        User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(()-> new UserNotFoundException("User not found"));
+        User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(() -> new UserNotFoundException("User not found"));
         user.getFriendList().forEach((friend -> {
             UnreadMessageCountDTO unreadMessageCountDTO = new UnreadMessageCountDTO();
             unreadMessageCountDTO.setUserId(friend.getUser().getId());
-            unreadMessageCountDTO.setCount(messageRepository.countAllByStatusesUser(MessageStatus.Status.UNREAD,friend.getUser().getId(),friend.getChat().getId()));
+            unreadMessageCountDTO.setCount(messageRepository.countAllByStatusesUser(MessageStatus.Status.UNREAD, friend.getUser().getId(), friend.getChat().getId()));
             unreadMessages.add(unreadMessageCountDTO);
         }));
         return unreadMessages;
