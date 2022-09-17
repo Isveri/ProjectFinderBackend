@@ -50,7 +50,7 @@ public class BootData implements CommandLineRunner {
 
         User u1 = User.builder()
                 .username("Evi")
-                .email("evi@gmail.com")
+                .email("evistifate1@gmail.com")
                 .name("Patryk")
                 .age(21)
                 .city("Lublin")
@@ -61,7 +61,7 @@ public class BootData implements CommandLineRunner {
 
         User u2 = User.builder()
                 .username("User")
-                .email("user@gmail.com")
+                .email("evistifate1@gmail.com")
                 .name("Adam")
                 .age(21)
                 .city("Lublin")
@@ -72,19 +72,19 @@ public class BootData implements CommandLineRunner {
 
         User u3 = User.builder()
                 .username("Arthur")
-                .email("arthur@gmail.com")
+                .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("arthur"))
                 .build();
 
         User u4 = User.builder()
                 .username("William")
-                .email("william@gmail.com")
+                .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("william"))
                 .build();
 
         User u5 = User.builder()
                 .username("Yeager")
-                .email("yeager@gmail.com")
+                .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("yeager"))
                 .accountNonLocked(false)
                 .reason("Toxicity, many reports")
@@ -93,7 +93,7 @@ public class BootData implements CommandLineRunner {
 
         User u6 = User.builder()
                 .username("Satoru")
-                .email("satoru@gmail.com")
+                .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("satoru"))
                 .accountNonLocked(false)
                 .bannedBy("Evi")

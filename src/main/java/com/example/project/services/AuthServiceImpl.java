@@ -14,19 +14,28 @@ import com.example.project.model.UserDTO;
 import com.example.project.model.auth.ChangePasswordDTO;
 import com.example.project.model.auth.TokenResponse;
 import com.example.project.model.auth.UserCredentials;
+import com.example.project.model.auth.VerificationToken;
 import com.example.project.repositories.GroupRepository;
 import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
+import com.example.project.repositories.VerificationTokenRepository;
 import com.example.project.security.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
 import com.example.project.utils.DataValidation;
+import org.springframework.ui.Model;
+import org.springframework.web.context.request.WebRequest;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 @RequiredArgsConstructor
 @Service
@@ -34,7 +43,6 @@ public class AuthServiceImpl implements AuthService {
 
 
     private final UserDetailsService userDetailsService;
-    private final GroupRoomService groupRoomService;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -42,6 +50,11 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final UserService userService;
+
+    private final MessageSource messageSource;
+
+    private final JavaMailSender javaMailSender;
+    private final VerificationTokenRepository verificationTokenRepository;
     private final DataValidation dataValidation;
 
     @Override
@@ -53,6 +66,17 @@ public class AuthServiceImpl implements AuthService {
         else if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword()))
             return new TokenResponse(jwtTokenUtil.generateAccessToken(user));
         return null;
+    }
+
+    @Override
+    public void createVerificationToken(User user, String token) {
+        VerificationToken myToken = VerificationToken.builder().token(token).user(user).build();
+        verificationTokenRepository.save(myToken);
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return verificationTokenRepository.findByToken(VerificationToken);
     }
 
     @Override
@@ -75,6 +99,26 @@ public class AuthServiceImpl implements AuthService {
             return new TokenResponse(jwtTokenUtil.generateAccessToken(createdUser));
         }
     }
+
+    @Override
+    public String confirmDeleteAccount(WebRequest request, Model model, String token) {
+
+        VerificationToken verificationToken = this.getVerificationToken(token);
+        if (verificationToken == null) {
+
+            throw new RuntimeException("Bad token");
+        }
+
+        Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            throw new RuntimeException("Token expired");
+                    //TODO zrobic exception do wyswietlania powiadomienia o wygasnieciu tokena
+        }
+
+        this.deleteUser();
+        return "/account-deleted";
+    }
+
 
     @Override
     public void changePassword(ChangePasswordDTO changePasswordDTO) {
