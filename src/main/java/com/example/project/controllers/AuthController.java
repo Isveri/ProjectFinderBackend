@@ -41,15 +41,21 @@ public class AuthController {
         }
     }
     @PostMapping("/new-account")
-    public ResponseEntity<TokenResponse> createNewAccount(@Valid @RequestBody UserDTO userDto) {
-        return ResponseEntity.ok(authService.createNewAccount(userDto));
-    }
-
-    @PostMapping("/emailChangeConfirmation")
-    public ResponseEntity<?> changeEmail(@Valid @RequestBody String email, HttpServletRequest request){
-        eventPublisher.publishEvent(new OnEmailChangeCompleteEvent(UserDetailsHelper.getCurrentUser(),request.getLocale(),request.getContextPath()));
+    public ResponseEntity<TokenResponse> createNewAccount(@Valid @RequestBody UserDTO userDto,HttpServletRequest request) {
+        authService.createNewAccount(userDto,request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/confirmAccountRegister")
+    public ResponseEntity<TokenResponse> confirmAccountRegister(@RequestParam("token") String token) {
+        return ResponseEntity.ok(authService.confirmAccountRegister(token));
+    }
+
+//    @PostMapping("/emailChangeConfirmation")
+//    public ResponseEntity<?> changeEmail(@Valid @RequestBody String email, HttpServletRequest request){
+//        eventPublisher.publishEvent(new OnEmailChangeCompleteEvent(UserDetailsHelper.getCurrentUser(),request.getLocale(),request.getContextPath()));
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 
     @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteAccount(HttpServletRequest request){
@@ -58,8 +64,10 @@ public class AuthController {
     }
 
     @GetMapping("/deleteAccountConfirm")
-    public String confirmDeleteAccount(WebRequest request, Model model, @RequestParam("token") String token){
-        return authService.confirmDeleteAccount(request,model,token);
+    public ResponseEntity<?> confirmDeleteAccount(WebRequest request, Model model, @RequestParam("token") String token){
+        authService.confirmDeleteAccount(request,model,token);
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
 
@@ -68,9 +76,5 @@ public class AuthController {
         authService.changePassword(changePasswordDTO);
         return ResponseEntity.ok("");
     }
-//    @DeleteMapping("/delete-user")
-//    public ResponseEntity<?> deleteUser(){
-//        authService.deleteUser();
-//        return ResponseEntity.ok("");
-//    }
+
 }

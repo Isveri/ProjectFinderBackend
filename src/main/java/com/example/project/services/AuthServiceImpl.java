@@ -3,11 +3,9 @@ package com.example.project.services;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.Role;
 import com.example.project.domain.User;
-import com.example.project.exceptions.AccountBannedException;
-import com.example.project.exceptions.DeleteUserException;
-import com.example.project.exceptions.GroupNotFoundException;
-import com.example.project.exceptions.UserNotFoundException;
+import com.example.project.exceptions.*;
 import com.example.project.exceptions.validation.EmailAlreadyTakenException;
+import com.example.project.exceptions.validation.UsernameAlreadyTakenException;
 import com.example.project.exceptions.validation.WrongPasswordException;
 import com.example.project.mappers.UserMapper;
 import com.example.project.model.UserDTO;
@@ -20,6 +18,9 @@ import com.example.project.repositories.RoleRepository;
 import com.example.project.repositories.UserRepository;
 import com.example.project.repositories.VerificationTokenRepository;
 import com.example.project.security.JwtTokenUtil;
+import com.example.project.security.emailConfirm.OnAccountRegisterCompleteEvent;
+import com.example.project.security.emailConfirm.OnEmailChangeCompleteEvent;
+import com.example.project.utils.UserDetailsHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -28,11 +29,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
+
 import com.example.project.utils.DataValidation;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -51,27 +55,31 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final UserService userService;
 
-    private final MessageSource messageSource;
-
-    private final JavaMailSender javaMailSender;
+    private final ApplicationEventPublisher eventPublisher;
     private final VerificationTokenRepository verificationTokenRepository;
     private final DataValidation dataValidation;
 
     @Override
     public TokenResponse getToken(UserCredentials userCredentials) {
         User user = (User) userDetailsService.loadUserByUsername(userCredentials.getUsername());
-        if(!user.isAccountNonLocked()){
-            throw new AccountBannedException("Account banned");
+        if(!user.isEnabled()){
+            throw new AccountNotEnabledException("Account not enabled");
         }
-        else if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword()))
+        if (!user.isAccountNonLocked()) {
+            throw new AccountBannedException("Account banned");
+        } else if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword()))
             return new TokenResponse(jwtTokenUtil.generateAccessToken(user));
         return null;
     }
 
     @Override
     public void createVerificationToken(User user, String token) {
-        VerificationToken myToken = VerificationToken.builder().token(token).user(user).build();
-        verificationTokenRepository.save(myToken);
+        if (verificationTokenRepository.existsByUserId(user.getId())) {
+            throw new TokenAlreadySendException("Verification token already send");
+        } else {
+            VerificationToken myToken = VerificationToken.builder().token(token).user(user).build();
+            verificationTokenRepository.save(myToken);
+        }
     }
 
     @Override
@@ -80,13 +88,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenResponse createNewAccount(UserDTO userDto) {
+    public void createNewAccount(UserDTO userDto, HttpServletRequest request) {
         User newUser = userMapper.mapUserDTOToUser(userDto);
         String username = userDto.getUsername();
         String password = userDto.getPassword();
         String email = userDto.getEmail();
         if (userRepository.findByUsername(username).isPresent()) {
-            return null;
+            throw new UsernameAlreadyTakenException("Username already taken");
         } else {
             Role userRole = roleRepository.findByName("ROLE_USER");
             newUser.setPassword(passwordEncoder.encode(password));
@@ -94,26 +102,44 @@ public class AuthServiceImpl implements AuthService {
             newUser.setEmail(email);
             newUser.setRole(userRole);
 
-            User createdUser = userMapper.mapUserDTOToUser(userService.save(userMapper.mapUserToUserDTO(newUser)));
 
-            return new TokenResponse(jwtTokenUtil.generateAccessToken(createdUser));
+            User createdUser = userMapper.mapUserDTOToUser(userService.save(userMapper.mapUserToUserDTO(newUser)));
+            eventPublisher.publishEvent(new OnAccountRegisterCompleteEvent(createdUser,request.getLocale(),request.getContextPath()));
+
+        }
+    }
+
+    @Override
+    public TokenResponse confirmAccountRegister(String token) {
+
+        validateVerificationToken(token);
+
+        Long userId = verificationTokenRepository.findByToken(token).getUser().getId();
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found id:"+userId));
+        user.setEnabled(true);
+        userRepository.save(user);
+        VerificationToken verificationToken = this.getVerificationToken(token);
+        verificationTokenRepository.delete(verificationToken);
+        return new TokenResponse(jwtTokenUtil.generateAccessToken(user));
+    }
+
+    private void validateVerificationToken(String token) {
+        VerificationToken verificationToken = this.getVerificationToken(token);
+        if (verificationToken == null) {
+
+            throw new TokenExpiredException("Bad token");
+        }
+
+        Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            throw new TokenExpiredException("Token expired");
         }
     }
 
     @Override
     public String confirmDeleteAccount(WebRequest request, Model model, String token) {
 
-        VerificationToken verificationToken = this.getVerificationToken(token);
-        if (verificationToken == null) {
-
-            throw new RuntimeException("Bad token");
-        }
-
-        Calendar cal = Calendar.getInstance();
-        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            throw new RuntimeException("Token expired");
-                    //TODO zrobic exception do wyswietlania powiadomienia o wygasnieciu tokena
-        }
+        validateVerificationToken(token);
 
         this.deleteUser();
         return "/account-deleted";
@@ -127,33 +153,43 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
         dataValidation.password(changePasswordDTO.getOldPassword());
         dataValidation.password(changePasswordDTO.getNewPassword());
-        if(passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())){
+        if (passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())) {
             try {
                 user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
                 userRepository.save(user);
             } catch (Exception e) {
-               throw new EmailAlreadyTakenException("something wrong with upd password");
+                throw new EmailAlreadyTakenException("something wrong with upd password");
             }
-        }else{
+        } else {
             throw new WrongPasswordException("Wrong password");
         }
     }
+
     @Override
-    public void deleteUser(){
+    public void deleteUser() {
         User currentUser = getCurrentUser();
         long id = currentUser.getId();
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
-        List<GroupRoom> UserGroupRooms= groupRepository.findAllByGroupLeaderId(id);
-        try{
+        List<GroupRoom> UserGroupRooms = groupRepository.findAllByGroupLeaderId(id);
+        try {
             for (GroupRoom groupRoom : UserGroupRooms) {
                 userService.getOutOfGroup(groupRoom.getId());
             }
+            deleteVerificationToken(user);
             userRepository.softDeleteById(id);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new DeleteUserException("Something wrong with deleting a user");
         }
 
+    }
+
+    private void deleteVerificationToken(User user) {
+        VerificationToken token = verificationTokenRepository.findByUser(user);
+        token.setUser(null);
+        Long tempId = token.getId();
+        verificationTokenRepository.save(token);
+        verificationTokenRepository.deleteById(tempId);
     }
 
 }

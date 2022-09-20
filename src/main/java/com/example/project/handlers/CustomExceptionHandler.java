@@ -72,6 +72,17 @@ public class CustomExceptionHandler {
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }
 
+    @ExceptionHandler({TokenExpiredException.class})
+    public ResponseEntity<ErrorCodeMsg> verificationTokenAlreadySend(TokenExpiredException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+
+    @ExceptionHandler({TokenAlreadySendException.class})
+    public ResponseEntity<ErrorCodeMsg> verificationTokenAlreadySend(TokenAlreadySendException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
     @ExceptionHandler({ChatNotFoundException.class})
     public ResponseEntity<ErrorCodeMsg> chatNotFoundException(ChatNotFoundException e){
         log.error(e.getMessage());
@@ -85,6 +96,12 @@ public class CustomExceptionHandler {
     }
     @ExceptionHandler({AccountBannedException.class})
     public ResponseEntity<ErrorCodeMsg> accountBannedException(AccountBannedException e){
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
+    }
+
+    @ExceptionHandler({AccountNotEnabledException.class})
+    public ResponseEntity<ErrorCodeMsg> verificationTokenAlreadySend(AccountNotEnabledException e){
         log.error(e.getMessage());
         return ResponseEntity.badRequest().body(ErrorCodeMsg.builder().code(e.getCode()).build());
     }

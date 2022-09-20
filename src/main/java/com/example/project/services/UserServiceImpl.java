@@ -179,13 +179,13 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findById(userId)
                 .map(userMapper::mapUserToUserProfileDTO)
-                .orElseThrow(() -> new GroupNotFoundException("Group room not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Override
     public void getOutOfGroup(Long groupRoomId) {
         User currentUser = getCurrentUser();
-        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new GroupNotFoundException("User not found id:" + currentUser.getId()));
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:" + currentUser.getId()));
         GroupRoom groupRoom = groupRepository.findById(groupRoomId)
                 .orElseThrow(() -> new GroupNotFoundException("Group room not found"));
 

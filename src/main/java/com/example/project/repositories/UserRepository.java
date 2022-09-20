@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE User g set g.enabled=false WHERE g.id=:id")
+    @Query("UPDATE User g set g.deleted=true WHERE g.id=:id")
     void softDeleteById(@Param("id") Long id);
 //    Optional<User> findByUsernameAndPassword(String username, String password);
 

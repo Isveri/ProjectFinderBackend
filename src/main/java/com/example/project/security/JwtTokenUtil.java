@@ -50,7 +50,7 @@ public class JwtTokenUtil {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (MalformedJwtException ex) {
-            log.error("Invalid JWT token - {}", ex.getMessage());
+            log.debug("Invalid JWT token - {}", ex.getMessage());
         } catch (ExpiredJwtException ex) {
             log.error("Expired JWT token - {}", ex.getMessage());
         } catch (UnsupportedJwtException ex) {

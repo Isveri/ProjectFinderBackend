@@ -19,7 +19,7 @@ import java.util.*;
 @Entity
 @Builder
 @EqualsAndHashCode(of = {"id","username","email"})
-@Where(clause = "enabled=true")
+@Where(clause = "deleted=false")
 public class User implements UserDetails, CredentialsContainer {
 
     @Id
@@ -100,6 +100,8 @@ public class User implements UserDetails, CredentialsContainer {
 
         return authorities;
     }
+    @Builder.Default
+    private boolean deleted = false;
 
 
 
@@ -133,7 +135,7 @@ public class User implements UserDetails, CredentialsContainer {
     private Boolean credentialsNonExpired = true;
 
     @Builder.Default
-    private Boolean enabled = true;
+    private Boolean enabled = false;
 
     @Override
     public void eraseCredentials() {

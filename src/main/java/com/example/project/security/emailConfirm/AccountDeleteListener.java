@@ -14,7 +14,6 @@ import java.util.UUID;
 @Component
 public class AccountDeleteListener implements ApplicationListener<OnAccountDeleteCompleteEvent> {
     private final AuthService authService;
-    private final MessageSource messageSource;
 
     private final JavaMailSender javaMailSender;
 
@@ -31,13 +30,12 @@ public class AccountDeleteListener implements ApplicationListener<OnAccountDelet
 
         String recipientAddress = user.getEmail();
         String subject = "Account Delete Confirmation";
-        String confirmationUrl
-                = event.getAppUrl() + "/deleteAccountConfirm?token=" + token;
+
 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setText("http://localhost:4200/#" + confirmationUrl);
+        email.setText("Your verification token: "+token);
         javaMailSender.send(email);
     }
 

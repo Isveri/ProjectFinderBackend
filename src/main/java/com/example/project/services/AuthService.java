@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface AuthService {
 
     TokenResponse getToken(UserCredentials userCredentials);
@@ -19,7 +21,9 @@ public interface AuthService {
 
     VerificationToken getVerificationToken(String VerificationToken);
 
-    TokenResponse createNewAccount(UserDTO userDto);
+    void createNewAccount(UserDTO userDto, HttpServletRequest request);
+
+    TokenResponse confirmAccountRegister(String token);
 
     String confirmDeleteAccount(WebRequest request, Model model, String token);
 
