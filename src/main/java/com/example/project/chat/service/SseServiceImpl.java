@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.example.project.chat.model.CustomNotification.NotifType.REMOVED;
 import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
@@ -38,18 +35,20 @@ public class SseServiceImpl implements SseService {
     public void sendSseEventToUser(CustomNotificationDTO customNotificationDTO, GroupRoom groupRoom, Long modifiedUserId) {
         List<Long> usersId = new ArrayList<>();
         groupRoom.getUsers().forEach((user -> {
-                usersId.add(user.getId());
-                customNotificationDTO.setGroupRoom(groupRoomMapper.mapGroupRoomToGroupNotifInfoDTO(groupRoom));
-                CustomNotification customNotification = notificationMapper.mapCustomNotificationDTOToCustomNotification(customNotificationDTO);
-                customNotification.setUser(user);
-                customNotification.setGroupRoom(groupRoom);
-                notificationRepository.save(customNotification);
+                if(!Objects.equals(user.getId(), modifiedUserId)) {
+                    usersId.add(user.getId());
+                    customNotificationDTO.setGroupRoom(groupRoomMapper.mapGroupRoomToGroupNotifInfoDTO(groupRoom));
+                    CustomNotification customNotification = notificationMapper.mapCustomNotificationDTOToCustomNotification(customNotificationDTO);
+                    customNotification.setUser(user);
+                    customNotification.setGroupRoom(groupRoom);
+                    notificationRepository.save(customNotification);
+                }
         }));
         usersId.forEach((id) -> {
                     sendMsgToEmitter(customNotificationDTO, id);
                 }
         );
-        if (modifiedUserId != null) {
+        if (modifiedUserId != null && REMOVED.equals(customNotificationDTO.getType())) {
             customNotificationDTO.setRemovedUserId(modifiedUserId);
             customNotificationDTO.setGroupRoom(groupRoomMapper.mapGroupRoomToGroupNotifInfoDTO(groupRoom));
             CustomNotification customNotification = notificationMapper.mapCustomNotificationDTOToCustomNotification(customNotificationDTO);

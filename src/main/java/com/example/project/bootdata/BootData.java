@@ -54,6 +54,7 @@ public class BootData implements CommandLineRunner {
                 .name("Patryk")
                 .age(21)
                 .city("Lublin")
+                .enabled(true)
                 .phone(551345345)
                 .info("Challanger in every role in League of Legends. Global elite in CS:GO and Immortal in Valorant. 706gs BDO kek")
                 .password(passwordEncoder.encode("admin"))
@@ -63,6 +64,7 @@ public class BootData implements CommandLineRunner {
                 .username("User")
                 .email("evistifate1@gmail.com")
                 .name("Adam")
+                .enabled(true)
                 .age(21)
                 .city("Lublin")
                 .phone(551343223)
@@ -73,17 +75,20 @@ public class BootData implements CommandLineRunner {
         User u3 = User.builder()
                 .username("Arthur")
                 .email("evistifate1@gmail.com")
+                .enabled(true)
                 .password(passwordEncoder.encode("arthur"))
                 .build();
 
         User u4 = User.builder()
                 .username("William")
+                .enabled(true)
                 .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("william"))
                 .build();
 
         User u5 = User.builder()
                 .username("Yeager")
+                .enabled(true)
                 .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("yeager"))
                 .accountNonLocked(false)
@@ -96,6 +101,7 @@ public class BootData implements CommandLineRunner {
                 .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("satoru"))
                 .accountNonLocked(false)
+                .enabled(true)
                 .bannedBy("Evi")
                 .reason("Toxicity, trolling, not taking serious warning from administration")
                 .build();
