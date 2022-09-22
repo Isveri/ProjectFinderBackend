@@ -137,7 +137,7 @@ public class ChatServiceImpl implements ChatService {
         User admin = getCurrentUser();
 
         if (admin.getRole().getName().equals("ROLE_ADMIN")) {
-            return messageRepository.findAllByUserId(userId)
+            return messageRepository.findAllByUserIdAndChat_notPrivate(userId,true)
                     .stream()
                     .map(messageMapper::mapMessageToMessageLogsDTO)
                     .collect(Collectors.toList());

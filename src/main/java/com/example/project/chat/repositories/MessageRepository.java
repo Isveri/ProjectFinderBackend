@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    List<Message> findAllByUserId(Long id);
+    List<Message> findAllByUserIdAndChat_notPrivate(Long id,boolean value);
 
     @Query("SELECT m FROM Message m JOIN FETCH m.statuses ms WHERE m.chat.id =:chatId AND ms.status=:status AND ms.user.id=:userId")
     List<Message> findAllNotReadByChatId(@Param("chatId") Long chatId, @Param("status")MessageStatus.Status status,@Param("userId") Long userId);

@@ -48,9 +48,9 @@ public class AccountDeleteListener implements ApplicationListener<OnAccountDelet
                     "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>\n" +
                     "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" +
                     "    <title>Account Register Confirm</title></head>\n" +
-                    "  <body><div style='justify-content:center;'><div><h2 style='justify-content:center;background-color: #a61e4d; color: #eee;padding: 15px 25px;'>Team Finder Token Verification</h2>" +
+                    "  <body><div style='justify-content:center;'><div><h2 style='justify-content:center;background-color: #0d1f30fa; color: #eee;padding: 15px 25px;'>Team Finder Token Verification</h2>" +
                     "<h3>We received your request to delete your account. Here is your unique verification code:</h3>" +
-                    "<div style='background-color: #a61e4d;\n" +
+                    "<div style='background-color: #0d1f30fa;\n" +
                     "  color: #eee;\n" +
                     "  width:250px;" +
                     "  padding: 15px 25px;\n" +

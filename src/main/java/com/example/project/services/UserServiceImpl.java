@@ -296,7 +296,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(getCurrentUser().getId()).orElseThrow(() -> new UserNotFoundException("User doesnt exist"));
         User sendingUser = userRepository.findById(friendRequest.getSendingUser().getId()).orElseThrow(() -> new UserNotFoundException("User doesnt exist"));
         if (IsNotOnFriendList(sendingUser, user)) {
-            Chat chat = Chat.builder().build();
+            Chat chat = Chat.builder().notPrivate(false).build();
             chatRepository.save(chat);
             Friend friend = Friend.builder().chat(chat).user(sendingUser).build();
             friendRepository.save(friend);

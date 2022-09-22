@@ -28,4 +28,7 @@ public class Chat {
 
     @OneToMany(mappedBy ="chat",cascade = CascadeType.MERGE)
     private List<Friend> users;
+
+    @Builder.Default
+    private boolean notPrivate = true;
 }
