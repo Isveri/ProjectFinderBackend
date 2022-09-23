@@ -17,12 +17,10 @@ import javax.mail.internet.MimeMessage;
 import java.util.UUID;
 @RequiredArgsConstructor
 @Component
-@EnableAsync
 public class AccountDeleteListener implements ApplicationListener<OnAccountDeleteCompleteEvent> {
     private final AuthService authService;
 
     private final JavaMailSender javaMailSender;
-    @Async
     @Override
     public void onApplicationEvent(OnAccountDeleteCompleteEvent event) {
         this.confirmAccountDelete(event);
@@ -56,11 +54,10 @@ public class AccountDeleteListener implements ApplicationListener<OnAccountDelet
                     "  padding: 15px 25px;\n" +
                     "  border: none;'>"+token+"</button></div></div></body>" +
                     "</html>", true);
-            javaMailSender.send(mimeMessage);
+            authService.sendMessage(mimeMessage);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-        javaMailSender.send(mimeMessage);
     }
 
 }

@@ -26,6 +26,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ import com.example.project.utils.DataValidation;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.List;
@@ -43,6 +46,7 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 @Service
+@EnableAsync
 public class AuthServiceImpl implements AuthService {
 
 
@@ -58,6 +62,8 @@ public class AuthServiceImpl implements AuthService {
     private final ApplicationEventPublisher eventPublisher;
     private final VerificationTokenRepository verificationTokenRepository;
     private final DataValidation dataValidation;
+    private final JavaMailSender javaMailSender;
+
 
     @Override
     public TokenResponse getToken(UserCredentials userCredentials) {
@@ -78,6 +84,21 @@ public class AuthServiceImpl implements AuthService {
             throw new TokenAlreadySendException("Verification token already send");
         } else {
             VerificationToken myToken = VerificationToken.builder().token(token).user(user).build();
+            verificationTokenRepository.save(myToken);
+        }
+    }
+
+    @Override
+    public void createEmailChangeToken(User user, String token, String email) {
+        if (verificationTokenRepository.existsByUserId(user.getId())) {
+            throw new TokenAlreadySendException("Verification token already send");
+        }else if(verificationTokenRepository.existsByEmail(email)){
+            throw new EmailAlreadyTakenException("Email taken:"+email);
+        }else if(userRepository.existsByEmail(email)){
+            throw new EmailAlreadyTakenException("Email taken:"+email);
+        }
+        else {
+            VerificationToken myToken = VerificationToken.builder().token(token).email(email).user(user).build();
             verificationTokenRepository.save(myToken);
         }
     }
@@ -137,12 +158,26 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String confirmDeleteAccount(WebRequest request, Model model, String token) {
+    public String confirmDeleteAccount(String token) {
 
         validateVerificationToken(token);
 
         this.deleteUser();
         return "/account-deleted";
+    }
+
+    @Override
+    public TokenResponse confirmEmailChange(String token) {
+        validateVerificationToken(token);
+
+        VerificationToken verificationToken = this.getVerificationToken(token);
+        Long userId = verificationTokenRepository.findByToken(token).getUser().getId();
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found id:"+userId));
+        user.setEmail(verificationToken.getEmail());
+        userRepository.save(user);
+        verificationTokenRepository.delete(verificationToken);
+
+      return new TokenResponse(jwtTokenUtil.generateAccessToken(user));
     }
 
 
@@ -163,6 +198,11 @@ public class AuthServiceImpl implements AuthService {
         } else {
             throw new WrongPasswordException("Wrong password");
         }
+    }
+    @Async
+    @Override
+    public void sendMessage(MimeMessage mimeMessage) {
+        javaMailSender.send(mimeMessage);
     }
 
     @Override

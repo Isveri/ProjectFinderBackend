@@ -12,5 +12,7 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
 
     boolean existsByUserId(Long userId);
 
+    boolean existsByEmail(String email);
+
     void deleteByUserId(Long userId);
 }

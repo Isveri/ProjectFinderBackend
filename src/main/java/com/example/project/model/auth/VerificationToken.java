@@ -29,6 +29,8 @@ public class VerificationToken {
     @JoinColumn(name="user_id")
     private User user;
 
+    private String email;
+
     @Builder.Default
     private Date expiryDate = calculateExpiryDate(EXPIRATION);
 

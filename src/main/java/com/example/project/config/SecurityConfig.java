@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/api/v1/auth/login","/api/v1/auth","/api/v1/auth/new-account","/api/v1/auth/confirmAccountRegister","/h2-console/**","/ws/**","/api/v1/notify/**").permitAll()
+                .antMatchers("/api/v1/auth/login","/api/v1/auth","/api/v1/auth/new-account","/api/v1/auth/confirmAccountRegister","/api/v1/auth/confirmEmailChange","/h2-console/**","/ws/**","/api/v1/notify/**").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

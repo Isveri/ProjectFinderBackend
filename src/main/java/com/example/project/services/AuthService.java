@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
 public interface AuthService {
@@ -19,15 +20,20 @@ public interface AuthService {
 
     void createVerificationToken(User user, String token);
 
+    void createEmailChangeToken(User user, String token, String email);
+
     VerificationToken getVerificationToken(String VerificationToken);
 
     void createNewAccount(UserDTO userDto, HttpServletRequest request);
 
     TokenResponse confirmAccountRegister(String token);
 
-    String confirmDeleteAccount(WebRequest request, Model model, String token);
+    String confirmDeleteAccount(String token);
 
+    TokenResponse confirmEmailChange(String token);
     void changePassword(ChangePasswordDTO changePasswordDTO);
+
+    void sendMessage(MimeMessage mimeMessage);
 
     void deleteUser();
 }

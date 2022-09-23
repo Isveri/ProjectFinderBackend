@@ -1,5 +1,6 @@
 package com.example.project.controllers;
 
+import com.example.project.model.EmailDTO;
 import com.example.project.model.UserDTO;
 import com.example.project.model.auth.ChangePasswordDTO;
 import com.example.project.model.auth.TokenResponse;
@@ -51,11 +52,16 @@ public class AuthController {
         return ResponseEntity.ok(authService.confirmAccountRegister(token));
     }
 
-//    @PostMapping("/emailChangeConfirmation")
-//    public ResponseEntity<?> changeEmail(@Valid @RequestBody String email, HttpServletRequest request){
-//        eventPublisher.publishEvent(new OnEmailChangeCompleteEvent(UserDetailsHelper.getCurrentUser(),request.getLocale(),request.getContextPath()));
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
+    @GetMapping("/confirmEmailChange")
+    public ResponseEntity<TokenResponse> confirmEmailChange(@RequestParam("token") String token){
+        return ResponseEntity.ok(authService.confirmEmailChange(token));
+    }
+
+    @PatchMapping("/emailChange")
+    public ResponseEntity<?> emailChange(@Valid @RequestBody EmailDTO email, HttpServletRequest request){
+        eventPublisher.publishEvent(new OnEmailChangeCompleteEvent(UserDetailsHelper.getCurrentUser(),request.getLocale(),email.getEmail(),request.getContextPath()));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteAccount(HttpServletRequest request){
@@ -64,8 +70,8 @@ public class AuthController {
     }
 
     @GetMapping("/deleteAccountConfirm")
-    public ResponseEntity<?> confirmDeleteAccount(WebRequest request, Model model, @RequestParam("token") String token){
-        authService.confirmDeleteAccount(request,model,token);
+    public ResponseEntity<?> confirmDeleteAccount(@RequestParam("token") String token){
+        authService.confirmDeleteAccount(token);
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
