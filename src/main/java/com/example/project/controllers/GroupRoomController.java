@@ -21,7 +21,7 @@ public class GroupRoomController {
     }
 
     @GetMapping
-    public ResponseEntity<GroupRoomDTO> getUserByName(@RequestParam String name) {
+    public ResponseEntity<GroupRoomDTO> getGroupByName(@RequestParam String name) {
         return ResponseEntity.ok(groupRoomService.getGroupByName(name));
     }
 
