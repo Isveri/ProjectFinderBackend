@@ -68,6 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/reportedUsers")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<ReportedUserDTO>> getReportedUsers(){
         return ResponseEntity.ok(userService.getReportedUsers());
     }
@@ -79,6 +80,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping("/banned")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<BannedUserDTO>> getBannedUsers(){
         return ResponseEntity.ok(userService.getBannedUsers());
     }
@@ -91,6 +93,7 @@ public class UserController {
     }
 
     @PutMapping("/banUser")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> banUser(@RequestBody BannedUserDTO bannedUserDTO){
         userService.banUser(bannedUserDTO);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -102,11 +105,13 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<UserDTO> getAlreadyLoggedUser() {
+
         return ResponseEntity.ok(userService.getLoggedUser());
     }
 
     @GetMapping("/my-groups")
     public ResponseEntity<UserGroupsListDTO> getUserGroups() {
+
         return ResponseEntity.ok(userService.getUserGroups());
     }
 

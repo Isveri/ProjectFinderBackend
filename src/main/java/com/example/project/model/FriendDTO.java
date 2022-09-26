@@ -7,6 +7,7 @@ import lombok.*;
 @Setter
 @Builder
 @NoArgsConstructor
+@EqualsAndHashCode
 @AllArgsConstructor
 public class FriendDTO {
 

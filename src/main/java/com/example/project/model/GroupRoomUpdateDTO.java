@@ -3,6 +3,7 @@ package com.example.project.model;
 import lombok.*;
 
 @AllArgsConstructor
+@EqualsAndHashCode
 @NoArgsConstructor
 @Builder
 @Setter

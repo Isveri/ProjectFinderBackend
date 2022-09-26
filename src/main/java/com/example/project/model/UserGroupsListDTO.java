@@ -8,6 +8,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Setter
+@EqualsAndHashCode
 @Getter
 public class UserGroupsListDTO {
     private Long id;

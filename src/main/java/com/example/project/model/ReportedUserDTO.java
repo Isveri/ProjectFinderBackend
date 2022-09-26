@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 @Builder
 @NoArgsConstructor
+@EqualsAndHashCode
 @AllArgsConstructor
 public class ReportedUserDTO {
     private UserMsgDTO reportedUser;

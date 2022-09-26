@@ -7,6 +7,7 @@ import lombok.*;
 @Getter
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 @NoArgsConstructor
 public class TakenInGameRoleDTO {
 

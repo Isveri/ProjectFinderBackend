@@ -7,6 +7,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
+@EqualsAndHashCode
 @Getter
 @Builder
 public class GameDTO {

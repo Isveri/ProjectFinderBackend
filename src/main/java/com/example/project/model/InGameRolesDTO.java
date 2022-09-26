@@ -5,6 +5,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
+@EqualsAndHashCode
 @Getter
 @Builder
 public class InGameRolesDTO {

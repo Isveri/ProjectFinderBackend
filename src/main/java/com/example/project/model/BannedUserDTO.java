@@ -6,6 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Setter
+@EqualsAndHashCode
 @Getter
 public class BannedUserDTO {
     private Long id;

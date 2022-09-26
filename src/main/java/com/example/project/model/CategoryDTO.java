@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode
 @Builder
 public class CategoryDTO {
     private Long id;

@@ -7,6 +7,7 @@ import lombok.*;
 @Builder
 @Setter
 @Getter
+@EqualsAndHashCode
 public class RoleDTO {
     private Long id;
     private String name;
