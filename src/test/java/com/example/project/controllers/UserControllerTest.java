@@ -19,6 +19,7 @@ import static com.example.project.converters.Converter.convertObjectToJsonBytes;
 import static com.example.project.samples.FriendsSample.getFriendDTOMock;
 import static com.example.project.samples.FriendsSample.getFriendRequestDTOMock;
 import static com.example.project.samples.GroupRoomSample.getUsersGroupListDTOMock;
+import static com.example.project.samples.InGameRolesSample.getInGameRoleDTOMock;
 import static com.example.project.samples.ReportMockSample.getReportDTOMock;
 import static com.example.project.samples.UserMockSample.*;
 import static org.mockito.Mockito.*;
@@ -307,22 +308,75 @@ class UserControllerTest {
 
     @Test
     void updateUser() throws Exception {
+        //given
+        final UserDTO userDTO = getUserDTOMock();
+        byte[] content = convertObjectToJsonBytes(userDTO);
+        when(userService.updateUserByDTO(any(UserDTO.class))).thenReturn(userDTO);
+
+        //when + then
+
+        mockMvc.perform(put(baseUrl+"/edit")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("username").value(userDTO.getUsername()))
+                .andExpect(jsonPath("id").value(userDTO.getId()))
+                .andExpect(jsonPath("age").value(userDTO.getAge()))
+                .andExpect(jsonPath("city").value(userDTO.getCity()))
+                .andExpect(jsonPath("name").value(userDTO.getName()))
+                .andExpect(jsonPath("info").value(userDTO.getInfo()));
+
+        verify(userService,times(1)).updateUserByDTO(userDTO);
     }
 
     @Test
     void joinGroupRoom() throws Exception {
+        //given
+        final Long groupId = 1L;
+        final InGameRolesDTO inGameRolesDTO = getInGameRoleDTOMock();
+        byte[] content = convertObjectToJsonBytes(inGameRolesDTO);
+
+        //when + then
+        mockMvc.perform(patch(baseUrl+"/joinGroup/"+ groupId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isOk());
+
+        verify(userService,times(1)).joinGroupRoom(groupId,inGameRolesDTO);
     }
 
     @Test
     void exitGroupRoom() throws Exception {
+        //given
+        final Long groupId = 1L;
+
+        //when + then
+        mockMvc.perform(delete(baseUrl+"/my-groups/"+groupId))
+                .andExpect(status().isOk());
+
+        verify(userService,times(1)).getOutOfGroup(groupId);
     }
 
     @Test
     void showUserProfile() throws Exception{
+
+        //given
+        final UserProfileDTO userProfileDTO = getUserProfileDTOMock();
+        final Long userId = 1L;
+        when(userService.getUserProfile(any(Long.class))).thenReturn(userProfileDTO);
+
+        //when + then
+        mockMvc.perform(get(baseUrl+"/profile/"+userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(userProfileDTO.getId()))
+                .andExpect(jsonPath("username").value(userProfileDTO.getUsername()));
+
+        verify(userService, times(1)).getUserProfile(userId);
     }
 
     @Test
     void setProfilePicture() throws Exception{
+
     }
 
     @Test

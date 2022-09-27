@@ -117,7 +117,7 @@ public class UserController {
 
 
     @PutMapping("/edit")
-    public ResponseEntity<?> updateUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
         return ResponseEntity.ok(userService.updateUserByDTO(userDTO));
     }
 

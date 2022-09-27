@@ -1,10 +1,8 @@
 package com.example.project.samples;
 
 import com.example.project.domain.User;
-import com.example.project.model.BannedUserDTO;
-import com.example.project.model.ReportedUserDTO;
-import com.example.project.model.UserDTO;
-import com.example.project.model.UserMsgDTO;
+import com.example.project.model.*;
+import com.example.project.model.auth.UserCredentials;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +32,24 @@ public class UserMockSample {
                 .email("evistifate@gmail.com")
                 .info("Idk")
                 .name("Patryk")
+                .build();
+    }
+
+    public static UserProfileDTO getUserProfileDTOMock(){
+        return UserProfileDTO.builder()
+                .id(2L)
+                .username("Evistix")
+                .age(21)
+                .city("Lublin")
+                .email("evistifate@gmail.com")
+                .info("Idk")
+                .name("Patryk")
+                .build();
+    }
+    public static UserCredentials getUserCredentialsMock(){
+        return UserCredentials.builder()
+                .password("pass")
+                .username("Evi")
                 .build();
     }
 
