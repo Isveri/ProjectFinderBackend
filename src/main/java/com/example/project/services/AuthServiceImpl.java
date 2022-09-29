@@ -167,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenResponse confirmEmailChange(String token) {
+    public void confirmEmailChange(String token) {
         validateVerificationToken(token);
 
         VerificationToken verificationToken = this.getVerificationToken(token);
@@ -176,8 +176,6 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(verificationToken.getEmail());
         userRepository.save(user);
         verificationTokenRepository.delete(verificationToken);
-
-      return new TokenResponse(jwtTokenUtil.generateAccessToken(user));
     }
 
 

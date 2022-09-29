@@ -53,8 +53,9 @@ public class AuthController {
     }
 
     @GetMapping("/confirmEmailChange")
-    public ResponseEntity<TokenResponse> confirmEmailChange(@RequestParam("token") String token){
-        return ResponseEntity.ok(authService.confirmEmailChange(token));
+    public ResponseEntity<?> confirmEmailChange(@RequestParam("token") String token){
+        authService.confirmEmailChange(token);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/emailChange")

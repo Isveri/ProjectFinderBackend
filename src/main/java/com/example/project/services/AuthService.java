@@ -30,7 +30,7 @@ public interface AuthService {
 
     String confirmDeleteAccount(String token);
 
-    TokenResponse confirmEmailChange(String token);
+    void confirmEmailChange(String token);
     void changePassword(ChangePasswordDTO changePasswordDTO);
 
     void sendMessage(MimeMessage mimeMessage);

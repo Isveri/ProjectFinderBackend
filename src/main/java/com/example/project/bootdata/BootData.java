@@ -155,11 +155,13 @@ public class BootData implements CommandLineRunner {
         InGameRole role2 = InGameRole.builder().name("Support").build();
         InGameRole role3 = InGameRole.builder().name("Leader").build();
         InGameRole role4 = InGameRole.builder().name("Fragger").build();
+        InGameRole role5 = InGameRole.builder().name("Lurker").build();
 
         inGameRoleRepository.save(role1);
         inGameRoleRepository.save(role2);
         inGameRoleRepository.save(role3);
         inGameRoleRepository.save(role4);
+        inGameRoleRepository.save(role5);
 
 
         Game game1 = Game.builder().name("League of Legends").inGameRoles(Arrays.asList(igr1, igr2, igr3, igr4, igr5)).build();
@@ -180,6 +182,7 @@ public class BootData implements CommandLineRunner {
         role2.setGame(game2);
         role3.setGame(game2);
         role4.setGame(game2);
+        role5.setGame(game2);
 
         inGameRoleRepository.save(igr1);
         inGameRoleRepository.save(igr2);
@@ -190,6 +193,7 @@ public class BootData implements CommandLineRunner {
         inGameRoleRepository.save(role2);
         inGameRoleRepository.save(role3);
         inGameRoleRepository.save(role4);
+        inGameRoleRepository.save(role5);
 
 
         Category cat1 = Category.builder()
@@ -434,13 +438,6 @@ public class BootData implements CommandLineRunner {
         userRepository.save(u5);
         userRepository.save(u6);
 
-//        game1.setGroupRooms(Arrays.asList(g1,g2,g3,g4));
-//        game2.setGroupRooms(Arrays.asList(g5, g6));
-//        game3.setGroupRooms(Arrays.asList(g7));
-//
-//        gameRepository.save(game1);
-//        gameRepository.save(game2);
-//        gameRepository.save(game3);
 
 
     }

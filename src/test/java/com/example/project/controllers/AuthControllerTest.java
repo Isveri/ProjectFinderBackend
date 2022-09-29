@@ -100,13 +100,10 @@ class AuthControllerTest {
     void confirmEmailChange() throws Exception {
         //given
         final String token = "token";
-        final TokenResponse tokenResponse = getTokenResponseMock();
-        when(authService.confirmEmailChange(any(String.class))).thenReturn(tokenResponse);
 
         //when + then
         mockMvc.perform(get(baseUrl+"/confirmEmailChange").param("token",token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("token").value(tokenResponse.getToken()));
+                .andExpect(status().isOk());
 
         verify(authService, times(1)).confirmEmailChange(token);
     }
