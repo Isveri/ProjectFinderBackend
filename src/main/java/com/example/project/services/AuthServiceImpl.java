@@ -67,6 +67,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenResponse getToken(UserCredentials userCredentials) {
+        dataValidation.usernameLogin(userCredentials.getUsername());
+        dataValidation.password(userCredentials.getPassword());
         User user = (User) userDetailsService.loadUserByUsername(userCredentials.getUsername());
         if(!user.isEnabled()){
             throw new AccountNotEnabledException("Account not enabled");
@@ -114,6 +116,7 @@ public class AuthServiceImpl implements AuthService {
         String username = userDto.getUsername();
         String password = userDto.getPassword();
         String email = userDto.getEmail();
+
         if (userRepository.findByUsername(username).isPresent()) {
             throw new UsernameAlreadyTakenException("Username already taken");
         } else {
