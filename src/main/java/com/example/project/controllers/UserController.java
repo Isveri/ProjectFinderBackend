@@ -104,7 +104,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDTO> getAlreadyLoggedUser() {
+    public ResponseEntity<UserProfileDTO> getAlreadyLoggedUser() {
 
         return ResponseEntity.ok(userService.getLoggedUser());
     }

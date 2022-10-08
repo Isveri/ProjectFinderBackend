@@ -19,5 +19,7 @@ public class UserProfileDTO {
     private int age;
     private int phone;
     private String city;
+    private RoleDTO role;
     private List<InGameRolesDTO> inGameRoles;
+    private List<PlatformDTO> platforms;
 }

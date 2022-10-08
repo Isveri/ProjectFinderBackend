@@ -80,11 +80,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getLoggedUser() {
+    public UserProfileDTO getLoggedUser() {
         User currentUser = getCurrentUser();
         long id = currentUser.getId();
         return userRepository.findById(id)
-                .map(userMapper::mapUserToUserDTO)
+                .map(userMapper::mapUserToUserProfileDTO)
                 .map(userDTO -> {
                     userDTO.setId(id);
                     return userDTO;

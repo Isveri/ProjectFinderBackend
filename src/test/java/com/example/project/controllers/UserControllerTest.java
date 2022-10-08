@@ -275,18 +275,18 @@ class UserControllerTest {
     @Test
     void getAlreadyLoggedUser() throws Exception{
         //given
-        final UserDTO userDTO = getUserDTOMock();
-        when(userService.getLoggedUser()).thenReturn(userDTO);
+        final UserProfileDTO userProfileDTO = getUserProfileDTOMock();
+        when(userService.getLoggedUser()).thenReturn(userProfileDTO);
 
         //when + then
         mockMvc.perform(get(baseUrl))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("username").value(userDTO.getUsername()))
-                .andExpect(jsonPath("id").value(userDTO.getId()))
-                .andExpect(jsonPath("age").value(userDTO.getAge()))
-                .andExpect(jsonPath("city").value(userDTO.getCity()))
-                .andExpect(jsonPath("name").value(userDTO.getName()))
-                .andExpect(jsonPath("info").value(userDTO.getInfo()));
+                .andExpect(jsonPath("username").value(userProfileDTO.getUsername()))
+                .andExpect(jsonPath("id").value(userProfileDTO.getId()))
+                .andExpect(jsonPath("age").value(userProfileDTO.getAge()))
+                .andExpect(jsonPath("city").value(userProfileDTO.getCity()))
+                .andExpect(jsonPath("name").value(userProfileDTO.getName()))
+                .andExpect(jsonPath("info").value(userProfileDTO.getInfo()));
 
         verify(userService,times(1)).getLoggedUser();
     }

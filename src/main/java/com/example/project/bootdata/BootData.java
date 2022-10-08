@@ -113,13 +113,13 @@ public class BootData implements CommandLineRunner {
         userRepository.save(u5);
         userRepository.save(u6);
 
-        Platform p1 = Platform.builder()
-                .platformType(Platform.PlatformType.STEAM)
-                .username("TEST")
-                .user(u2)
-                .build();
-
-        platformRepository.save(p1);
+//        Platform p1 = Platform.builder()
+//                .platformType(Platform.PlatformType.STEAM)
+//                .username("TEST")
+//                .user(u2)
+//                .build();
+//
+//        platformRepository.save(p1);
 
         Chat chat1 = Chat.builder().messages(Arrays.asList()).build();
         Chat chat2 = Chat.builder().messages(Arrays.asList()).build();

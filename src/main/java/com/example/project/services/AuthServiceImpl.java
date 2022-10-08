@@ -9,6 +9,7 @@ import com.example.project.exceptions.validation.UsernameAlreadyTakenException;
 import com.example.project.exceptions.validation.WrongPasswordException;
 import com.example.project.mappers.UserMapper;
 import com.example.project.model.UserDTO;
+import com.example.project.model.UserMsgDTO;
 import com.example.project.model.auth.ChangePasswordDTO;
 import com.example.project.model.auth.TokenResponse;
 import com.example.project.model.auth.UserCredentials;
@@ -24,7 +25,7 @@ import com.example.project.utils.UserDetailsHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -36,10 +37,16 @@ import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
 
 import com.example.project.utils.DataValidation;
 import org.springframework.ui.Model;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -224,6 +231,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
     }
+
 
     private void deleteVerificationToken(User user) {
         VerificationToken token = verificationTokenRepository.findByUser(user);

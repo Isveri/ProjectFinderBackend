@@ -14,7 +14,7 @@ public interface UserService {
     UserDTO save(UserDTO user);
     UserDTO saveAndReturnDTO(User user);
     UserDTO updateUserByDTO(UserDTO userDTO);
-    UserDTO getLoggedUser();
+    UserProfileDTO getLoggedUser();
     UserDTO getUserByUsername(String username);
     List<BannedUserDTO> getBannedUsers();
 

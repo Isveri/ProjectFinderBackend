@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Entity
 public class Platform {
-    public enum PlatformType{
+    public enum PlatformType {
         STEAM,
         DISCORD,
         RIOTGAMES,
@@ -28,10 +28,17 @@ public class Platform {
     @NotNull
     private PlatformType platformType;
 
-   @NotBlank
+    @NotBlank
     private String username;
 
-   @ManyToOne(cascade = CascadeType.MERGE)
-   @JoinColumn(name = "user_id")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @NotBlank
+    private String avatar;
+
+    @NotBlank
+    private String discriminator;
+
 }
