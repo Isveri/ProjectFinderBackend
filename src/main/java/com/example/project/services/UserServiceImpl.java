@@ -76,6 +76,7 @@ public class UserServiceImpl implements UserService {
         //dataValidation.emailUpdate(userDTO.getEmail(), user);
         dataValidation.age(userDTO.getAge());
         dataValidation.city(userDTO.getCity());
+        userDTO.setPassword(user.getPassword());
         return saveAndReturnDTO(userMapper.updateUserFromUserDTO(userDTO, user));
     }
 
