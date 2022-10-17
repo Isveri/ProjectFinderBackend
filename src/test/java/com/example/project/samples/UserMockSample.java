@@ -76,7 +76,7 @@ public class UserMockSample {
                 .city("Lublin")
                 .email("evistifate@gmail.com")
                 .info("Brak ")
-                .name("Harold")
+                .name("Patryk")
                 .build();
     }
 
