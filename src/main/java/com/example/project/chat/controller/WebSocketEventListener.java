@@ -21,7 +21,7 @@ public class WebSocketEventListener {
 
     private Map<String,String> destination = new HashMap<>();
     private Map<String,Map<String,Long>> connectedUsers = new HashMap<>();
-//TODO mozna cos zrobic z ta mapa connectedUsers bo trzymanie tego w pamieci 2/10
+
 
     @EventListener
     public void handleSessionSubscribe(SessionSubscribeEvent event) {

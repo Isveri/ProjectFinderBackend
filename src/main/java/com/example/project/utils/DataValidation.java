@@ -108,7 +108,6 @@ public class DataValidation {
             if (!Pattern.matches("^\\d{9}$", phoneString)) {//check if number has 9 digits
                 throw new BadPhoneException("Phone number must have 9 digits");
             }
-            //TODO dodac sprawdzanie dla roznych wersji numeru
         }
     }
     public  void city(String city){

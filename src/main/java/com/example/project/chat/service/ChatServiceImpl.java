@@ -93,7 +93,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<MessageDTO> setMessagesAsRead(Long chatId) {
-        //TODO jak bedzie sie chcialo to mozna zrobic 2 oddzielne wyjatki
+
         User user = getCurrentUser();
         List<Message> messageList = messageRepository.findAllNotReadByChatId(chatId, MessageStatus.Status.UNREAD, user.getId());
         messageList.forEach((message -> {
