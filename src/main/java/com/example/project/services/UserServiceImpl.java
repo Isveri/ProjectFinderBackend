@@ -184,6 +184,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
+
     @Override
     public void getOutOfGroup(Long groupRoomId) {
         User currentUser = getCurrentUser();

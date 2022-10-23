@@ -6,6 +6,7 @@ public class RoleMockSample {
 
     public static Role getRoleMock(){
         return Role.builder()
+                .name("ROLE_USER")
                 .build();
     }
 }

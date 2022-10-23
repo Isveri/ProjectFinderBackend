@@ -18,7 +18,7 @@ import java.util.List;
 import static com.example.project.converters.Converter.convertObjectToJsonBytes;
 import static com.example.project.samples.FriendsSample.getFriendDTOMock;
 import static com.example.project.samples.FriendsSample.getFriendRequestDTOMock;
-import static com.example.project.samples.GroupRoomSample.getUsersGroupListDTOMock;
+import static com.example.project.samples.GroupRoomSample.getUserGroupListDTOMock;
 import static com.example.project.samples.InGameRolesSample.getInGameRoleDTOMock;
 import static com.example.project.samples.ReportMockSample.getReportDTOMock;
 import static com.example.project.samples.UserMockSample.*;
@@ -294,7 +294,7 @@ class UserControllerTest {
     @Test
     void getUserGroups() throws Exception{
         //given
-        final UserGroupsListDTO userGroupsListDTO = getUsersGroupListDTOMock();
+        final UserGroupsListDTO userGroupsListDTO = getUserGroupListDTOMock();
         when(userService.getUserGroups()).thenReturn(userGroupsListDTO);
 
         //when + then
