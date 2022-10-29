@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Friend {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

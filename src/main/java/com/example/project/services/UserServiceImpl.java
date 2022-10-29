@@ -159,6 +159,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // TODO refactor FileHandler do serwisu i potem mock do testow
     @Override
     public void changeProfilePicture(MultipartFile profilePicture) {
         User currentUser = getCurrentUser();

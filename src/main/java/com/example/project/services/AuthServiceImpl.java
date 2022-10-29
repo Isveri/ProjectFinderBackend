@@ -85,6 +85,9 @@ public class AuthServiceImpl implements AuthService {
         } else if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword()))
             return new TokenResponse(jwtTokenUtil.generateAccessToken(user));
         return null;
+
+        //TODO EXCEPTION zrobic zamiast tego zwracania nulla
+
     }
 
     @Override

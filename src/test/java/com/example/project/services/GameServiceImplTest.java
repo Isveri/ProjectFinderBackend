@@ -37,7 +37,7 @@ class GameServiceImplTest {
         Game game = getGameMock();
         GameDTO gameDTO = getGameDTOMock();
         when(gameRepository.findAll()).thenReturn(Arrays.asList(game));
-        when(gameMapper.mapGameToGameDTO(game)).thenReturn(gameDTO);
+        when(gameMapper.mapGameToGameDTO(any(Game.class))).thenReturn(gameDTO);
 
         //when
         List<GameDTO> games = gameService.getGames();
@@ -46,6 +46,7 @@ class GameServiceImplTest {
         assertThat(games.get(0).getName())
                 .isEqualTo(game.getName());
 
-//        verify(gameService,times(1)).getGames();
+        verify(gameRepository,times(1)).findAll();
+        verify(gameMapper, times(1)).mapGameToGameDTO(game);
     }
 }

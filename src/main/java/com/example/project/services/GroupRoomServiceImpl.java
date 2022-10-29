@@ -221,6 +221,7 @@ public class GroupRoomServiceImpl implements GroupRoomService {
         } else {
             return null;
         }
+        //TODO wywalic nulla i zrobic exception + w kontrolerze tylko response raz dac
     }
 
     private String getUniqueCode() {
@@ -235,7 +236,6 @@ public class GroupRoomServiceImpl implements GroupRoomService {
 
         User currentUser = getCurrentUser();
         User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new UserNotFoundException("User not found id:" + currentUser.getId()));
-        ;
 
         GroupRoom groupRoom = groupRepository.findGroupRoomByJoinCode(code);
         if (groupRoom == null) {

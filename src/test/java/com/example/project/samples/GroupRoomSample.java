@@ -1,5 +1,7 @@
 package com.example.project.samples;
 
+import com.example.project.domain.Category;
+import com.example.project.domain.Game;
 import com.example.project.domain.GroupRoom;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.model.GroupRoomUpdateDTO;
@@ -20,6 +22,9 @@ public class GroupRoomSample {
                 .maxUsers(5)
                 .name("Group Mock")
                 .open(true)
+                .game(Game.builder().name("CSGO").build())
+                .category(Category.builder().name("Match Making").build())
+                .groupLeader(getCurrentUserMock())
                 .joinCode("sersad23")
                 .users(List.of(getUserMock()))
                 .inGameRolesActive(false)
