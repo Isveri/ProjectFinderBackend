@@ -11,6 +11,7 @@ import com.example.project.model.UserGroupsListDTO;
 import java.util.Collections;
 import java.util.List;
 
+import static com.example.project.chat.samples.ChatSample.getChatMock;
 import static com.example.project.samples.UserMockSample.*;
 
 public class GroupRoomSample {
@@ -22,11 +23,12 @@ public class GroupRoomSample {
                 .maxUsers(5)
                 .name("Group Mock")
                 .open(true)
+                .chat(getChatMock())
                 .game(Game.builder().name("CSGO").build())
                 .category(Category.builder().name("Match Making").build())
                 .groupLeader(getCurrentUserMock())
                 .joinCode("sersad23")
-                .users(List.of(getUserMock()))
+                .users(List.of(getUserMock(),getCurrentUserMock()))
                 .inGameRolesActive(false)
                 .build();
     }

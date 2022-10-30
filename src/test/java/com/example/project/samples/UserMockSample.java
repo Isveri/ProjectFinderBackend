@@ -68,6 +68,7 @@ public class UserMockSample {
                 .age(21)
                 .groupRooms(new ArrayList<>())
                 .city("Lublin")
+                .password("old")
                 .friendList(friends)
                 .email("evistifate@gmail.com")
                 .info("Idk")

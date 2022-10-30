@@ -5,12 +5,13 @@ import com.example.project.domain.Role;
 import com.example.project.domain.User;
 import com.example.project.exceptions.AccountBannedException;
 import com.example.project.exceptions.AccountNotEnabledException;
-import com.example.project.exceptions.NotGroupLeaderException;
 import com.example.project.exceptions.TokenAlreadySendException;
 import com.example.project.exceptions.validation.EmailAlreadyTakenException;
 import com.example.project.exceptions.validation.UsernameAlreadyTakenException;
+import com.example.project.exceptions.validation.WrongPasswordException;
 import com.example.project.mappers.UserMapper;
 import com.example.project.model.UserDTO;
+import com.example.project.model.auth.ChangePasswordDTO;
 import com.example.project.model.auth.TokenResponse;
 import com.example.project.model.auth.UserCredentials;
 import com.example.project.model.auth.VerificationToken;
@@ -34,12 +35,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.mail.internet.MimeMessage;
 import java.util.Collections;
 import java.util.Optional;
 
 import static com.example.project.samples.GroupRoomSample.getGroupRoomMock;
 import static com.example.project.samples.RoleMockSample.getRoleMock;
-import static com.example.project.samples.TokenResponseSample.getTokenResponseMock;
+import static com.example.project.samples.TokenResponseSample.getChangePasswordDTOMock;
 import static com.example.project.samples.TokenResponseSample.getVerificationTokenMock;
 import static com.example.project.samples.UserMockSample.*;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
@@ -301,36 +303,98 @@ class AuthServiceImplTest {
     @Test
     void confirmDeleteAccount() {
 
-//        //given
-//        User user = getCurrentUserMock();
-//        String token = "mock";
-//        VerificationToken verificationToken = getVerificationTokenMock();
-//        GroupRoom gr = getGroupRoomMock();
-//        when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(verificationToken);
-//        when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(user));
-//        when(groupRepository.findAllByGroupLeaderId(user.getId())).thenReturn(Collections.singletonList(gr));
-//
-//        //when
-//        authService.deleteUser();
-//
-//        //then
-//        verify(verificationTokenRepository, times(1)).findByToken(token);
-//        verify(userRepository, times(1)).findById(user.getId());
-//        verify(groupRepository, times(1)).findAllByGroupLeaderId(user.getId());
-//        verify(userService, times(1)).getOutOfGroup(gr.getId());
-//        verify(userRepository, times(1)).softDeleteById(gr.getId());
+        //given
+        User user = getCurrentUserMock();
+        String token = "mock";
+        VerificationToken verificationToken = getVerificationTokenMock();
+        GroupRoom gr = getGroupRoomMock();
+        when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(verificationToken);
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(user));
+        when(verificationTokenRepository.findByUser(any(User.class))).thenReturn(verificationToken);
+        when(groupRepository.findAllByGroupLeaderId(user.getId())).thenReturn(Collections.singletonList(gr));
+
+        //when
+        authService.confirmDeleteAccount(token);
+
+        //then
+        verify(verificationTokenRepository, times(1)).findByToken(token);
+        verify(userRepository, times(1)).findById(user.getId());
+        verify(groupRepository, times(1)).findAllByGroupLeaderId(user.getId());
+        verify(userService, times(1)).getOutOfGroup(gr.getId());
+        verify(userRepository, times(1)).softDeleteById(user.getId());
 
     }
 
     @Test
     void confirmEmailChange() {
+        //given
+        User user = getUserMock();
+        String token = "mock";
+        VerificationToken verificationToken = getVerificationTokenMock();
+        when(verificationTokenRepository.findByToken(any(String.class))).thenReturn(verificationToken);
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(user));
+
+        //when
+        authService.confirmEmailChange(token);
+
+        //then
+        verify(verificationTokenRepository, times(3)).findByToken(token);
+        verify(userRepository, times(1)).findById(user.getId());
+        verify(userRepository, times(1)).save(user);
+        verify(verificationTokenRepository, times(1)).delete(verificationToken);
     }
 
     @Test
     void changePassword() {
+        //given
+        ChangePasswordDTO changePasswordDTO = getChangePasswordDTOMock();
+        User user = getCurrentUserMock();
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(user));
+        when(passwordEncoder.matches(any(String.class), any(String.class))).thenReturn(true);
+        when(passwordEncoder.encode(any(String.class))).thenReturn(changePasswordDTO.getNewPassword());
+
+        //when
+        authService.changePassword(changePasswordDTO);
+
+        //then
+        verify(userRepository, times(1)).findById(user.getId());
+        verify(dataValidation, times(2)).password(any());
+        verify(userRepository, times(1)).save(user);
+        verify(passwordEncoder, times(1)).encode(any());
+        verify(passwordEncoder, times(1)).matches(any(), any());
+
+    }
+
+    @Test
+    void password_change_should_throw_wrong_password_exception() {
+        //given
+        ChangePasswordDTO changePasswordDTO = getChangePasswordDTOMock();
+        User user = getCurrentUserMock();
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(user));
+        when(passwordEncoder.matches(any(String.class), any(String.class))).thenReturn(false);
+
+        //when
+        Exception exception = assertThrows(WrongPasswordException.class, () -> authService.changePassword(changePasswordDTO));
+
+        //then
+        assertNotNull(exception);
+        verify(userRepository, times(1)).findById(user.getId());
+        verify(dataValidation, times(2)).password(any());
+        verify(userRepository, times(0)).save(user);
+        verify(passwordEncoder, times(0)).encode(any());
+        verify(passwordEncoder, times(1)).matches(any(), any());
+
     }
 
     @Test
     void sendMessage() {
+        //given
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+
+        //when
+        authService.sendMessage(mimeMessage);
+
+        //then
+        verify(javaMailSender, times(1)).send(mimeMessage);
     }
 }

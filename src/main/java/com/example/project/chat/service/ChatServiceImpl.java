@@ -91,6 +91,7 @@ public class ChatServiceImpl implements ChatService {
         throw new EmptyMessageException("Cannot send empty message");
     }
 
+    //TODO sprawdzic dlaczego lista zwracana jest bo moze bedzie void
     @Override
     public List<MessageDTO> setMessagesAsRead(Long chatId) {
 

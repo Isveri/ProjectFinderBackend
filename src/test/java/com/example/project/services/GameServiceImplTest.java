@@ -17,6 +17,7 @@ import static com.example.project.samples.GameSample.getGameDTOMock;
 import static com.example.project.samples.GameSample.getGameMock;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
+
 class GameServiceImplTest {
 
 
@@ -46,7 +47,7 @@ class GameServiceImplTest {
         assertThat(games.get(0).getName())
                 .isEqualTo(game.getName());
 
-        verify(gameRepository,times(1)).findAll();
+        verify(gameRepository, times(1)).findAll();
         verify(gameMapper, times(1)).mapGameToGameDTO(game);
     }
 }

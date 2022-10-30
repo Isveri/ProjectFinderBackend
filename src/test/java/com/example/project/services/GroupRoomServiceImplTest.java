@@ -64,11 +64,12 @@ class GroupRoomServiceImplTest {
 
     private GroupRoom gr;
     private GroupRoomDTO groupRoomDTO;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        groupRoomService = new GroupRoomServiceImpl(groupRoomMapper,groupRepository,userRepository,chatRepository,categoryRepository,sseService,dataValidation,
-                takenInGameRoleMapper,takenInGameRoleRepository);
+        groupRoomService = new GroupRoomServiceImpl(groupRoomMapper, groupRepository, userRepository, chatRepository, categoryRepository, sseService, dataValidation,
+                takenInGameRoleMapper, takenInGameRoleRepository);
 
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
@@ -76,8 +77,8 @@ class GroupRoomServiceImplTest {
         SecurityContextHolder.setContext(securityContext);
         when(authentication.getPrincipal()).thenReturn(getCurrentUserMock());
 
-         groupRoomDTO = getGroupRoomDTOMock();
-         gr = getGroupRoomMock();
+        groupRoomDTO = getGroupRoomDTOMock();
+        gr = getGroupRoomMock();
     }
 
     @Test
@@ -92,7 +93,7 @@ class GroupRoomServiceImplTest {
         //then
         assertThat(result.get(0).getId()).isEqualTo(gr.getId());
 
-        verify(groupRepository,times(1)).findAll();
+        verify(groupRepository, times(1)).findAll();
         verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
     }
 
@@ -125,7 +126,7 @@ class GroupRoomServiceImplTest {
 
         //then
         assertThat(result.get(0).getId()).isEqualTo(gr.getId());
-        verify(groupRepository,times(1)).findAllDeletedGroups();
+        verify(groupRepository, times(1)).findAllDeletedGroups();
         verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
     }
 
@@ -137,7 +138,7 @@ class GroupRoomServiceImplTest {
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));
 
         //when
-        groupRoomService.updateVisibility(groupId,value);
+        groupRoomService.updateVisibility(groupId, value);
 
         //then
         verify(groupRepository, times(1)).findById(groupId);
@@ -153,7 +154,7 @@ class GroupRoomServiceImplTest {
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));
 
         //when
-        Exception exception = assertThrows(NotGroupLeaderException.class, () ->groupRoomService.updateVisibility(groupId,value));
+        Exception exception = assertThrows(NotGroupLeaderException.class, () -> groupRoomService.updateVisibility(groupId, value));
 
         //then
         assertNotNull(exception);
@@ -185,11 +186,11 @@ class GroupRoomServiceImplTest {
         Long gameId = 1L;
         Long categoryId = 1L;
         Long roleId = 1L;
-        when(groupRepository.findAllByGameCategoryRole(any(Long.class),any(Long.class), any(Long.class))).thenReturn(Collections.singletonList(gr));
+        when(groupRepository.findAllByGameCategoryRole(any(Long.class), any(Long.class), any(Long.class))).thenReturn(Collections.singletonList(gr));
         when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
 
         //when
-        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryRole(gameId, categoryId,roleId);
+        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryRole(gameId, categoryId, roleId);
 
         //then
         assertThat(result.get(0).getId()).isEqualTo(gr.getId());
@@ -238,15 +239,15 @@ class GroupRoomServiceImplTest {
         Long gameId = 1L;
         Long categoryId = 1L;
         String city = "Lublin";
-        when(groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(any(Long.class),any(Long.class), any(String.class))).thenReturn(Collections.singletonList(gr));
+        when(groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(any(Long.class), any(Long.class), any(String.class))).thenReturn(Collections.singletonList(gr));
         when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
 
         //when
-        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryCity(gameId,categoryId, city);
+        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryCity(gameId, categoryId, city);
 
         //then
         assertThat(result.get(0).getId()).isEqualTo(gr.getId());
-        verify(groupRepository, times(1)).findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId,categoryId, city);
+        verify(groupRepository, times(1)).findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId, categoryId, city);
         verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
     }
 
@@ -316,7 +317,7 @@ class GroupRoomServiceImplTest {
 
         //then
         verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
-        verify(groupRepository,times(1)).save(gr);
+        verify(groupRepository, times(1)).save(gr);
     }
 
     @Test
@@ -331,9 +332,9 @@ class GroupRoomServiceImplTest {
 
         //then
         verify(groupRepository, times(1)).findById(gr.getId());
-        verify(groupRoomMapper,times(1)).updateGroupRoomFromGroupRoomUpdateDTO(gru, gr);
+        verify(groupRoomMapper, times(1)).updateGroupRoomFromGroupRoomUpdateDTO(gru, gr);
         verify(dataValidation, times(1)).userLimitUpdate(gru.getMaxUsers(), gr);
-        verify(dataValidation,times(1)).groupDesc(gru.getDescription());
+        verify(dataValidation, times(1)).groupDesc(gru.getDescription());
     }
 
 
@@ -395,7 +396,7 @@ class GroupRoomServiceImplTest {
         verify(userRepository, times(1)).findById(currentUser.getId());
         verify(groupRepository, times(1)).findGroupRoomByJoinCode(joinCode);
         verify(userRepository, times(1)).save(currentUser);
-        verify(sseService,times(1)).sendSseEventToUser(any(),any(),any());
+        verify(sseService, times(1)).sendSseEventToUser(any(), any(), any());
         verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
     }
 
@@ -410,14 +411,14 @@ class GroupRoomServiceImplTest {
         when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
 
         //when
-        Exception exception = assertThrows(CodeDoesntExistException.class, () ->groupRoomService.joinGroupByCode(joinCode));
+        Exception exception = assertThrows(CodeDoesntExistException.class, () -> groupRoomService.joinGroupByCode(joinCode));
 
         //then
         assertNotNull(exception);
         verify(userRepository, times(1)).findById(currentUser.getId());
         verify(groupRepository, times(1)).findGroupRoomByJoinCode(joinCode);
         verify(userRepository, times(0)).save(currentUser);
-        verify(sseService,times(0)).sendSseEventToUser(any(),any(),any());
+        verify(sseService, times(0)).sendSseEventToUser(any(), any(), any());
         verify(groupRoomMapper, times(0)).mapGroupRoomToGroupRoomDTO(gr);
     }
 
@@ -432,14 +433,14 @@ class GroupRoomServiceImplTest {
         when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
 
         //when
-        Exception exception = assertThrows(AlreadyInGroupException.class, () ->groupRoomService.joinGroupByCode(joinCode));
+        Exception exception = assertThrows(AlreadyInGroupException.class, () -> groupRoomService.joinGroupByCode(joinCode));
 
         //then
         assertNotNull(exception);
         verify(userRepository, times(1)).findById(currentUser.getId());
         verify(groupRepository, times(1)).findGroupRoomByJoinCode(joinCode);
         verify(userRepository, times(0)).save(currentUser);
-        verify(sseService,times(0)).sendSseEventToUser(any(),any(),any());
+        verify(sseService, times(0)).sendSseEventToUser(any(), any(), any());
         verify(groupRoomMapper, times(0)).mapGroupRoomToGroupRoomDTO(gr);
     }
 
@@ -463,6 +464,7 @@ class GroupRoomServiceImplTest {
         verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
         verify(groupRepository, times(1)).save(gr);
     }
+
     @Test
     void should_throw_not_group_leader_exception_when_make_leader() {
         //given
@@ -472,7 +474,7 @@ class GroupRoomServiceImplTest {
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(currentUser));
 
         //when
-        Exception exception = assertThrows(NotGroupLeaderException.class, () ->groupRoomService.makePartyLeader(gr.getId(), currentUser.getId()));
+        Exception exception = assertThrows(NotGroupLeaderException.class, () -> groupRoomService.makePartyLeader(gr.getId(), currentUser.getId()));
 
         assertNotNull(exception);
         verify(groupRepository, times(1)).findById(gr.getId());
@@ -515,7 +517,7 @@ class GroupRoomServiceImplTest {
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(currentUser));
 
         //when
-        Exception exception = assertThrows(NotGroupLeaderException.class, () ->groupRoomService.removeUserFromGroup(gr.getId(), currentUser.getId()));
+        Exception exception = assertThrows(NotGroupLeaderException.class, () -> groupRoomService.removeUserFromGroup(gr.getId(), currentUser.getId()));
 
         //then
         assertNotNull(exception);
@@ -539,7 +541,7 @@ class GroupRoomServiceImplTest {
 
         //then
         verify(groupRepository, times(1)).findById(gr.getId());
-        verify(groupRepository,times(1)).softDeleteById(gr.getId());
+        verify(groupRepository, times(1)).softDeleteById(gr.getId());
 
     }
 
@@ -550,12 +552,12 @@ class GroupRoomServiceImplTest {
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));
 
         //when
-        Exception exception = assertThrows(NotGroupLeaderException.class, () ->groupRoomService.deleteGroupRoomById(gr.getId()));
+        Exception exception = assertThrows(NotGroupLeaderException.class, () -> groupRoomService.deleteGroupRoomById(gr.getId()));
 
         //then
         assertNotNull(exception);
         verify(groupRepository, times(1)).findById(gr.getId());
-        verify(groupRepository,times(0)).softDeleteById(gr.getId());
+        verify(groupRepository, times(0)).softDeleteById(gr.getId());
 
     }
 

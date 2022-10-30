@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.example.project.chat.samples.ChatSample.getChatMock;
+import static com.example.project.chat.samples.ChatSample.getChatMockv2;
 import static com.example.project.samples.UserMockSample.*;
 
 public class FriendsSample {
@@ -32,6 +34,7 @@ public class FriendsSample {
     public static Friend getFriendMock(){
         return Friend.builder()
                 .id(1L)
+                .chat(getChatMockv2())
                 .user(getUserMock())
                 .build();
     }

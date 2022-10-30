@@ -26,7 +26,6 @@ import static org.mockito.Mockito.*;
 class CategoryServiceImplTest {
 
 
-
     private CategoryServiceImpl categoryService;
     @Mock
     private CategoryRepository categoryRepository;
@@ -55,8 +54,8 @@ class CategoryServiceImplTest {
         assertThat(categories.get(0).getName())
                 .isEqualTo(categoryDTO.getName());
 
-        verify(categoryRepository,times(1)).findAllByGameName(name);
-        verify(categoryMapper,times(1)).mapCategoryToCategoryDTO(category);
+        verify(categoryRepository, times(1)).findAllByGameName(name);
+        verify(categoryMapper, times(1)).mapCategoryToCategoryDTO(category);
 
     }
 }

@@ -78,7 +78,7 @@ class AuthControllerTest {
                         .content(content))
                 .andExpect(status().isOk());
 
-//        verify(authService,times(1)).createNewAccount(userDTO,request);
+        verify(authService,times(1)).createNewAccount(any(),any());
     }
 
     @Test

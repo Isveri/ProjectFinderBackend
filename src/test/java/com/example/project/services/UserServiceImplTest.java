@@ -303,7 +303,7 @@ class UserServiceImplTest {
     void changeProfilePicture() {
         //given
         User currentUser = getCurrentUserMock();
-        MultipartFile file = new MockMultipartFile("file",new byte[]{});
+        MultipartFile file = new MockMultipartFile("file", new byte[]{});
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(currentUser));
 
         //when
@@ -446,7 +446,7 @@ class UserServiceImplTest {
 
         //then
         verify(userRepository, times(1)).findById(user.getId());
-        verify(reportRepository,times(1)).deleteAll(any());
+        verify(reportRepository, times(1)).deleteAll(any());
         verify(userRepository, times(1)).save(user);
     }
 
@@ -469,15 +469,15 @@ class UserServiceImplTest {
         User invitedUser = getInvitedUserMock();
         User currentUser = getCurrentUserMock();
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(invitedUser));
-        when(friendRequestRepository.existsBySendingUserIdAndInvitedUserId(any(Long.class),any(Long.class))).thenReturn(false);
+        when(friendRequestRepository.existsBySendingUserIdAndInvitedUserId(any(Long.class), any(Long.class))).thenReturn(false);
 
         //when
         userService.sendFriendRequest(invitedUser.getId());
 
         //then
         verify(userRepository, times(1)).findById(invitedUser.getId());
-        verify(friendRequestRepository,times(1)).existsBySendingUserIdAndInvitedUserId(currentUser.getId(), invitedUser.getId());
-        verify(sseService,times(1)).sendSseFriendEvent(any(),any());
+        verify(friendRequestRepository, times(1)).existsBySendingUserIdAndInvitedUserId(currentUser.getId(), invitedUser.getId());
+        verify(sseService, times(1)).sendSseFriendEvent(any(), any());
 
     }
 
@@ -487,7 +487,7 @@ class UserServiceImplTest {
         User invitedUser = getInvitedUserMock();
         User currentUser = getCurrentUserMock();
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(invitedUser));
-        when(friendRequestRepository.existsBySendingUserIdAndInvitedUserId(any(Long.class),any(Long.class))).thenReturn(true);
+        when(friendRequestRepository.existsBySendingUserIdAndInvitedUserId(any(Long.class), any(Long.class))).thenReturn(true);
 
         //when
         Exception exception = assertThrows(AlreadyInvitedException.class, () -> userService.sendFriendRequest(invitedUser.getId()));
@@ -495,7 +495,7 @@ class UserServiceImplTest {
         //then
         assertNotNull(exception);
         verify(userRepository, times(1)).findById(invitedUser.getId());
-        verify(sseService,times(0)).sendSseFriendEvent(any(),any());
+        verify(sseService, times(0)).sendSseFriendEvent(any(), any());
 
     }
 
@@ -514,7 +514,7 @@ class UserServiceImplTest {
         //then
         assertThat(result.get(0).getId()).isEqualTo(friendRequest.getId());
         verify(friendRequestRepository, times(1)).findAllByInvitedUserId(currentUser.getId());
-        verify(friendRequestMapper,times(1)).mapFriendRequestToFriendRequestDTO(friendRequest);
+        verify(friendRequestMapper, times(1)).mapFriendRequestToFriendRequestDTO(friendRequest);
 
 
     }
@@ -535,11 +535,11 @@ class UserServiceImplTest {
         //then
         assertNotNull(exception);
         verify(friendRequestRepository, times(1)).findById(fr.getId());
-        verify(userRepository,times(1)).findById(sendingUser.getId());
+        verify(userRepository, times(1)).findById(sendingUser.getId());
         verify(userRepository, times(1)).findById(currentUser.getId());
-        verify(chatRepository,times(0)).save(any());
+        verify(chatRepository, times(0)).save(any());
         verify(friendRepository, times(0)).save(any());
-        verify(sseService,times(0)).sendSseFriendEvent(any(),any());
+        verify(sseService, times(0)).sendSseFriendEvent(any(), any());
 
     }
 
@@ -558,10 +558,10 @@ class UserServiceImplTest {
 
         //then
         verify(friendRequestRepository, times(1)).findById(fr.getId());
-        verify(userRepository,times(2)).findById(any(Long.class));
-        verify(chatRepository,times(1)).save(any());
+        verify(userRepository, times(2)).findById(any(Long.class));
+        verify(chatRepository, times(1)).save(any());
         verify(friendRepository, times(2)).save(any());
-        verify(sseService,times(2)).sendSseFriendEvent(any(),any());
+        verify(sseService, times(2)).sendSseFriendEvent(any(), any());
 
     }
 
@@ -597,7 +597,7 @@ class UserServiceImplTest {
         assertThat(result.get(0).getId()).isEqualTo(friend.getId());
         verify(userRepository, times(1)).findById(currentUser.getId());
 
-        verify(friendMapper,times(1)).mapFriendToFriendDTO(friend);
+        verify(friendMapper, times(1)).mapFriendToFriendDTO(any(Friend.class));
 
     }
 
