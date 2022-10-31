@@ -3,10 +3,7 @@ package com.example.project.samples;
 import com.example.project.domain.Category;
 import com.example.project.domain.Game;
 import com.example.project.domain.GroupRoom;
-import com.example.project.model.GroupRoomDTO;
-import com.example.project.model.GroupRoomUpdateDTO;
-import com.example.project.model.JoinCodeDTO;
-import com.example.project.model.UserGroupsListDTO;
+import com.example.project.model.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +29,22 @@ public class GroupRoomSample {
                 .inGameRolesActive(false)
                 .build();
     }
+    public static GroupRoom getGroupRoomGameRolesTrueMock(){
+        return GroupRoom.builder()
+                .id(1L)
+                .city("Lublin")
+                .maxUsers(5)
+                .name("Group Mock")
+                .open(true)
+                .chat(getChatMock())
+                .game(Game.builder().name("CSGO").build())
+                .category(Category.builder().name("Match Making").build())
+                .groupLeader(getCurrentUserMock())
+                .joinCode("sersad23")
+                .users(List.of(getUserMock(),getCurrentUserMock()))
+                .inGameRolesActive(true)
+                .build();
+    }
     public static GroupRoom getCurrentUserGroupRoomMock(){
         return GroupRoom.builder()
                 .id(2L)
@@ -55,6 +68,19 @@ public class GroupRoomSample {
                 .joinCode("sersad23")
                 .users(List.of(getUserDTOMock()))
                 .inGameRolesActive(false)
+                .build();
+    }
+    public static GroupRoomDTO getGroupRoomDTOGameRolesTrueMock() {
+        return GroupRoomDTO.builder()
+                .id(1L)
+                .city("Lublin")
+                .maxUsers(5)
+                .name("Group Mock")
+                .open(true)
+                .joinCode("sersad23")
+                .category(CategoryDTO.builder().basicMaxUsers(3).build())
+                .users(List.of(getUserDTOMock()))
+                .inGameRolesActive(true)
                 .build();
     }
 

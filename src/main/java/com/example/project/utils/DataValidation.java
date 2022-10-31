@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class DataValidation {
 
     private final UserRepository userRepository ;
-    private final GroupRepository groupRepository;
+
     private final Cities cities=new Cities();
 
     public  void emailCreate(String email){
