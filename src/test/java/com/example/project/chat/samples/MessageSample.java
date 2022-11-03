@@ -50,4 +50,10 @@ public class MessageSample {
                 .user(getCurrentUserMock())
                 .status(MessageStatus.Status.UNREAD).build();
     }
+    public static MessageStatusDTO getMessageStatusDTOMock() {
+        return MessageStatusDTO.builder()
+                .id(1L)
+                .user(getUserMsgDTOMockv2())
+                .status(MessageStatus.Status.UNREAD).build();
+    }
 }
