@@ -5,6 +5,7 @@ import com.example.project.domain.Role;
 import com.example.project.domain.User;
 import com.example.project.model.*;
 import com.example.project.model.auth.UserCredentials;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import static com.example.project.samples.GroupRoomSample.getGroupRoomMock;
 import static com.example.project.samples.ReportMockSample.getReportDTOMock;
 
 public class UserMockSample {
+
 
     public static User getUserMock(){
         return User.builder()
@@ -31,6 +33,24 @@ public class UserMockSample {
                 .name("Patryk")
                 .build();
     }
+
+    public static User getAdminMock(){
+        return User.builder()
+                .id(1L)
+                .username("Evi")
+                .password("adsa")
+                .age(21)
+                .city("Lublin")
+                .reports(new ArrayList<>())
+                .friendList(new ArrayList<>())
+                .groupRooms(Collections.singletonList(getGroupRoomMock()))
+                .email("evistifate@gmail.com")
+                .info("Idk")
+                .enabled(true)
+                .role(Role.builder().name("ROLE_ADMIN").build())
+                .name("Patryk")
+                .build();
+    }
     public static User getInvitedUserMock(){
         return User.builder()
                 .id(1L)
@@ -41,6 +61,21 @@ public class UserMockSample {
                 .reports(new ArrayList<>())
                 .email("evistifate@gmail.com")
                 .info("Idk")
+                .name("Patryk")
+                .build();
+    }
+    public static User getBlockedUserMock(){
+        return User.builder()
+                .id(10L)
+                .username("Yamamoto")
+                .password("pass")
+                .age(21)
+                .city("Lublin")
+                .reports(new ArrayList<>())
+                .friendList(new ArrayList<>())
+                .email("evistifate@gmail.com")
+                .info("Idk")
+                .accountNonLocked(false)
                 .name("Patryk")
                 .build();
     }

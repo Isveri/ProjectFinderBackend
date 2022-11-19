@@ -9,4 +9,8 @@ public class RoleMockSample {
                 .name("ROLE_USER")
                 .build();
     }
+    public static Role getAdminRoleMock(){
+        return Role.builder().name("ROLE_ADMIN")
+                .build();
+    }
 }

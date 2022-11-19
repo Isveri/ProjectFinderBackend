@@ -1,10 +1,10 @@
-package com.example.project.bootdata;
+package com.example.project.integrationTests.bootData;
 
 import com.example.project.chat.model.Chat;
 import com.example.project.chat.repositories.ChatRepository;
-import com.example.project.chat.repositories.MessageRepository;
 import com.example.project.domain.*;
 import com.example.project.repositories.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -14,13 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Profile({"!test"})
+@Profile("test")
 @Component
-public class BootData implements CommandLineRunner {
+public class BootData {
 
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
@@ -30,18 +29,12 @@ public class BootData implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final ChatRepository chatRepository;
     private final InGameRoleRepository inGameRoleRepository;
+    private final FriendRequestRepository friendRequestRepository;
     private final GameRepository gameRepository;
 
+    private List<User> createdUsers;
 
-    @Override
-    public void run(String... args) throws Exception {
-
-        loadData();
-
-    }
-
-
-    private void loadData() {
+    public void loadData() {
 
         List<User> users = createUsers();
 
@@ -57,17 +50,37 @@ public class BootData implements CommandLineRunner {
 
         setGroupsAndInGameRoles(setUserPrivilages(users), groupRooms, inGameRoles);
 
+        createFriendRequests(users);
+
+    }
+
+    public void createFriendRequests(List<User> users) {
+       FriendRequest f1 = FriendRequest.builder()
+                .invitedUser(users.get(0))
+                .sendingUser(users.get(1))
+                .accepted(false)
+                .build();
+
+        FriendRequest f2 = FriendRequest.builder()
+                .invitedUser(users.get(0))
+                .sendingUser(users.get(1))
+                .accepted(false)
+                .build();
+
+        friendRequestRepository.saveAll(new ArrayList<>(Arrays.asList(f1, f2)));
     }
 
 
-    private List<User> createUsers() {
+    public List<User> createUsers() {
         User u1 = User.builder()
                 .username("Evi")
                 .email("evistifate1@gmail.com")
                 .name("Patryk")
                 .age(21)
                 .city("Lublin")
+                .friendList(new ArrayList<>())
                 .enabled(true)
+                .reports(new ArrayList<>())
                 .phone(551345345)
                 .info("Challanger in every role in League of Legends. Global elite in CS:GO and Immortal in Valorant. 706gs BDO kek")
                 .password(passwordEncoder.encode("admin"))
@@ -79,7 +92,9 @@ public class BootData implements CommandLineRunner {
                 .name("Adam")
                 .enabled(true)
                 .age(21)
+                .reports(new ArrayList<>())
                 .city("Lublin")
+                .friendList(new ArrayList<>())
                 .phone(551343223)
                 .info("I like cakes")
                 .password(passwordEncoder.encode("user"))
@@ -89,12 +104,16 @@ public class BootData implements CommandLineRunner {
                 .username("Arthur")
                 .email("evistifate1@gmail.com")
                 .enabled(true)
+                .reports(new ArrayList<>())
+                .friendList(new ArrayList<>())
                 .password(passwordEncoder.encode("arthur"))
                 .build();
 
         User u4 = User.builder()
                 .username("William")
+                .friendList(new ArrayList<>())
                 .enabled(true)
+                .reports(new ArrayList<>())
                 .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("william"))
                 .build();
@@ -103,6 +122,8 @@ public class BootData implements CommandLineRunner {
                 .username("Yeager")
                 .enabled(true)
                 .email("evistifate1@gmail.com")
+                .friendList(new ArrayList<>())
+                .reports(new ArrayList<>())
                 .password(passwordEncoder.encode("yeager"))
                 .accountNonLocked(false)
                 .reason("Toxicity, many reports")
@@ -114,33 +135,35 @@ public class BootData implements CommandLineRunner {
                 .email("evistifate1@gmail.com")
                 .password(passwordEncoder.encode("satoru"))
                 .accountNonLocked(false)
+                .reports(new ArrayList<>())
+                .friendList(new ArrayList<>())
                 .enabled(true)
                 .bannedBy("Evi")
                 .reason("Toxicity, trolling, not taking serious warning from administration")
                 .build();
 
-        List<User> users = Arrays.asList(u1, u2, u3, u4, u5, u6);
+        List<User> users = new ArrayList<>(Arrays.asList(u1, u2, u3, u4, u5, u6));
         userRepository.saveAll(users);
-
+        createdUsers = users;
         return users;
     }
 
-    private List<Chat> createChats() {
+    public List<Chat> createChats() {
 
-        Chat chat1 = Chat.builder().messages(Arrays.asList()).build();
-        Chat chat2 = Chat.builder().messages(Arrays.asList()).build();
-        Chat chat3 = Chat.builder().messages(Arrays.asList()).build();
-        Chat chat4 = Chat.builder().messages(Arrays.asList()).build();
-        Chat chat5 = Chat.builder().messages(Arrays.asList()).build();
-        Chat chat6 = Chat.builder().messages(Arrays.asList()).build();
-        Chat chat7 = Chat.builder().messages(Arrays.asList()).build();
+        Chat chat1 = Chat.builder().messages(new ArrayList<>(Arrays.asList())).build();
+        Chat chat2 = Chat.builder().messages(new ArrayList<>(Arrays.asList())).build();
+        Chat chat3 = Chat.builder().messages(new ArrayList<>(Arrays.asList())).build();
+        Chat chat4 = Chat.builder().messages(new ArrayList<>(Arrays.asList())).build();
+        Chat chat5 = Chat.builder().messages(new ArrayList<>(Arrays.asList())).build();
+        Chat chat6 = Chat.builder().messages(new ArrayList<>(Arrays.asList())).build();
+        Chat chat7 = Chat.builder().messages(new ArrayList<>(Arrays.asList())).build();
 
-        List<Chat> chats = Arrays.asList(chat1, chat2, chat3, chat4, chat5, chat6, chat7);
+        List<Chat> chats = new ArrayList<>(Arrays.asList(chat1, chat2, chat3, chat4, chat5, chat6, chat7));
         chatRepository.saveAll(chats);
         return chats;
     }
 
-    private List<InGameRole> createInGameRoles(List<Game> games) {
+    public List<InGameRole> createInGameRoles(List<Game> games) {
 
         InGameRole igr1 = InGameRole.builder()
                 .name("Mid")
@@ -193,13 +216,13 @@ public class BootData implements CommandLineRunner {
                 .game(games.get(1))
                 .build();
 
-        List<InGameRole> inGameRoles = Arrays.asList(igr1, igr2, igr3, igr4, igr5, role1, role2, role3, role4, role5);
+        List<InGameRole> inGameRoles = new ArrayList<>(Arrays.asList(igr1, igr2, igr3, igr4, igr5, role1, role2, role3, role4, role5));
         inGameRoleRepository.saveAll(inGameRoles);
 
         return inGameRoles;
     }
 
-    private List<Game> createGames() {
+    public List<Game> createGames() {
 
         Game game1 = Game.builder()
                 .name("League of Legends")
@@ -214,13 +237,13 @@ public class BootData implements CommandLineRunner {
                 .assignRolesActive(false)
                 .build();
 
-        List<Game> games = Arrays.asList(game1, game2, game3);
+        List<Game> games = new ArrayList<>(Arrays.asList(game1, game2, game3));
         gameRepository.saveAll(games);
 
         return games;
     }
 
-    private List<Category> createCategories(List<Game> games) {
+    public List<Category> createCategories(List<Game> games) {
 
         Category cat1 = Category.builder()
                 .name("SoloQ")
@@ -323,13 +346,13 @@ public class BootData implements CommandLineRunner {
                 .basicMaxUsers(3)
                 .build();
 
-        List<Category> categories = Arrays.asList(cat1, cat2, cat3, cat4, cat5, cat6, cat7, cat8, cat9, cat10, cat12, cat13, cat14, cat15, cat16);
+        List<Category> categories = new ArrayList<>(Arrays.asList(cat1, cat2, cat3, cat4, cat5, cat6, cat7, cat8, cat9, cat10, cat12, cat13, cat14, cat15, cat16));
         categoryRepository.saveAll(categories);
 
         return categories;
     }
 
-    private List<GroupRoom> createGroupRooms(List<User> users, List<Category> categories, List<Game> games, List<Chat> chats) {
+    public List<GroupRoom> createGroupRooms(List<User> users, List<Category> categories, List<Game> games, List<Chat> chats) {
         GroupRoom g1 = GroupRoom.builder()
                 .name("Grupa 1")
                 .description("Poszukuje osób do wspólnego pogrania w Lolka")
@@ -408,7 +431,7 @@ public class BootData implements CommandLineRunner {
                 .chat(chats.get(6))
                 .build();
 
-        List<GroupRoom> groupRooms = Arrays.asList(g1, g2, g3, g4, g5, g6, g7);
+        List<GroupRoom> groupRooms = new ArrayList<>(Arrays.asList(g1, g2, g3, g4, g5, g6, g7));
         groupRepository.saveAll(groupRooms);
 
 
@@ -422,15 +445,15 @@ public class BootData implements CommandLineRunner {
         return groupRooms;
     }
 
-    private List<User> setUserPrivilages(List<User> users) {
+    public List<User> setUserPrivilages(List<User> users) {
         Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
         Privilege writePrivilege
                 = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
 
-        List<Privilege> adminPrivileges = Arrays.asList(
-                readPrivilege, writePrivilege);
+        List<Privilege> adminPrivileges = new ArrayList<>(Arrays.asList(
+                readPrivilege, writePrivilege));
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilege));
+        createRoleIfNotFound("ROLE_USER", new ArrayList<>(Arrays.asList(readPrivilege)));
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN");
         Role userRole = roleRepository.findByName("ROLE_USER");
@@ -442,24 +465,25 @@ public class BootData implements CommandLineRunner {
         users.get(4).setRole(userRole);
         users.get(5).setRole(userRole);
 
+        userRepository.saveAll(users);
         return users;
     }
 
-    private void setGroupsAndInGameRoles(List<User> users, List<GroupRoom> groupRooms, List<InGameRole> inGameRoles) {
-        users.get(0).setGroupRooms(Arrays.asList(groupRooms.get(0), groupRooms.get(1), groupRooms.get(2)));
-        users.get(1).setGroupRooms(Arrays.asList(groupRooms.get(0), groupRooms.get(1)));
-        users.get(2).setGroupRooms(Arrays.asList(groupRooms.get(2), groupRooms.get(1), groupRooms.get(3), groupRooms.get(4)));
-        users.get(3).setGroupRooms(Arrays.asList(groupRooms.get(1), groupRooms.get(2), groupRooms.get(3)));
-        users.get(4).setGroupRooms(Arrays.asList(groupRooms.get(6), groupRooms.get(1), groupRooms.get(4), groupRooms.get(3)));
-        users.get(5).setGroupRooms(Arrays.asList(groupRooms.get(6), groupRooms.get(5), groupRooms.get(3)));
+    public void setGroupsAndInGameRoles(List<User> users, List<GroupRoom> groupRooms, List<InGameRole> inGameRoles) {
+        users.get(0).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(0), groupRooms.get(1), groupRooms.get(2))));
+        users.get(1).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(0), groupRooms.get(1))));
+        users.get(2).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(2), groupRooms.get(1), groupRooms.get(3), groupRooms.get(4))));
+        users.get(3).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(1), groupRooms.get(2), groupRooms.get(3))));
+        users.get(4).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(6), groupRooms.get(1), groupRooms.get(4), groupRooms.get(3))));
+        users.get(5).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(6), groupRooms.get(5), groupRooms.get(3))));
 
 
-        users.get(0).setInGameRoles(Arrays.asList(inGameRoles.get(0), inGameRoles.get(2), inGameRoles.get(6), inGameRoles.get(5), inGameRoles.get(7), inGameRoles.get(8)));
-        users.get(1).setInGameRoles(Arrays.asList(inGameRoles.get(1), inGameRoles.get(2), inGameRoles.get(6)));
-        users.get(2).setInGameRoles(Arrays.asList(inGameRoles.get(2), inGameRoles.get(6)));
-        users.get(3).setInGameRoles(Arrays.asList(inGameRoles.get(3), inGameRoles.get(7), inGameRoles.get(8)));
-        users.get(4).setInGameRoles(Arrays.asList(inGameRoles.get(4), inGameRoles.get(5), inGameRoles.get(8)));
-        users.get(5).setInGameRoles(Arrays.asList(inGameRoles.get(0), inGameRoles.get(1), inGameRoles.get(6)));
+        users.get(0).setInGameRoles(new ArrayList<>(Arrays.asList(inGameRoles.get(0), inGameRoles.get(2), inGameRoles.get(6), inGameRoles.get(5), inGameRoles.get(7), inGameRoles.get(8))));
+        users.get(1).setInGameRoles(new ArrayList<>(Arrays.asList(inGameRoles.get(1), inGameRoles.get(2), inGameRoles.get(6))));
+        users.get(2).setInGameRoles(new ArrayList<>(Arrays.asList(inGameRoles.get(2), inGameRoles.get(6))));
+        users.get(3).setInGameRoles(new ArrayList<>(Arrays.asList(inGameRoles.get(3), inGameRoles.get(7), inGameRoles.get(8))));
+        users.get(4).setInGameRoles(new ArrayList<>(Arrays.asList(inGameRoles.get(4), inGameRoles.get(5), inGameRoles.get(8))));
+        users.get(5).setInGameRoles(new ArrayList<>(Arrays.asList(inGameRoles.get(0), inGameRoles.get(1), inGameRoles.get(6))));
 
         userRepository.saveAll(users);
 
@@ -489,6 +513,17 @@ public class BootData implements CommandLineRunner {
             roleRepository.save(role);
         }
         return role;
+    }
+
+
+    public void setGroups(List<User> users, List<GroupRoom> groupRooms){
+        users.get(0).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(0), groupRooms.get(1), groupRooms.get(2))));
+        users.get(1).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(0), groupRooms.get(1))));
+        users.get(2).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(2), groupRooms.get(1), groupRooms.get(3), groupRooms.get(4))));
+        users.get(3).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(1), groupRooms.get(2), groupRooms.get(3))));
+        users.get(4).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(6), groupRooms.get(1), groupRooms.get(4), groupRooms.get(3))));
+        users.get(5).setGroupRooms(new ArrayList<>(Arrays.asList(groupRooms.get(6), groupRooms.get(5), groupRooms.get(3))));
+        userRepository.saveAll(users);
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.project.controllers;
 
 import com.example.project.model.*;
 import com.example.project.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -14,14 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Controller
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {

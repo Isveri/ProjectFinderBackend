@@ -24,6 +24,7 @@ import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
 @Service
 public class PlatformServiceImpl implements PlatformService {
 
+    public static final String DISCORD_COM_API_USERS_ME = "https://discord.com/api/users/@me";
     private final UserRepository userRepository;
     private final PlatformRepository platformRepository;
     private final PlatformMapper platformMapper;
@@ -32,7 +33,7 @@ public class PlatformServiceImpl implements PlatformService {
     public PlatformDTO connectDC(String accessToken, String tokenType) {
 
         try {
-            URL url = new URL("https://discord.com/api/users/@me");
+            URL url = new URL(DISCORD_COM_API_USERS_ME);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("Authorization", tokenType+" "+accessToken);

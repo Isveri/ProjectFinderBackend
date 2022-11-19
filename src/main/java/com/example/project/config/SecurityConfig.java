@@ -1,5 +1,7 @@
 package com.example.project.config;
 
+import com.example.project.domain.Role;
+import com.example.project.domain.User;
 import com.example.project.security.JwtTokenFilter;
 import com.example.project.security.SfgPasswordEncoderFactories;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletResponse;
