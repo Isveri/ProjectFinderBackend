@@ -4,6 +4,8 @@ import com.example.project.model.GroupRoomUpdateDTO;
 import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.GroupRoomDTO;
 import com.example.project.services.GroupRoomService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,8 +33,8 @@ public class GroupRoomController {
     }
 
     @GetMapping("/all/{game}")
-    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGame(@PathVariable String game){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGame(game));
+    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGame(@PathVariable String game,Pageable pageable){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGame(game,pageable));
     }
 
     @PostMapping("/add")
@@ -69,37 +71,33 @@ public class GroupRoomController {
     }
 
     @GetMapping("/G&C/{gameId}/{categoryId}")
-    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCategory(@PathVariable Long gameId, @PathVariable Long categoryId){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategory(gameId,categoryId));
+    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameCategory(@PathVariable Long gameId, @PathVariable Long categoryId, Pageable pageable){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategory(gameId,categoryId,pageable));
     }
 
     @GetMapping("/G&R/{gameId}/{inGameRoleId}")
-    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameInGameRole(@PathVariable Long gameId, @PathVariable Long inGameRoleId){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameRole(gameId,inGameRoleId));
+    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameInGameRole(@PathVariable Long gameId, @PathVariable Long inGameRoleId,Pageable pageable){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameRole(gameId,inGameRoleId,pageable));
     }
 
     @GetMapping("/G&C&R/{gameId}/{categoryId}/{roleId}")
-    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCategoryRole(@PathVariable Long gameId, @PathVariable Long categoryId, @PathVariable Long roleId){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryRole(gameId,categoryId,roleId));
+    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameCategoryRole(@PathVariable Long gameId, @PathVariable Long categoryId, @PathVariable Long roleId,Pageable pageable){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryRole(gameId,categoryId,roleId,pageable));
     }
 
     @GetMapping("/g&cit/{gameId}/{city}")
-    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCity(@PathVariable Long gameId, @PathVariable String city){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameCity(gameId,city));
+    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameCity(@PathVariable Long gameId, @PathVariable String city,Pageable pageable){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameCity(gameId,city,pageable));
     }
 
     @GetMapping("/C&C/{gameId}/{categoryId}/{city}")
-    public ResponseEntity<List<GroupRoomDTO>> getGroupsByGameCategoryCity(@PathVariable Long gameId,@PathVariable Long categoryId, @PathVariable String city){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryCity(gameId,categoryId,city));
+    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameCategoryCity(@PathVariable Long gameId,@PathVariable Long categoryId, @PathVariable String city,Pageable pageable){
+        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryCity(gameId,categoryId,city,pageable));
     }
 
     @GetMapping("/generateCode/{groupId}")
     public ResponseEntity<JoinCodeDTO> generateJoinCode(@PathVariable Long groupId){
-        JoinCodeDTO joinCodeDTO = groupRoomService.generateJoinCode(groupId);
-        if(joinCodeDTO==null){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }else{
-        return ResponseEntity.ok(joinCodeDTO);}
+        return ResponseEntity.ok(groupRoomService.generateJoinCode(groupId));
     }
 
     @PatchMapping("/joinByCode/{code}")

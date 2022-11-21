@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUserByDTO(UserDTO userDTO) {
         User currentUser = getCurrentUser();
         long id = currentUser.getId();
-        User user = userRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("User not found id:" + id));
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found id:" + id));
         //dataValidation.emailUpdate(userDTO.getEmail(), user);
         dataValidation.age(userDTO.getAge());
         dataValidation.city(userDTO.getCity());
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
                     reportedUserDTO.addReport(reportMapper.mapReportToReportDTO(report));
                     reportedUsers.put(report.getReportedUser().getUsername(), reportedUserDTO);
                 });
-        return new ArrayList<ReportedUserDTO>(reportedUsers.values());
+        return new ArrayList<>(reportedUsers.values());
     }
 
 
@@ -159,7 +159,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    // TODO refactor FileHandler do serwisu i potem mock do testow
     @Override
     public void changeProfilePicture(MultipartFile profilePicture) {
         User currentUser = getCurrentUser();

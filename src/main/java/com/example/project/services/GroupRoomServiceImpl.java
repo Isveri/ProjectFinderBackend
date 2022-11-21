@@ -17,6 +17,9 @@ import com.example.project.repositories.*;
 import com.example.project.utils.DataValidation;
 import com.example.project.utils.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.xml.validation.Validator;
@@ -52,12 +55,10 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
-    public List<GroupRoomDTO> getGroupsByGame(String game) {
+    public Page<GroupRoomDTO> getGroupsByGame(String game, Pageable pageable) {
 
-        return groupRepository.findAllByGameNameAndOpenIsTrue(game)
-                .stream()
-                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
-                .collect(Collectors.toList());
+        return groupRepository.findAllByGameNameAndOpenIsTrue(game,pageable)
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO);
     }
 
     @Override
@@ -79,43 +80,36 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     }
 
     @Override
-    public List<GroupRoomDTO> getGroupsByGameCategory(Long gameId, Long categoryId) {
-        return groupRepository.findAllByGameIdAndCategoryIdAndOpenIsTrue(gameId, categoryId)
-                .stream()
-                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
-                .collect(Collectors.toList());
+    public Page<GroupRoomDTO> getGroupsByGameCategory(Long gameId, Long categoryId, Pageable pageable) {
+        return groupRepository.findAllByGameIdAndCategoryIdAndOpenIsTrue(gameId, categoryId, pageable)
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO);
     }
 
     @Override
-    public List<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId, Long categoryId, Long roleId) {
-        return groupRepository.findAllByGameCategoryRole(gameId, categoryId, roleId)
-                .stream()
-                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
-                .collect(Collectors.toList());
+    public Page<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId, Long categoryId, Long roleId, Pageable pageable) {
+        return groupRepository.findAllByGameCategoryRole(gameId, categoryId, roleId, pageable)
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO);
+
     }
 
     @Override
-    public List<GroupRoomDTO> getGroupsByGameRole(Long gameId, Long roleId) {
-        return groupRepository.findAllByGameRole(gameId, roleId)
-                .stream()
-                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
-                .collect(Collectors.toList());
+    public Page<GroupRoomDTO> getGroupsByGameRole(Long gameId, Long roleId, Pageable pageable) {
+        return groupRepository.findAllByGameRole(gameId, roleId, pageable)
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO);
+
     }
 
     @Override
-    public List<GroupRoomDTO> getGroupsByGameCity(Long gameId, String city) {
-        return groupRepository.findAllByGameIdAndCityAndOpenIsTrue(gameId, city)
-                .stream()
-                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
-                .collect(Collectors.toList());
+    public Page<GroupRoomDTO> getGroupsByGameCity(Long gameId, String city, Pageable pageable) {
+        return groupRepository.findAllByGameIdAndCityAndOpenIsTrue(gameId, city, pageable)
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO);
+
     }
 
     @Override
-    public List<GroupRoomDTO> getGroupsByGameCategoryCity(Long gameId, Long categoryId, String city) {
-        return groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId, categoryId, city)
-                .stream()
-                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO)
-                .collect(Collectors.toList());
+    public Page<GroupRoomDTO> getGroupsByGameCategoryCity(Long gameId, Long categoryId, String city, Pageable pageable) {
+        return groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId, categoryId, city, pageable)
+                .map(groupRoomMapper::mapGroupRoomToGroupRoomDTO);
     }
 
     @Override
@@ -219,9 +213,8 @@ public class GroupRoomServiceImpl implements GroupRoomService {
             groupRepository.save(groupRoom);
             return JoinCodeDTO.builder().code(generatedCode).build();
         } else {
-            return null;
+            throw new NotGroupLeaderException("Cant generate join code for group with id:"+groupId);
         }
-        //TODO wywalic nulla i zrobic exception + w kontrolerze tylko response raz dac
     }
 
     private String getUniqueCode() {

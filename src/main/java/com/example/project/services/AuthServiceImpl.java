@@ -86,8 +86,6 @@ public class AuthServiceImpl implements AuthService {
             return new TokenResponse(jwtTokenUtil.generateAccessToken(user));
         return null;
 
-        //TODO EXCEPTION zrobic zamiast tego zwracania nulla
-
     }
 
     @Override
@@ -176,7 +174,7 @@ public class AuthServiceImpl implements AuthService {
         validateVerificationToken(token);
 
         this.deleteUser();
-        return "/account-deleted";
+        return "Account Deleted";
     }
 
     @Override

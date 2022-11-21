@@ -133,11 +133,7 @@ public class UserController {
 
     @GetMapping("/profile/{userId}")
     public ResponseEntity<UserProfileDTO> showUserProfile(@PathVariable Long userId) {
-        UserProfileDTO temp = userService.getUserProfile(userId);
-        if (temp == null) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        return ResponseEntity.ok(temp);
+        return ResponseEntity.ok(userService.getUserProfile(userId));
     }
 
     @PatchMapping(path = "/profilePicture")

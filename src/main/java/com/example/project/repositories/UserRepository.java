@@ -23,6 +23,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Modifying
     @Query("UPDATE User g set g.deleted=true WHERE g.id=:id")
     void softDeleteById(@Param("id") Long id);
-//    Optional<User> findByUsernameAndPassword(String username, String password);
 
 }

@@ -5,6 +5,8 @@ import com.example.project.model.GroupRoomUpdateDTO;
 import com.example.project.model.JoinCodeDTO;
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,19 +14,19 @@ public interface GroupRoomService {
 
     List<GroupRoomDTO> getAllGroups();
 
-    List<GroupRoomDTO> getGroupsByGame(String game);
+    Page<GroupRoomDTO> getGroupsByGame(String game, Pageable pageable);
 
     List<GroupRoomDTO> getDeletedGroups();
 
-    List<GroupRoomDTO> getGroupsByGameCategory(Long gameId,Long categoryId);
+    Page<GroupRoomDTO> getGroupsByGameCategory(Long gameId,Long categoryId, Pageable pageable);
 
-    List<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId,Long categoryId,Long roleId);
+    Page<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId,Long categoryId,Long roleId, Pageable pageable);
 
-    List<GroupRoomDTO> getGroupsByGameRole(Long gameId,Long roleId);
+    Page<GroupRoomDTO> getGroupsByGameRole(Long gameId,Long roleId, Pageable pageable);
 
-    List<GroupRoomDTO> getGroupsByGameCity(Long gameId, String city);
+    Page<GroupRoomDTO> getGroupsByGameCity(Long gameId, String city, Pageable pageable);
 
-    List<GroupRoomDTO> getGroupsByGameCategoryCity(Long gameId,Long categoryId, String city);
+    Page<GroupRoomDTO> getGroupsByGameCategoryCity(Long gameId,Long categoryId, String city, Pageable pageable);
 
     void updateVisibility(Long groupId, boolean result);
 
