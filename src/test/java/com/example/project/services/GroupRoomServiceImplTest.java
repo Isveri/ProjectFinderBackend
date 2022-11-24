@@ -24,6 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,7 +86,7 @@ class GroupRoomServiceImplTest {
     }
 
     @Test
-    void getAllGroups() {
+    void should_return_all_groups() {
         //given
         when(groupRepository.findAll()).thenReturn(Collections.singletonList(gr));
         when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
@@ -97,26 +101,25 @@ class GroupRoomServiceImplTest {
         verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
     }
 
-//    @Test
-//    void getGroupsByGame() {
-//        //given
-//        String gameName = "CSGO";
-//        when(groupRepository.findAllByGameNameAndOpenIsTrue(any(String.class))).thenReturn(Collections.singletonList(gr));
-//        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(gr)).thenReturn(groupRoomDTO);
-//
-//        //when
-//        List<GroupRoomDTO> result = groupRoomService.getGroupsByGame(gameName);
-//
-//
-//        //then
-//        assertThat(result.get(0).getId()).isEqualTo(gr.getId());
-//        verify(groupRepository, times(1)).findAllByGameNameAndOpenIsTrue(gameName);
-//        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
-//
-//    }
+    @Test
+    void should_return_empty_Page() {
+        //given
+        String gameName = "CSGO";
+        Pageable pageable = PageRequest.of(1,1);
+        when(groupRepository.findAllByGameNameAndOpenIsTrue(any(String.class),any())).thenReturn(Page.empty());
+
+        //when
+        Page<GroupRoomDTO> result = groupRoomService.getGroupsByGame(gameName,pageable);
+
+
+        //then
+        assertTrue(result.isEmpty());
+        verify(groupRepository, times(1)).findAllByGameNameAndOpenIsTrue(gameName,pageable);
+
+    }
 
     @Test
-    void getDeletedGroups() {
+    void should_delete_groups() {
         //given
         when(groupRepository.findAllDeletedGroups()).thenReturn(Collections.singletonList(gr));
         when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(gr)).thenReturn(groupRoomDTO);
@@ -131,10 +134,11 @@ class GroupRoomServiceImplTest {
     }
 
     @Test
-    void updateVisibility() {
+    void should_update_visibility() {
         //given
         Long groupId = gr.getId();
         boolean value = true;
+
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));
 
         //when
@@ -151,6 +155,7 @@ class GroupRoomServiceImplTest {
         Long groupId = gr.getId();
         gr.setGroupLeader(getUserMock());
         boolean value = true;
+
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));
 
         //when
@@ -162,97 +167,117 @@ class GroupRoomServiceImplTest {
         verify(groupRepository, times(0)).save(any());
     }
 
-//    @Test
-//    void getGroupsByGameCategory() {
-//        //given
-//        Long gameId = 1L;
-//        Long categoryId = 1L;
-//        when(groupRepository.findAllByGameIdAndCategoryIdAndOpenIsTrue(any(Long.class), any(Long.class))).thenReturn(Collections.singletonList(gr));
-//        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
-//
-//        //when
-//        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategory(gameId, categoryId);
-//
-//        //then
-//        assertThat(result.get(0).getId()).isEqualTo(gr.getId());
-//        verify(groupRepository, times(1)).findAllByGameIdAndCategoryIdAndOpenIsTrue(gameId, categoryId);
-//        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
-//
-//    }
+    @Test
+    void should_return_groups_by_category_and_game() {
+        //given
+        Long gameId = 1L;
+        Long categoryId = 1L;
+        PageRequest pageRequest = PageRequest.of(1,1);
+        List<GroupRoom> groupRooms = Collections.singletonList(gr);
+        Page<GroupRoom> page = new PageImpl<GroupRoom>(groupRooms,pageRequest,groupRooms.size());
 
-//    @Test
-//    void getGroupsByGameCategoryRole() {
-//        //given
-//        Long gameId = 1L;
-//        Long categoryId = 1L;
-//        Long roleId = 1L;
-//        when(groupRepository.findAllByGameCategoryRole(any(Long.class), any(Long.class), any(Long.class))).thenReturn(Collections.singletonList(gr));
-//        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
-//
-//        //when
-//        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryRole(gameId, categoryId, roleId);
-//
-//        //then
-//        assertThat(result.get(0).getId()).isEqualTo(gr.getId());
-//        verify(groupRepository, times(1)).findAllByGameCategoryRole(gameId, categoryId, roleId);
-//        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
-//    }
+        when(groupRepository.findAllByGameIdAndCategoryIdAndOpenIsTrue(any(Long.class), any(Long.class),any(Pageable.class))).thenReturn(page);
+        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
 
-//    @Test
-//    void getGroupsByGameRole() {
-//        //given
-//        Long gameId = 1L;
-//        Long roleId = 1L;
-//        when(groupRepository.findAllByGameRole(any(Long.class), any(Long.class))).thenReturn(Collections.singletonList(gr));
-//        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
-//
-//        //when
-//        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameRole(gameId, roleId);
-//
-//        //then
-//        assertThat(result.get(0).getId()).isEqualTo(gr.getId());
-//        verify(groupRepository, times(1)).findAllByGameRole(gameId, roleId);
-//        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
-//    }
+        //when
+        Page<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategory(gameId, categoryId,pageRequest);
 
-//    @Test
-//    void getGroupsByGameCity() {
-//        //given
-//        Long gameId = 1L;
-//        String city = "Lublin";
-//        when(groupRepository.findAllByGameIdAndCityAndOpenIsTrue(any(Long.class), any(String.class))).thenReturn(Collections.singletonList(gr));
-//        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
-//
-//        //when
-//        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameCity(gameId, city);
-//
-//        //then
-//        assertThat(result.get(0).getId()).isEqualTo(gr.getId());
-//        verify(groupRepository, times(1)).findAllByGameIdAndCityAndOpenIsTrue(gameId, city);
-//        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
-//
-//    }
+        //then
+        assertThat(result.getContent().get(0).getId()).isEqualTo(gr.getId());
+        verify(groupRepository, times(1)).findAllByGameIdAndCategoryIdAndOpenIsTrue(gameId, categoryId,pageRequest);
+        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
 
-//    @Test
-//    void getGroupsByGameCategoryCity() {
-//        //given
-//        Long gameId = 1L;
-//        Long categoryId = 1L;
-//        String city = "Lublin";
-//        when(groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(any(Long.class), any(Long.class), any(String.class))).thenReturn(Collections.singletonList(gr));
-//        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
-//
-//        //when
-//        List<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryCity(gameId, categoryId, city);
-//
-//        //then
-//        assertThat(result.get(0).getId()).isEqualTo(gr.getId());
-//        verify(groupRepository, times(1)).findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId, categoryId, city);
-//        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
-//    }
+    }
 
     @Test
-    void getGroupByName() {
+    void should_return_groups_by_game_and_category() {
+        //given
+        Long gameId = 1L;
+        Long categoryId = 1L;
+        Long roleId = 1L;
+        PageRequest pageRequest = PageRequest.of(1,1);
+        List<GroupRoom> groupRooms = Collections.singletonList(gr);
+        Page<GroupRoom> page = new PageImpl<GroupRoom>(groupRooms,pageRequest,groupRooms.size());
+
+        when(groupRepository.findAllByGameCategoryRole(any(Long.class), any(Long.class), any(Long.class),any(Pageable.class))).thenReturn(page);
+        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
+
+        //when
+        Page<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryRole(gameId, categoryId, roleId,pageRequest);
+
+        //then
+        assertThat(result.getContent().get(0).getId()).isEqualTo(gr.getId());
+        verify(groupRepository, times(1)).findAllByGameCategoryRole(gameId, categoryId, roleId,pageRequest);
+        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
+    }
+
+    @Test
+    void should_return_groups_by_game_and_role() {
+        //given
+        Long gameId = 1L;
+        Long roleId = 1L;
+        PageRequest pageRequest = PageRequest.of(1,1);
+        List<GroupRoom> groupRooms = Collections.singletonList(gr);
+        Page<GroupRoom> page = new PageImpl<GroupRoom>(groupRooms,pageRequest,groupRooms.size());
+
+        when(groupRepository.findAllByGameRole(any(Long.class), any(Long.class),any(Pageable.class))).thenReturn(page);
+        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
+
+        //when
+        Page<GroupRoomDTO> result = groupRoomService.getGroupsByGameRole(gameId, roleId,pageRequest);
+
+        //then
+        assertThat(result.getContent().get(0).getId()).isEqualTo(gr.getId());
+        verify(groupRepository, times(1)).findAllByGameRole(gameId, roleId,pageRequest);
+        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
+    }
+
+    @Test
+    void should_return_groups_by_game_and_city() {
+        //given
+        Long gameId = 1L;
+        String city = "Lublin";
+        PageRequest pageRequest = PageRequest.of(1,1);
+        List<GroupRoom> groupRooms = Collections.singletonList(gr);
+        Page<GroupRoom> page = new PageImpl<GroupRoom>(groupRooms,pageRequest,groupRooms.size());
+
+        when(groupRepository.findAllByGameIdAndCityAndOpenIsTrue(any(Long.class), any(String.class),any(Pageable.class))).thenReturn(page);
+        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
+
+        //when
+        Page<GroupRoomDTO> result = groupRoomService.getGroupsByGameCity(gameId, city,pageRequest);
+
+        //then
+        assertThat(result.getContent().get(0).getId()).isEqualTo(gr.getId());
+        verify(groupRepository, times(1)).findAllByGameIdAndCityAndOpenIsTrue(gameId, city,pageRequest);
+        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
+
+    }
+
+    @Test
+    void should_return_groups_by_category_and_city() {
+        //given
+        Long gameId = 1L;
+        Long categoryId = 1L;
+        String city = "Lublin";
+        PageRequest pageRequest = PageRequest.of(1,1);
+        List<GroupRoom> groupRooms = Collections.singletonList(gr);
+        Page<GroupRoom> page = new PageImpl<GroupRoom>(groupRooms,pageRequest,groupRooms.size());
+
+        when(groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(any(Long.class), any(Long.class), any(String.class),any(Pageable.class))).thenReturn(page);
+        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
+
+        //when
+        Page<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryCity(gameId, categoryId, city,pageRequest);
+
+        //then
+        assertThat(result.getContent().get(0).getId()).isEqualTo(gr.getId());
+        verify(groupRepository, times(1)).findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId, categoryId, city,pageRequest);
+        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
+    }
+
+    @Test
+    void should_return_group_by_name() {
         //given
         String name = "Group Mock";
         when(groupRepository.findByName(any(String.class))).thenReturn(Optional.ofNullable(gr));
@@ -268,7 +293,7 @@ class GroupRoomServiceImplTest {
     }
 
     @Test
-    void save() {
+    void should_save_and_return_GroupRoomDTO() {
         //given
         Long userId = 2L;
         Category category = getCategoryMock();
@@ -292,7 +317,7 @@ class GroupRoomServiceImplTest {
     }
 
     @Test
-    void getGroupById() {
+    void should_get_group_by_id() {
         //given
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));
         when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
@@ -307,7 +332,7 @@ class GroupRoomServiceImplTest {
     }
 
     @Test
-    void saveAndReturnDTO() {
+    void should_save_and_return_DTO() {
         //given
         when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
         when(groupRepository.save(any(GroupRoom.class))).thenReturn(gr);
@@ -321,7 +346,7 @@ class GroupRoomServiceImplTest {
     }
 
     @Test
-    void updateGroupRoomByDTO() {
+    void should_update_group_room_by_dto() {
         //given
         GroupRoomUpdateDTO gru = getGroupRoomUpdateDTOMock();
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));
@@ -355,7 +380,6 @@ class GroupRoomServiceImplTest {
         verify(groupRepository, times(1)).save(gr);
     }
 
-    //TODO POPRAWIC TEST PO ZMIANIE METODY ZEBY WYRZUCALA EXCEPTION
     @Test
     void should_not_generate_and_return_join_code() {
         //given
@@ -363,16 +387,12 @@ class GroupRoomServiceImplTest {
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));
         when(groupRepository.existsByJoinCode(any(String.class))).thenReturn(false);
 
-//        //when
-//        Exception exception = assertThrows(CodeAlreadyExist.class, () ->groupRoomService.generateJoinCode(gr.getId()));
-//
-//        //then
-//        assertNotNull(exception);
-
-        JoinCodeDTO result = groupRoomService.generateJoinCode(gr.getId());
+        //when
+        Exception exception = assertThrows(NotGroupLeaderException.class, () ->groupRoomService.generateJoinCode(gr.getId()));
 
         //then
-        assertNull(result);
+        assertNotNull(exception);
+
         verify(groupRepository, times(1)).findById(gr.getId());
         verify(groupRepository, times(0)).existsByJoinCode(any(String.class));
         verify(groupRepository, times(0)).save(gr);
@@ -445,7 +465,7 @@ class GroupRoomServiceImplTest {
     }
 
     @Test
-    void makePartyLeader() {
+    void should_make_party_leader_by_id() {
         //given
         User currentUser = getCurrentUserMock();
         when(groupRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(gr));

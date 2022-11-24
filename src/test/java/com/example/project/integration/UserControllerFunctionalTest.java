@@ -1,11 +1,11 @@
-package com.example.project.integrationTests;
+package com.example.project.integration;
 
 import com.example.project.converters.Converter;
 import com.example.project.domain.Category;
 import com.example.project.domain.Game;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
-import com.example.project.integrationTests.bootData.BootData;
+import com.example.project.integration.bootData.BootData;
 import com.example.project.model.ReportDTO;
 import com.example.project.security.JwtTokenUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class UserControllerIntegrationTest {
+public class UserControllerFunctionalTest {
 
     @Autowired
     private WebApplicationContext context;

@@ -1,13 +1,11 @@
-package com.example.project.repositories;
+package com.example.project.integration.repositories;
 
 import com.example.project.domain.User;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import com.example.project.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.project.samples.UserMockSample.getBlockedUserMock;
-import static com.example.project.samples.UserMockSample.getUserMock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,6 +73,19 @@ class UserRepositoryTest {
 
         //then
         assertTrue(result);
+
+    }
+
+    @Test
+    void exist_by_email_should_return_false() {
+        //given
+        String email = "notExist";
+
+        //when
+        Boolean result = userRepository.existsByEmail(email);
+
+        //then
+        assertFalse(result);
 
     }
 

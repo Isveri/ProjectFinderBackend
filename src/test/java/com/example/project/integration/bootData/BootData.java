@@ -1,12 +1,10 @@
-package com.example.project.integrationTests.bootData;
+package com.example.project.integration.bootData;
 
 import com.example.project.chat.model.Chat;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.domain.*;
 import com.example.project.repositories.*;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
