@@ -52,7 +52,7 @@ class DataValidationTest {
     void correct_emailCreate() {
         //given
         String email="evistifate@gmail.com";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.emailCreate(email));
     }
     @Test
@@ -60,7 +60,7 @@ class DataValidationTest {
         //given
         String email="ev@istifate@gmail.com";
         String expectedMsg="Wrong email structure";
-        //when
+        //when+then
         assertThrows(BadEmailException.class, () -> {
             dataValidation.emailCreate(email);
         });
@@ -74,7 +74,7 @@ class DataValidationTest {
 
         when(userRepository.existsByEmail(email)).thenReturn(true);
 
-        //when
+        //when+then
        assertThrows(EmailAlreadyTakenException.class, () -> {
             dataValidation.emailCreate(email);
         });
@@ -85,7 +85,7 @@ class DataValidationTest {
         //given
         User userC=getCurrentUserMock();
         String email="test@gmail.com";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.emailUpdate(email,userC));
     }
     @Test
@@ -93,7 +93,7 @@ class DataValidationTest {
         //given
         User userC=getCurrentUserMock();
         String email="t@est@gmail.com";
-        //when
+        //when+then
        assertThrows(BadEmailException.class, () -> {
             dataValidation.emailUpdate(email,userC);
         });
@@ -103,14 +103,14 @@ class DataValidationTest {
     void correct_usernameCreate() {
         //given
         String username="Evi";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.usernameCreate(username));
     }
     @Test
     void incorrect_usernameCreate_throw_BadUsernameException() {
         //given
         String username="Evi test";
-        //when
+        //when+then
        assertThrows(BadUsernameException.class, () -> {
             dataValidation.usernameCreate(username);
         });
@@ -121,7 +121,7 @@ class DataValidationTest {
         String username="Evi";
         when(userRepository.findByUsername(username)).thenReturn(Optional.ofNullable(user));
 
-        //when
+        //when+then
         assertThrows(UsernameAlreadyTakenException.class, () -> {
             dataValidation.usernameCreate(username);
         });
@@ -131,7 +131,7 @@ class DataValidationTest {
         //given
         User userC=getCurrentUserMock();
         String username="EviTest";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.usernameUpdate(username,userC));
     }
     @Test
@@ -139,7 +139,7 @@ class DataValidationTest {
         //given
         User userC=getCurrentUserMock();
         String username="Evi Test";
-        //when
+        //when+then
         assertThrows(BadUsernameException.class, () -> {
             dataValidation.usernameUpdate(username,userC);
         });
@@ -148,14 +148,14 @@ class DataValidationTest {
     void correct_usernameLogin() {
         //given
         String username="Evi";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.usernameLogin(username));
     }
     @Test
     void incorrect_usernameLogin_throw_BadUsernameException() {
         //given
         String username="Evi>";
-        //when
+        //when+then
         assertThrows(BadUsernameException.class, () -> {
             dataValidation.usernameLogin(username);
         });
@@ -165,7 +165,7 @@ class DataValidationTest {
     void correct_password() {
         //given
         String pswd="Password0";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.password(pswd));
     }
     @Test
@@ -173,7 +173,7 @@ class DataValidationTest {
         //test for testing regex w{3,}
         //given
         String pswd="pass>";
-        //when
+        //when+then
         assertThrows(BadPasswordException.class, () -> {
             dataValidation.password(pswd);
         });
@@ -182,14 +182,14 @@ class DataValidationTest {
     void correct_profileName() {
         //given
         String name="Janusz";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.profileName(name));
     }
     @Test
     void incorrect_profileName_throw_BadProfileNameException() {
         //given
         String name="Janusz1";
-        //when
+        //when+then
         assertThrows(BadProfileNameException.class, () -> {
             dataValidation.profileName(name);
         });
@@ -200,7 +200,7 @@ class DataValidationTest {
         //given
         String groupname="Group Mock";
         GroupRoom groupRoom=getGroupRoomMock();
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.groupName(groupname,groupRoom));
     }
     @Test
@@ -208,7 +208,7 @@ class DataValidationTest {
         //given
         String groupname="Group <Mock>";
         GroupRoom groupRoom=getGroupRoomMock();
-        //when
+        //when+then
         assertThrows(BadGroupNameException.class, () -> {
             dataValidation.groupName(groupname,groupRoom);
         });
@@ -218,14 +218,14 @@ class DataValidationTest {
     void correct_age() {
         //given
         Integer age = 19;
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.age(age));
     }
     @Test
     void incorrect_age_throw_BadAgeException() {
         //given
         Integer age = 1999;
-        //when
+        //when+then
         assertThrows(BadAgeException.class, () -> {
             dataValidation.age(age);
         });
@@ -234,14 +234,14 @@ class DataValidationTest {
     void correct_phone() {
         //given
         Integer phone=987654321;
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.phone(phone));
     }
     @Test
     void incorrect_phone_throw_BadPhoneException() {
         //given
         Integer phone=98765432;
-        //when
+        //when+then
         assertThrows(BadPhoneException.class, () -> {
             dataValidation.phone(phone);
         });
@@ -250,7 +250,7 @@ class DataValidationTest {
     void correct_city() {
         //given
         String city="Warsaw";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.city(city));
     }
 
@@ -258,7 +258,7 @@ class DataValidationTest {
     void incorrect_city_throw_BadCityException() {
         //given
         String city="London";
-        //when
+        //when+then
         assertThrows(BadCityException.class, () -> {
             dataValidation.city(city);
         });
@@ -268,14 +268,14 @@ class DataValidationTest {
     void correct_profileInfo() {
         //given
         String text="Random text to test";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.profileInfo(text));
     }
     @Test
     void incorrect_profileInfo_throw_BadProfileInfoException() {
         //given
         String text="<Random text to test>";
-        //when
+        //when+then
         assertThrows(BadProfileInfoException.class, () -> {
             dataValidation.profileInfo(text);
         });
@@ -284,14 +284,14 @@ class DataValidationTest {
     void correct_groupDesc() {
         //given
         String text="Random text to test";
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.groupDesc(text));
     }
     @Test
     void incorrect_groupDesc_throw_BadGroupDescException() {
         //given
         String text="<Random text to test>";
-        //when
+        //when+then
         assertThrows(BadGroupDescException.class, () -> {
             dataValidation.groupDesc(text);
         });
@@ -301,7 +301,7 @@ class DataValidationTest {
         //given
         Integer users=2;
         GroupRoomDTO groupRoomDTO=getGroupRoomDTOMock();
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.userLimitCreate(users,groupRoomDTO));
     }
     @Test
@@ -310,7 +310,7 @@ class DataValidationTest {
         Integer users=2;
         GroupRoomDTO groupRoomDTO=getGroupRoomDTOGameRolesTrueMock();
 
-        //when
+        //when+then
         assertThrows(SomethingWrongException.class, () -> {
             dataValidation.userLimitCreate(users,groupRoomDTO);
         });
@@ -321,7 +321,7 @@ class DataValidationTest {
         Integer users=999;
         GroupRoomDTO groupRoomDTO=getGroupRoomDTOMock();
 
-        //when
+        //when+then
         assertThrows(BadUserLimitException.class, () -> {
             dataValidation.userLimitCreate(users,groupRoomDTO);
         });
@@ -331,7 +331,7 @@ class DataValidationTest {
         //given
         Integer users=2;
         GroupRoom groupRoom=getGroupRoomMock();
-        //when
+        //when+then
         Assertions.assertDoesNotThrow(() -> dataValidation.userLimitUpdate(users,groupRoom));
     }
     @Test
@@ -340,7 +340,7 @@ class DataValidationTest {
         Integer users=2;
         GroupRoom groupRoom=getGroupRoomGameRolesTrueMock();
 
-        //when
+        //when+then
         assertThrows(SomethingWrongException.class, () -> {
             dataValidation.userLimitUpdate(users,groupRoom);
         });
@@ -351,7 +351,7 @@ class DataValidationTest {
         Integer users=999;
         GroupRoom groupRoom=getGroupRoomMock();
 
-        //when
+        //when+then
         assertThrows(TooLowUserLimitException.class, () -> {
             dataValidation.userLimitUpdate(users,groupRoom);
         });
