@@ -30,7 +30,7 @@ public class DataValidation {
     private final Cities cities=new Cities();
 
     public  void emailCreate(String email){
-        if(email==null || !Pattern.matches("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$",email)){
+        if(email==null || !Pattern.matches("^[a-z0-9._-]+@[a-z0-9.-]+\\.[a-z]{2,}$",email)){
             throw new BadEmailException("Wrong email structure");
         }
         if (userRepository.existsByEmail(email)) {
@@ -38,7 +38,7 @@ public class DataValidation {
         }
     }
     public  void emailUpdate(String email, User user){
-        if(email==null || !Pattern.matches("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$",email)){
+        if(email==null || !Pattern.matches("^[a-z0-9._-]+@[a-z0-9.-]+\\.[a-z]{2,}$",email)){
             throw new BadEmailException("Wrong email structure");
         }
 
@@ -50,8 +50,7 @@ public class DataValidation {
         }
     }
     public  void usernameCreate(String username){
-        //if(username==null || !Pattern.matches("^[a-zA-Z0-9]{3,30}$",username)){
-        if(username==null || !Pattern.matches("^\\w{3,30}$",username)){//min 3, max 30 znakow, tylko takie: [A-Za-z0-9_]
+        if(username==null || !Pattern.matches("^[a-zA-Z0-9]{3,30}$",username)){
             throw new BadUsernameException("Wrong username structure");
         }
         if (userRepository.findByUsername(username).isPresent()) {
@@ -59,41 +58,32 @@ public class DataValidation {
         }
     }
     public  void usernameUpdate(String username,User user){
-        //if(username==null || !Pattern.matches("^[a-zA-Z0-9]{3,30}$",username)){
-        if(username==null || !Pattern.matches("^\\w{3,30}$",username)){//min 3, max 30 znakow, tylko takie: [A-Za-z0-9_]
+        if(username==null || !Pattern.matches("^[a-zA-Z0-9]{3,30}$",username)){
             throw new BadUsernameException("Wrong username structure");
         }
         if(!Objects.equals(user.getUsername(), username)){usernameCreate(username);}
     }
     public  void usernameLogin(String username){
-        //if(username==null || !Pattern.matches("^[a-zA-Z0-9]{3,30}$",username)){
-        if(username==null || !Pattern.matches("^\\w{3,30}$",username)){//min 3, max 30 znakow, tylko takie: [A-Za-z0-9_]
+        if(username==null || !Pattern.matches("^[a-zA-Z0-9]{3,30}$",username)){
             throw new BadUsernameException("Wrong username structure");
         }
     }
     public  void password(String pswd){
-        //if(pswd==null || !Pattern.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$",pswd)){//min 1 maly znak, min 1 duzy znak, min 1 cyfra, bez spacji, od 8 do 20 znakow
-        if(pswd==null || !Pattern.matches("^\\w{3,}$",pswd)){// walidacja dla testow
+        if(pswd==null || !Pattern.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$",pswd)){//min 1 maly znak, min 1 duzy znak, min 1 cyfra, bez spacji, od 8 do 20 znakow
             throw new BadPasswordException("Wrong password structure");
         }
     }
     public  void profileName(String name){
         if(name!=null){
-            if (!Pattern.matches("^[a-zA-Ząśćźżłóęń]{2,20}$", name)) {
+            if (!Pattern.matches("^[a-zA-Z]{2,20}$", name)) {
                 throw new BadProfileNameException("Name must required at least 2 characters");
             }
         }
     }
     public  void groupName(String name, GroupRoom group){
-        if (name==null || !Pattern.matches("^[a-zA-Z0-9.,ąśćźżłóęń\\s]{3,30}$", name)) {//tylko:[ a-z A-Z 0-9 . , spacja]
+        if (name==null || !Pattern.matches("^[a-zA-Z0-9.,\\s]{3,30}$", name)) {//tylko:[ a-z A-Z 0-9 . , spacja]
             throw new BadGroupNameException("Name must required at least 2 characters");
         }
-        //sprawdzenie czy nazwa jest unikalna
-        /*if(!Objects.equals(group.getName(), name)){
-            if (groupRepository.findByName(name).isPresent()) {
-                throw new GroupnameAlreadyTakenException("Group name already exists");
-            }
-        }*/
     }
     public  void age(Integer age){
         if(age!=null){
@@ -111,7 +101,7 @@ public class DataValidation {
         }
     }
     public  void city(String city){
-        if(city!=null){
+        if(!city.isEmpty()){
             String[] citiesList = cities.getCities();
             if (!Arrays.stream(citiesList).anyMatch(city::equals)) {
                 throw new BadCityException("City not known");
@@ -120,13 +110,13 @@ public class DataValidation {
     }
     public  void profileInfo(String text){
         if(text!=null){
-            if (!Pattern.matches("^[a-zA-Z0-9.,ąśćźżłóęń\\s]{3,150}$", text)) {
+            if (!Pattern.matches("^[a-zA-Z0-9.,\\s]{3,150}$", text)) {
                 throw new BadProfileInfoException("Profile info must be in range from 1 to 150 characters");
             }
         }
     }
     public  void groupDesc(String text){
-        if (!Pattern.matches("^[a-zA-Z0-9.,ąśćźżłóęń\\s]{3,150}$", text)) {
+        if (!Pattern.matches("^[a-zA-Z0-9.,\\s]{3,150}$", text)) {
             throw new BadGroupDescException("Group description must be in range from 1 to 150 characters");
         }
     }

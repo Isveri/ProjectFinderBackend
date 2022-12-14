@@ -82,7 +82,7 @@ public class BootData implements CommandLineRunner {
                 .city("Lublin")
                 .phone(551343223)
                 .info("I like cakes")
-                .password(passwordEncoder.encode("user"))
+                .password(passwordEncoder.encode("Useruser1!"))
                 .build();
 
         User u3 = User.builder()
