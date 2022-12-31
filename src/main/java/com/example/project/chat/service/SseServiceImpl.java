@@ -2,7 +2,6 @@ package com.example.project.chat.service;
 
 import com.example.project.chat.mappers.NotificationMapper;
 import com.example.project.chat.model.CustomNotification;
-import com.example.project.chat.model.CustomNotification.NotifType;
 import com.example.project.chat.model.CustomNotificationDTO;
 import com.example.project.chat.repositories.NotificationRepository;
 import com.example.project.domain.User;
@@ -49,14 +48,18 @@ public class SseServiceImpl implements SseService {
                 }
         );
         if (modifiedUserId != null && REMOVED.equals(customNotificationDTO.getType())) {
-            customNotificationDTO.setRemovedUserId(modifiedUserId);
-            customNotificationDTO.setGroupRoom(groupRoomMapper.mapGroupRoomToGroupNotifInfoDTO(groupRoom));
-            CustomNotification customNotification = notificationMapper.mapCustomNotificationDTOToCustomNotification(customNotificationDTO);
-            customNotification.setUser((User) userRepository.findById(modifiedUserId).orElseThrow());
-            customNotification.setGroupRoom(groupRoom);
-            notificationRepository.save(customNotification);
-            sendMsgToEmitter(customNotificationDTO, modifiedUserId);
+            sendRemovedNotif(customNotificationDTO, groupRoom, modifiedUserId);
         }
+    }
+
+    private void sendRemovedNotif(CustomNotificationDTO customNotificationDTO, GroupRoom groupRoom, Long modifiedUserId) {
+        customNotificationDTO.setRemovedUserId(modifiedUserId);
+        customNotificationDTO.setGroupRoom(groupRoomMapper.mapGroupRoomToGroupNotifInfoDTO(groupRoom));
+        CustomNotification customNotification = notificationMapper.mapCustomNotificationDTOToCustomNotification(customNotificationDTO);
+        customNotification.setUser(userRepository.findById(modifiedUserId).orElseThrow());
+        customNotification.setGroupRoom(groupRoom);
+        notificationRepository.save(customNotification);
+        sendMsgToEmitter(customNotificationDTO, modifiedUserId);
     }
 
     @Override

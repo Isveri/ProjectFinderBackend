@@ -60,14 +60,16 @@ public class UserControllerFunctionalTest {
         users = bootData.setUserPrivilages(users);
         user = users.get(0);
         token = jwtTokenUtil.generateAccessToken(user);
-        // given depends on BootData class in bootData package above test
+
     }
 
 
     @Test
     public void should_return_unauthorized() throws Exception {
         //given
-        token = "eyJdJIUzUxMiJ9.eyJzdWIiOiJFdmkiLCJyb2xlIjoiUk9MRV9BRE1JTiIsImlzcyI6ImhlaCIsImlhdCI6MTY2ODcyMTI4OSwiZXhwIjoxNjY5MzI2MDg5fQ.eQk8XlnOUYUMNuGTdNth4qXXxnaANa3kZNXxPXermfQOSc44xfiDlGKIxppwIpoqZA-AfMGRKmkSjn9RAXsDUw";
+        token = "eyJdJIUzUxMiJ9.eyJzdWIiOiJFdmkiLCJyb2xlIjoiUk9MRV9BRE1JTiIs" +
+                "ImlzcyI6ImhlaCIsImlhdCI6MTY2ODcyMTI4OSwiZXhwIjoxNjY5MzI2MDg5fQ.eQk8Xl" +
+                "nOUYUMNuGTdNth4qXXxnaANa3kZNXxPXermfQOSc44xfiDlGKIxppwIpoqZA-AfMGRKmkSjn9RAXsDUw";
 
         //when + then
         mockMvc.perform(get(baseUrl + "/" + user.getUsername())

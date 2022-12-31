@@ -33,7 +33,6 @@ import static com.example.project.utils.UserDetailsHelper.getCurrentUser;
 
 @RequiredArgsConstructor
 @Service
-
 public class GroupRoomServiceImpl implements GroupRoomService {
     private final GroupRoomMapper groupRoomMapper;
     private final GroupRepository groupRepository;

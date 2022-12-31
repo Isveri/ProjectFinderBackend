@@ -46,7 +46,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getAllUsers() throws Exception {
+    void should_return_all_users_as_list() throws Exception {
 
         //given
         final UserDTO userDTO = getUserDTOMock();
@@ -54,13 +54,16 @@ class UserControllerTest {
 
         //when + then
         mockMvc.perform(get(baseUrl+"/all"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$[0].id").value(userDTO.getId()))
+                .andExpect(jsonPath("$[0].username").value(userDTO.getUsername()));
         verify(userService,times(1)).getAllUsers();
 
     }
 
     @Test
-    void getUserByUsername() throws Exception {
+    void should_return_user_by_name() throws Exception {
         //given
         final UserDTO userDTO = getUserDTOMock();
         final String username = "Evi";
