@@ -4,6 +4,7 @@ import com.example.project.domain.GroupRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
+public interface GroupRepository extends JpaRepository<GroupRoom,Long>, JpaSpecificationExecutor<GroupRoom> {
 
     Optional<GroupRoom> findByName(String name);
 
@@ -30,19 +31,7 @@ public interface GroupRepository extends JpaRepository<GroupRoom,Long> {
     List<GroupRoom> findAllDeletedGroups();
     Page<GroupRoom> findAllByGameNameAndOpenIsTrue(String name, Pageable pageable);
 
-    Page<GroupRoom> findAllByGameIdAndCategoryIdAndOpenIsTrue(Long gameId, Long categoryId, Pageable pageable);
-    Page<GroupRoom> findAllByGameIdAndCityAndOpenIsTrue(Long gameId, String city, Pageable pageable);
     List<GroupRoom> findAllByGroupLeaderId(Long userId);
-
-    Page<GroupRoom> findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(Long gameId, Long categoryId, String city, Pageable pageable);
-    @Query(value="SELECT g FROM GroupRoom g JOIN FETCH g.takenInGameRoles tr JOIN FETCH tr.inGameRole r WHERE g.open=true AND g.game.id=:gameId AND r.id=:inGameRoleId AND tr.user IS NULL",
-    countQuery = "SELECT COUNT(g) FROM GroupRoom g JOIN g.takenInGameRoles tr JOIN tr.inGameRole r WHERE g.open=true AND g.game.id=:gameId AND r.id=:inGameRoleId AND tr.user Is NULL")
-    Page<GroupRoom> findAllByGameRole(@Param("gameId") Long gameId, @Param("inGameRoleId")Long inGameRoleId, Pageable pageable);
-
-    @Query(value="SELECT g FROM GroupRoom g JOIN FETCH g.takenInGameRoles tr JOIN FETCH tr.inGameRole r WHERE g.open=true AND g.game.id=:gameId AND g.category.id=:categoryId AND " +
-            "r.id=:inGameRoleId AND tr.user IS NULL",
-    countQuery = "SELECT COUNT(g) FROM GroupRoom g JOIN g.takenInGameRoles tr JOIN tr.inGameRole r WHERE g.open=true AND g.game.id=:gameId AND r.id=:inGameRoleId AND tr.user Is NULL")
-    Page<GroupRoom> findAllByGameCategoryRole(@Param("gameId") Long gameId, @Param("categoryId") Long categoryId, @Param("inGameRoleId") Long inGameRoleId, Pageable pageable);
 
     @Transactional
     @Modifying

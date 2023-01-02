@@ -41,9 +41,6 @@ class GroupRoomControllerTest {
 
     private static final Long groupId = 1L;
     private static final Long userId = 1L;
-    private static final Long gameId = 1L;
-    private static final Long categoryId = 1L;
-    private static final Long roleId = 1L;
 
 
     @BeforeEach
@@ -198,94 +195,6 @@ class GroupRoomControllerTest {
                 .andExpect(status().isOk());
 
         verify(groupRoomService,times(1)).updateVisibility(groupId,visibilityValue);
-    }
-
-    @Test
-    void should_return_groups_by_game_and_category() throws Exception {
-        //given
-        PageRequest pageRequest = PageRequest.of(1,1);
-        final GroupRoomDTO groupRoomDTO = getGroupRoomDTOMock();
-        List<GroupRoomDTO> groups = Collections.singletonList(groupRoomDTO);
-        Page<GroupRoomDTO> page = new PageImpl<>(groups,pageRequest,groups.size());
-        when(groupRoomService.getGroupsByGameCategory(any(Long.class),any(Long.class),any(Pageable.class))).thenReturn(page);
-
-        //when + then
-        mockMvc.perform(get(baseUrl+"/G&C/"+gameId+"/"+categoryId+"?page=1&size=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0]").value(groupRoomDTO));
-
-        verify(groupRoomService,times(1)).getGroupsByGameCategory(gameId,categoryId,pageRequest);
-    }
-
-    @Test
-    void should_return_groups_by_game_and_role() throws Exception{
-        //given
-        PageRequest pageRequest = PageRequest.of(1,1);
-        final GroupRoomDTO groupRoomDTO = getGroupRoomDTOMock();
-        List<GroupRoomDTO> groups = Collections.singletonList(groupRoomDTO);
-        Page<GroupRoomDTO> page = new PageImpl<>(groups,pageRequest,groups.size());
-        when(groupRoomService.getGroupsByGameRole(any(Long.class),any(Long.class),any(Pageable.class))).thenReturn(page);
-
-        //when + then
-        mockMvc.perform(get(baseUrl+"/G&R/"+gameId+"/"+roleId+"?page=1&size=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0]").value(groupRoomDTO));
-
-        verify(groupRoomService,times(1)).getGroupsByGameRole(gameId,roleId,pageRequest);
-    }
-
-    @Test
-    void should_return_groups_by_game_category_and_role() throws Exception{
-        //given
-        PageRequest pageRequest = PageRequest.of(1,1);
-        final GroupRoomDTO groupRoomDTO = getGroupRoomDTOMock();
-        List<GroupRoomDTO> groups = Collections.singletonList(groupRoomDTO);
-        Page<GroupRoomDTO> page = new PageImpl<>(groups,pageRequest,groups.size());
-        when(groupRoomService.getGroupsByGameCategoryRole(any(Long.class),any(Long.class),any(Long.class),any(Pageable.class)))
-                .thenReturn(page);
-
-        //when + then
-        mockMvc.perform(get(baseUrl+"/G&C&R/"+gameId+"/"+categoryId+"/"+roleId+"?page=1&size=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0]").value(groupRoomDTO));
-
-        verify(groupRoomService,times(1)).getGroupsByGameCategoryRole(gameId,categoryId,roleId,pageRequest);
-    }
-
-    @Test
-    void should_return_groups_by_game_and_city() throws Exception {
-        //given
-        final String city = "Lublin";
-        PageRequest pageRequest = PageRequest.of(1,1);
-        final GroupRoomDTO groupRoomDTO = getGroupRoomDTOMock();
-        List<GroupRoomDTO> groups = Collections.singletonList(groupRoomDTO);
-        Page<GroupRoomDTO> page = new PageImpl<>(groups,pageRequest,groups.size());
-        when(groupRoomService.getGroupsByGameCity(any(Long.class),any(String.class),any(Pageable.class))).thenReturn(page);
-
-        //when + then
-        mockMvc.perform(get(baseUrl+"/g&cit/"+gameId+"/"+city+"?page=1&size=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0]").value(groupRoomDTO));
-
-        verify(groupRoomService,times(1)).getGroupsByGameCity(gameId,city,pageRequest);
-    }
-
-    @Test
-    void should_return_groups_by_game_category_and_city() throws Exception {
-        //given
-        final String city = "Lublin";
-        PageRequest pageRequest = PageRequest.of(1,1);
-        final GroupRoomDTO groupRoomDTO = getGroupRoomDTOMock();
-        List<GroupRoomDTO> groups = Collections.singletonList(groupRoomDTO);
-        Page<GroupRoomDTO> page = new PageImpl<>(groups,pageRequest,groups.size());
-        when(groupRoomService.getGroupsByGameCategoryCity(any(Long.class),any(Long.class),any(String.class),any(Pageable.class))).thenReturn(page);
-
-        //when + then
-        mockMvc.perform(get(baseUrl+"/C&C/"+gameId+"/"+categoryId+"/"+city+"?page=1&size=1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0]").value(groupRoomDTO));
-
-        verify(groupRoomService,times(1)).getGroupsByGameCategoryCity(gameId,categoryId,city,pageRequest);
     }
 
     @Test

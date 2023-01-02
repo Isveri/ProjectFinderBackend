@@ -377,12 +377,4 @@ class UserControllerTest {
         verify(userService, times(1)).getUserProfile(userId);
     }
 
-    @Test
-    void setProfilePicture() throws Exception{
-
-    }
-
-    @Test
-    void getProfilePicture() throws Exception{
-    }
 }

@@ -70,7 +70,7 @@ public class BootData implements CommandLineRunner {
                 .enabled(true)
                 .phone(551345345)
                 .info("Challanger in every role in League of Legends. Global elite in CS:GO and Immortal in Valorant. 706gs BDO kek")
-                .password(passwordEncoder.encode("admin"))
+                .password(passwordEncoder.encode("Useruser1!"))
                 .build();
 
         User u2 = User.builder()
@@ -89,7 +89,7 @@ public class BootData implements CommandLineRunner {
                 .username("Arthur")
                 .email("evistifate1@gmail.com")
                 .enabled(true)
-                .password(passwordEncoder.encode("arthur"))
+                .password(passwordEncoder.encode("Useruser1!"))
                 .build();
 
         User u4 = User.builder()

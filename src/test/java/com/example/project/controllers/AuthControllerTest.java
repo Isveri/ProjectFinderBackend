@@ -109,14 +109,6 @@ class AuthControllerTest {
     }
 
     @Test
-    void emailChange() {
-    }
-
-    @Test
-    void deleteAccount() {
-    }
-
-    @Test
     void confirmDeleteAccount() throws Exception{
         //given
         final String token = "token";
