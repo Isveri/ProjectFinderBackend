@@ -6,7 +6,9 @@ import com.example.project.domain.Game;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
 import com.example.project.integration.bootData.BootData;
+import com.example.project.model.SearchCriteria;
 import com.example.project.repositories.GroupRepository;
+import com.example.project.utils.GroupRoomSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +53,16 @@ public class GroupRepositoryTest {
         groupRoom=groups.get(0);
 
     }
-    //given
-    //when
-    //then
+
+    @Test
+    void should_return_all_groups_by_city() {
+        GroupRoomSpecification spec = new GroupRoomSpecification(SearchCriteria.builder().cityName("Lublin").build());
+
+        List<GroupRoom> results = groupRepository.findAll(spec);
+
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+    }
 
     @Test
     void should_return_group_by_name(){

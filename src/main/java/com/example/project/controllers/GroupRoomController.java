@@ -3,6 +3,7 @@ package com.example.project.controllers;
 import com.example.project.model.GroupRoomUpdateDTO;
 import com.example.project.model.JoinCodeDTO;
 import com.example.project.model.GroupRoomDTO;
+import com.example.project.model.SearchCriteria;
 import com.example.project.services.GroupRoomService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,10 @@ public class GroupRoomController {
         return ResponseEntity.ok(groupRoomService.getAllGroups());
     }
 
+    @PostMapping("/all/filter")
+    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByCriteria(@RequestBody SearchCriteria criteria,Pageable pageable){
+        return ResponseEntity.ok(groupRoomService.getGroupsByCriteria(criteria,pageable));
+    }
     @GetMapping("/all/{game}")
     public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGame(@PathVariable String game,Pageable pageable){
         return ResponseEntity.ok(groupRoomService.getGroupsByGame(game,pageable));
@@ -68,31 +73,6 @@ public class GroupRoomController {
     public ResponseEntity<Void> changeVisibility(@PathVariable Long groupId, @PathVariable boolean value){
         groupRoomService.updateVisibility(groupId,value);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/G&C/{gameId}/{categoryId}")
-    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameCategory(@PathVariable Long gameId, @PathVariable Long categoryId, Pageable pageable){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategory(gameId,categoryId,pageable));
-    }
-
-    @GetMapping("/G&R/{gameId}/{inGameRoleId}")
-    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameInGameRole(@PathVariable Long gameId, @PathVariable Long inGameRoleId,Pageable pageable){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameRole(gameId,inGameRoleId,pageable));
-    }
-
-    @GetMapping("/G&C&R/{gameId}/{categoryId}/{roleId}")
-    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameCategoryRole(@PathVariable Long gameId, @PathVariable Long categoryId, @PathVariable Long roleId,Pageable pageable){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryRole(gameId,categoryId,roleId,pageable));
-    }
-
-    @GetMapping("/g&cit/{gameId}/{city}")
-    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameCity(@PathVariable Long gameId, @PathVariable String city,Pageable pageable){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameCity(gameId,city,pageable));
-    }
-
-    @GetMapping("/C&C/{gameId}/{categoryId}/{city}")
-    public ResponseEntity<Page<GroupRoomDTO>> getGroupsByGameCategoryCity(@PathVariable Long gameId,@PathVariable Long categoryId, @PathVariable String city,Pageable pageable){
-        return ResponseEntity.ok(groupRoomService.getGroupsByGameCategoryCity(gameId,categoryId,city,pageable));
     }
 
     @GetMapping("/generateCode/{groupId}")

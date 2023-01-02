@@ -5,6 +5,7 @@ import com.example.project.model.GroupRoomUpdateDTO;
 import com.example.project.model.JoinCodeDTO;
 import com.example.project.chat.model.MessageDTO;
 import com.example.project.model.GroupRoomDTO;
+import com.example.project.model.SearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,19 +15,11 @@ public interface GroupRoomService {
 
     List<GroupRoomDTO> getAllGroups();
 
+    Page<GroupRoomDTO> getGroupsByCriteria(SearchCriteria criteria,Pageable pageable);
+
     Page<GroupRoomDTO> getGroupsByGame(String game, Pageable pageable);
 
     List<GroupRoomDTO> getDeletedGroups();
-
-    Page<GroupRoomDTO> getGroupsByGameCategory(Long gameId,Long categoryId, Pageable pageable);
-
-    Page<GroupRoomDTO> getGroupsByGameCategoryRole(Long gameId,Long categoryId,Long roleId, Pageable pageable);
-
-    Page<GroupRoomDTO> getGroupsByGameRole(Long gameId,Long roleId, Pageable pageable);
-
-    Page<GroupRoomDTO> getGroupsByGameCity(Long gameId, String city, Pageable pageable);
-
-    Page<GroupRoomDTO> getGroupsByGameCategoryCity(Long gameId,Long categoryId, String city, Pageable pageable);
 
     void updateVisibility(Long groupId, boolean result);
 

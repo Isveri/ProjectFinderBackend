@@ -17,7 +17,8 @@ public class TakenInGameRole {
     private Long id;
 
     @OneToOne
-    private User user;
+    @Builder.Default
+    private User user = null;
 
     @OneToOne
     private InGameRole inGameRole;
