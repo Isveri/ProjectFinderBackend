@@ -165,9 +165,6 @@ public class GroupRoomServiceImpl implements GroupRoomService {
     @Override
     public GroupRoomDTO updateGroupRoomByDTO(Long id, GroupRoomUpdateDTO groupRoomUpdateDTO) {
         GroupRoom groupRoom = groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("Group room not found id:" + id));
-        // groupRoom = groupRoomMapper.mapGroupRoomDTOToGroupRoom(groupRoomDTO);
-        //groupRoom.setId(id);
-        //dataValidation.groupName(groupRoomUpdateDTO.getName(),groupRoom);
         dataValidation.userLimitUpdate(groupRoomUpdateDTO.getMaxUsers(),groupRoom);
         dataValidation.groupDesc(groupRoomUpdateDTO.getDescription());
         return saveAndReturnDTO(groupRoomMapper.updateGroupRoomFromGroupRoomUpdateDTO(groupRoomUpdateDTO, groupRoom));

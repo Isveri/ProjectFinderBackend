@@ -3,10 +3,7 @@ package com.example.project.services;
 import com.example.project.chat.repositories.ChatRepository;
 import com.example.project.chat.service.SseService;
 import com.example.project.domain.*;
-import com.example.project.exceptions.AlreadyBannedException;
-import com.example.project.exceptions.AlreadyFriendException;
-import com.example.project.exceptions.AlreadyInvitedException;
-import com.example.project.exceptions.AlreadyReportedException;
+import com.example.project.exceptions.*;
 import com.example.project.mappers.*;
 import com.example.project.model.*;
 import com.example.project.repositories.*;
@@ -116,7 +113,7 @@ class UserServiceImplTest {
 
     @Test
     void should_save_and_return_userDTO() {
-//        //given
+        //given
         Role role = getRoleMock();
         String roleName = "ROLE_USER";
         when(roleRepository.findByName(roleName)).thenReturn(role);
@@ -314,11 +311,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getProfilePicture() {
-    }
-
-
-    @Test
     void should_return_user_profileDTO() {
         //given
         UserProfileDTO userProfileDTO = getUserProfileDTOMock();
@@ -437,6 +429,20 @@ class UserServiceImplTest {
     }
 
     @Test
+    void banUser_should_throw_user_not_found_exception(){
+        BannedUserDTO bannedUserDTO = getBannedUserDTOMock();
+        Long bannedUserId = bannedUserDTO.getId();
+        when(userRepository.findById(bannedUserId)).thenReturn(Optional.empty());
+
+        //when
+        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.banUser(bannedUserDTO));
+
+        //then
+        assertNotNull(exception);
+        verify(userRepository, times(1)).findById(bannedUserId);
+    }
+
+    @Test
     void should_delete_reports() {
         //given
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(user));
@@ -448,6 +454,18 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).findById(user.getId());
         verify(reportRepository, times(1)).deleteAll(any());
         verify(userRepository, times(1)).save(user);
+    }
+    @Test
+    void deleteReports_should_throw_user_not_found_exception(){
+        //given
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        //when
+        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.deleteReports(user.getId()));
+
+        //then
+        assertNotNull(exception);
+        verify(userRepository, times(1)).findById(user.getId());
     }
 
     @Test
@@ -461,6 +479,19 @@ class UserServiceImplTest {
         //then
         verify(userRepository, times(1)).findById(user.getId());
         verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    void unbanUser_should_throw_user_not_found_exception(){
+        //given
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        //when
+        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.unbanUser(user.getId()));
+
+        //then
+        assertNotNull(exception);
+        verify(userRepository, times(1)).findById(user.getId());
     }
 
     @Test
@@ -485,7 +516,6 @@ class UserServiceImplTest {
     void should_throw_already_friend_exception() {
         //given
         User invitedUser = getInvitedUserMock();
-        User currentUser = getCurrentUserMock();
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(invitedUser));
         when(friendRequestRepository.existsBySendingUserIdAndInvitedUserId(any(Long.class), any(Long.class))).thenReturn(true);
 

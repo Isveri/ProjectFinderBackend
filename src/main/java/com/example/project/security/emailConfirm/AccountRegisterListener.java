@@ -51,7 +51,7 @@ public class AccountRegisterListener implements ApplicationListener<OnAccountReg
                     "    <title>Account Register Confirm</title></head>\n" +
                     "  <body><div style='justify-content:center;'><div><h2 style='justify-content:center;background-color: #0d1f30fa; color: #eee;padding: 15px 25px;'>Welcome to Team Finder</h2>" +
                     "<h3>You successfully registered your new account. To enable it click button below</h3>" +
-                    "<a class='btn btn-primary w-100 w-lg-50 align-center' href='http://localhost:4200/#" + confirmationUrl + "'><button style='background-color: #0d1f30fa;\n" +
+                    "<a class='btn btn-primary w-100 w-lg-50 align-center' href='http://localhost:4200" + confirmationUrl + "'><button style='background-color: #0d1f30fa;\n" +
                     "  color: #eee;\n" +
                     "  padding: 15px 25px;\n" +
                     "  border: none;'>Enable account</button></a></div></div></body>" +

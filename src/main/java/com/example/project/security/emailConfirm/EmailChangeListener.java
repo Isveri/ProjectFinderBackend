@@ -52,7 +52,7 @@ public class EmailChangeListener implements ApplicationListener<OnEmailChangeCom
                     "    <title>Account Register Confirm</title></head>\n" +
                     "  <body><div style='justify-content:center;'><div><h2 style='justify-content:center;background-color: #0d1f30fa; color: #eee;padding: 15px 25px;'>Change Email Request</h2>" +
                     "<h3>To finish request please click button below. You will be logged in to account</h3>" +
-                    "<a class='btn btn-primary w-100 w-lg-50 align-center' href='http://localhost:4200/#" + confirmationUrl + "'><button style='background-color: #0d1f30fa;\n" +
+                    "<a class='btn btn-primary w-100 w-lg-50 align-center' href='http://localhost:4200" + confirmationUrl + "'><button style='background-color: #0d1f30fa;\n" +
                     "  color: #eee;\n" +
                     "  padding: 15px 25px;\n" +
                     "  border: none;'>Change email</button></a></div></div></body>" +

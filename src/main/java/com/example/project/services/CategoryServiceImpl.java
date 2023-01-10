@@ -17,16 +17,6 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-//    @Override
-//    public List<CategoryDTO> getAllCategories() {
-//        return null;
-//    }
-//
-//    @Override
-//    public Category getCategoryByName(String name) {
-//        return null;
-//    }
-
     @Override
     public List<CategoryDTO> getCategoriesByGame(String game) {
         return categoryRepository.findAllByGameName(game)

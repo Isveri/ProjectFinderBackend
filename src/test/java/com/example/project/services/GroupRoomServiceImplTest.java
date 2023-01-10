@@ -5,10 +5,7 @@ import com.example.project.chat.service.SseService;
 import com.example.project.domain.Category;
 import com.example.project.domain.GroupRoom;
 import com.example.project.domain.User;
-import com.example.project.exceptions.AlreadyInGroupException;
-import com.example.project.exceptions.AlreadyReportedException;
-import com.example.project.exceptions.CodeDoesntExistException;
-import com.example.project.exceptions.NotGroupLeaderException;
+import com.example.project.exceptions.*;
 import com.example.project.mappers.GroupRoomMapper;
 import com.example.project.mappers.TakenInGameRoleMapper;
 import com.example.project.model.GroupRoomDTO;
@@ -152,28 +149,6 @@ class GroupRoomServiceImplTest {
     }
 
 
-//    @Test
-//    void should_return_groups_by_category_and_city() {
-//        //given
-//        Long gameId = 1L;
-//        Long categoryId = 1L;
-//        String city = "Lublin";
-//        PageRequest pageRequest = PageRequest.of(1,1);
-//        List<GroupRoom> groupRooms = Collections.singletonList(gr);
-//        Page<GroupRoom> page = new PageImpl<GroupRoom>(groupRooms,pageRequest,groupRooms.size());
-//
-//        when(groupRepository.findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(any(Long.class), any(Long.class), any(String.class),any(Pageable.class))).thenReturn(page);
-//        when(groupRoomMapper.mapGroupRoomToGroupRoomDTO(any(GroupRoom.class))).thenReturn(groupRoomDTO);
-//
-//        //when
-//        Page<GroupRoomDTO> result = groupRoomService.getGroupsByGameCategoryCity(gameId, categoryId, city,pageRequest);
-//
-//        //then
-//        assertThat(result.getContent().get(0).getId()).isEqualTo(gr.getId());
-//        verify(groupRepository, times(1)).findAllByGameIdAndCategoryIdAndCityAndOpenIsTrue(gameId, categoryId, city,pageRequest);
-//        verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
-//    }
-
     @Test
     void should_return_group_by_name() {
         //given
@@ -188,6 +163,33 @@ class GroupRoomServiceImplTest {
         assertThat(result.getName()).isEqualTo(gr.getName());
         verify(groupRepository, times(1)).findByName(name);
         verify(groupRoomMapper, times(1)).mapGroupRoomToGroupRoomDTO(gr);
+    }
+
+
+    @Test
+    void findById_should_throw_GroupNotFoundException(){
+        //given
+        when(groupRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        //when
+        Exception exception = assertThrows(GroupNotFoundException.class,() -> groupRoomService.getGroupById(1L));
+
+        //then
+        assertNotNull(exception);
+        verify(groupRepository,times(1)).findById(1L);
+    }
+
+    @Test
+    void findByName_should_throw_GroupNotFoundException(){
+        //given
+        when(groupRepository.findByName(any(String.class))).thenReturn(Optional.empty());
+
+        //when
+        Exception exception = assertThrows(GroupNotFoundException.class,() -> groupRoomService.getGroupByName("name"));
+
+        //then
+        assertNotNull(exception);
+        verify(groupRepository,times(1)).findByName("name");
     }
 
     @Test

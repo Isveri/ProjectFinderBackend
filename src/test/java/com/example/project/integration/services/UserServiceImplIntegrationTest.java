@@ -146,5 +146,21 @@ class UserServiceImplIntegrationTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    @Rollback
+    void should_return_UserProfileDTO(){
+        //given
+        List<User> users = bootData.createUsers();
+        bootData.setUserPrivilages(users);
+        user = users.get(0);
+
+        //when
+        UserProfileDTO result = userService.getUserProfile(user.getId());
+
+        //then
+        assertNotNull(result);
+        assertEquals(user.getUsername(), result.getUsername());
+        assertEquals(user.getId(),result.getId());
+    }
 
 }
