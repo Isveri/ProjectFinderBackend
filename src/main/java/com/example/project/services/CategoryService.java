@@ -8,9 +8,6 @@ import java.util.List;
 
 public interface CategoryService {
 
-//    List<CategoryDTO> getAllCategories();
-//    Category getCategoryByName(String name);
-
     List<CategoryDTO> getCategoriesByGame(String game);
 
 
